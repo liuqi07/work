@@ -1,6 +1,7 @@
 import { login, logout, getUserInfo, getAccessRoutes } from '@/api/user'
-import { setToken, getToken, getMenuByRouter } from '@/libs/util'
+import { setToken, getToken, getMenuByRouter, formatRouter } from '@/libs/util'
 import routers from '@/router/routers';
+import defaultRouters from '@/router/defaultRouters';
 import Main from '@/view/main';
 
 export default {
@@ -14,7 +15,7 @@ export default {
   },
   getters: {
     menuList: (state, getters, rootState) => {
-      console.log('%c state.accessRoutes', 'color:red;', state.accessRoutes);
+      // console.log('%c state.accessRoutes', 'color:red;', state.accessRoutes);
       const accessRoutes = state.accessRoutes;
       // const children = (child, parentPath) => {
       //   child.map(c => ({
@@ -88,13 +89,16 @@ export default {
     // 获取用户相关信息
     getUserInfo ({ state, commit }) {
       return new Promise((resolve, reject) => {
-        getUserInfo(state.token).then(res => {
+        getUserInfo().then(res => {
           const data = res.data
-          commit('setAvator', data.avator)
-          commit('setUserName', data.user_name)
-          commit('setUserId', data.user_id)
-          commit('setAccess', data.access)
-          commit('setAccessRoutes', data.accessRoutes)
+          console.log('%c data', 'color:red;', data.data);
+          const routers = [...defaultRouters, ...formatRouter(data.data)]
+          // commit('setAvator', data.avator)
+          // commit('setUserName', data.user_name)
+          // commit('setUserId', data.user_id)
+          // commit('setAccess', data.access)
+          console.log('%c routers', 'color:red;', routers);
+          commit('setAccessRoutes', routers)
           resolve(data)
         }).catch(err => {
           reject(err)

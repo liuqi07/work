@@ -1,20 +1,21 @@
-import { getParams } from '@/libs/util'
+import { getParams } from "@/libs/util";
+import defaultRouters from "../router/defaultRouters";
 const USER_MAP = {
   super_admin: {
-    name: 'super_admin',
-    user_id: '1',
-    access: ['super_admin', 'admin'],
-    token: 'super_admin',
-    avator: 'https://file.iviewui.com/dist/a0e88e83800f138b94d2414621bd9704.png'
+    name: "super_admin",
+    user_id: "1",
+    access: ["super_admin", "admin"],
+    token: "super_admin",
+    avator: "https://file.iviewui.com/dist/a0e88e83800f138b94d2414621bd9704.png"
   },
   admin: {
-    name: 'admin',
-    user_id: '2',
-    access: ['admin'],
-    token: 'admin',
-    avator: 'https://avatars0.githubusercontent.com/u/20942571?s=460&v=4'
+    name: "admin",
+    user_id: "2",
+    access: ["admin"],
+    token: "admin",
+    avator: "https://avatars0.githubusercontent.com/u/20942571?s=460&v=4"
   }
-}
+};
 
 const accessRoutes = [
   {
@@ -71,6 +72,69 @@ const accessRoutes = [
     }
   },
   {
+    path: "/sysTem",
+    name: "sysTem",
+    children: [
+      {
+        path: "/sysUser",
+        name: "sysUser",
+        meta: {
+          icon: "icon",
+          title: "人员管理"
+        },
+        buttons: [
+          {
+            path: "editSysUser",
+            title: "编辑"
+          },
+          {
+            path: "openOrClose",
+            title: "停用启用"
+          }
+        ]
+      },
+      {
+        path: "/sysRole",
+        name: "sysRole",
+        meta: {
+          icon: "icon",
+          title: "角色管理"
+        },
+        buttons: [
+          {
+            path: "addSysRole",
+            title: "添加"
+          },
+          {
+            path: "editSysRole",
+            title: "编辑"
+          },
+          {
+            path: "deleteSysRole",
+            title: "删除"
+          },
+          {
+            path: "authSysRole",
+            title: "授权"
+          }
+        ]
+      },
+      {
+        path: "/sysResource",
+        name: "sysResource",
+        meta: {
+          icon: "icon",
+          title: "资源管理",
+        },
+        buttons: []
+      }
+    ],
+    meta: {
+      icon: "icon",
+      title: "系统管理"
+    }
+  }
+  /*{
     path: '/student-management',
     name: 'student-management',
     meta: {
@@ -100,27 +164,20 @@ const accessRoutes = [
         }
       }
     ]
-  }
-]
+  }*/
+];
 
 export const login = req => {
-  req = JSON.parse(req.body)
-  return {token: USER_MAP[req.userName].token}
-}
+  req = JSON.parse(req.body);
+  return { token: USER_MAP[req.userName].token };
+};
 
 export const getUserInfo = req => {
-  const params = getParams(req.url)
-  return {...USER_MAP[params.token], accessRoutes}
-}
+  // const params = getParams(req.url);
+  return { ...USER_MAP['admin'], accessRoutes };
+};
 
 export const logout = req => {
-  return null
-}
+  return null;
+};
 
-export const getAccessRoutes = req => {
-  return {
-    code: 1,
-    message: 'success',
-    data: accessRoutes
-  }
-}

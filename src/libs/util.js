@@ -153,6 +153,7 @@ export const canTurnTo = (name, access, routes) => {
 }
 
 export const _canTurnTo = (name, access, routes) => {
+  console.log('%c name, access', 'color:red;', name, access);
   const accessArr = []
   access.map(r => {
     accessArr.push(r.name)
@@ -162,6 +163,7 @@ export const _canTurnTo = (name, access, routes) => {
       })
     }
   })
+  console.log('%c accessArr.includes(name)', 'color:red;', accessArr.includes(name));
   return accessArr.includes(name);
 }
 
@@ -344,4 +346,28 @@ export const initRoutes  = (vm) => {
       }))
     }
   })
+}
+
+export const formatRouter = (routers) => {
+  const children = (child=[]) => {
+    return child.map(c => ({
+      path: c.path,
+      name: c.name,
+      meta: {
+        icon: c.meta.icon,
+        title: c.meta.title
+      },
+      buttons: c.buttons
+    }))
+    
+  }
+  return routers.map(r => ({
+      path: r.path,
+      name: r.name,
+      children: children(r.children),
+      meta: {
+        icon: r.meta.icon,
+        title: r.meta.title
+      }
+  }))
 }
