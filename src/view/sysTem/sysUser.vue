@@ -11,7 +11,7 @@
       </FormItem>
       <FormItem>
         <Button type="primary" @click="search" style="margin-right: 10px;">搜索</Button>
-        <Button type="primary" @click="openAddModal">添加</Button>
+        <Button type="primary" v-hasPermission="'addSysUser'" @click="openAddModal">添加</Button>
       </FormItem>
     </Form>
     <Card>
@@ -119,7 +119,10 @@
                     click: () => {
                       this.openEditUser(params)
                     }
-                  }
+                  },
+                  directives: [
+                    { name: 'hasPermission', value: "editSysUser" }
+                  ]
                 }, '修改资料'),
                 h('Button', {
                   props: {
@@ -134,7 +137,10 @@
                     click: () => {
                       this.disuse(params)
                     }
-                  }
+                  },
+                  directives: [
+                    { name: 'hasPermission', value: "openOrClose" }
+                  ]
                 }, '停用')
               ])
             }

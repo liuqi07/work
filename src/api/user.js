@@ -33,7 +33,7 @@ export const getAccessRoutes = (token) => {
 
 export const getValidCode = () => {
   return axios.request({
-    url: 'manager/getValidCode',
+    url: '/manager/getValidCode',
     method: 'get'
   })
 }

@@ -2,7 +2,7 @@
   <div>
     <Form ref="sysRole" :model="sysRole" inline :label-width="120">
       <FormItem label="可进行以下操作">
-        <Button type="primary" @click="openAddRole()">添加角色</Button>
+        <Button v-hasPermission="'addSysRole'" type="primary" @click="addSysRole()">添加角色</Button>
       </FormItem>
     </Form>
     <Card>
@@ -35,6 +35,10 @@
         </FormItem>
       </Form>
     </Modal>
+    <!-- 角色权限授权 -->
+    <Modal title="角色授权" v-model="authRoleModal" @on-ok="authRole">
+      <Tree :data="authRoleTree" ref="authRole" show-checkbox multiple></Tree>
+    </Modal>
   </div>
 </template>
 
@@ -50,13 +54,13 @@
           { title: '角色名称', key: 'name' },
           { title: '角色描述', key: 'roleDesc' },
           { title: '状态', key: 'status', render: (h, params) => h('div', {}, params.row.status === 1 ? '使用中' : '停用') },
-          { title: '管理', key: 'manager', render: (h, params) => {
+          { title: '管理', key: 'manager', width: 200, render: (h, params) => {
               return h('div', [
                 h('Button', {
                   props: {
                     type: 'primary',
                     size: 'small',
-                    disabled: params.row.status !== 1
+                    disabled: params.row.status !== 1,                    
                   },
                   style: {
                     marginRight: '5px'
@@ -65,7 +69,10 @@
                     click: () => {
                       this.openEditRole(params)
                     }
-                  }
+                  },
+                  directives: [
+                    { name: 'hasPermission', value: "editSysRole" }
+                  ]
                 }, '编辑'),
                 h('Button', {
                   props: {
@@ -80,8 +87,11 @@
                     click: () => {
                       this.openEditAuth(params)
                     }
-                  }
-                }, '权限'),
+                  },
+                  directives: [
+                    { name: 'hasPermission', value: "authSysRole" }
+                  ]
+                }, '角色授权'),
                 h('Button', {
                   props: {
                     type: 'error',
@@ -92,7 +102,10 @@
                     click: () => {
                       this.deleteRole(params)
                     }
-                  }
+                  },
+                  directives: [
+                    { name: 'hasPermission', value: "deleteSysRole" }
+                  ]
                 }, '删除')
               ])
             }
@@ -123,7 +136,10 @@
         },
         editRoleModal: false,
         editRoleData: {},
-        editRoleRules: {}
+        editRoleRules: {},
+        authRoleModal: false,
+        authRoleTree: [],
+        currRoleId: '',
       }
     },
     methods: {
@@ -138,7 +154,7 @@
           }
         })
       },
-      openAddRole() {
+      addSysRole() {
         this.addRoleModal = true
       },
       addRole() {
@@ -176,7 +192,51 @@
         })
       },
       openEditAuth(params) {
-        console.log('%c openEditAuth params', 'color:red;', params);
+        this.authRoleModal = true
+        this.currRoleId = params.row.id
+        http.get({
+          vm: this,
+          url: '/manager/sys-role/getAuth',
+          data: { id: this.currRoleId },
+          success: res => {
+            const treeData = [res.data]
+            treeData[0].expand = true
+            this.authRoleTree = treeData
+          }
+        })
+      },
+      authRole () {
+        const treeData = this.authRoleTree;
+        const resourceIds = [];
+        const fn = t => {
+          if(t.indeterminate || t.checked){
+            resourceIds.push(t.id)
+          }
+        }
+        treeData.map(t => {
+          (t.indeterminate || t.checked) && resourceIds.push(t.id)
+          t.children && t.children.length > 0 && t.children.map(c => {
+            (c.indeterminate || c.checked) && resourceIds.push(c.id)
+            c.children && c.children.length > 0 && c.children.map(d => {
+              (d.indeterminate || d.checked) && resourceIds.push(d.id)
+              d.children && d.children.length > 0 && d.children.map(e => {
+                (e.indeterminate || e.checked) && resourceIds.push(e.id)
+              })
+            })
+          })
+        })
+        console.log('%c resourceIds', 'color:red;', resourceIds.sort((a,b)=>a-b));
+        http.post({
+          vm: this,
+          url: '/manager/sys-role/auth',
+          data: {
+            id: this.currRoleId,
+            resourceIds: resourceIds.sort((a,b)=>a-b)
+          },
+          success: res => {
+            this.$Message.success(res.msg)
+          }
+        })
       },
       deleteRole(params) {
         this.$Modal.confirm({

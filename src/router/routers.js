@@ -94,8 +94,8 @@ export default [
     ]
   },
   {
-    path: '/student-management',
-    name: 'student-management',
+    path: '/student',
+    name: 'student',
     component: Main,
     meta: {
       icon: 'logo-buffer',
@@ -103,21 +103,222 @@ export default [
     },
     children: [
       {
-        path: '/student-list',
-        name: 'student-list',
-        component: () => import('@/view/student-management/student-list.vue'),
+        path: '/studentList',
+        name: 'studentList',
+        component: () => import('@/view/student/studentList.vue'),
         meta: {
           icon: 'logo-buffer',
           title: '学员列表'
         }
       },
       {
-        path: '/student-schedule',
-        name: 'student-schedule',
-        component: () => import('@/view/student-management/student-schedule.vue'),
+        path: '/studentCourseList',
+        name: 'studentCourseList',
+        component: () => import('@/view/student/studentCourseList.vue'),
         meta: {
           icon: 'logo-buffer',
           title: '学员课表'
+        }
+      }
+    ]
+  },
+  {
+    path: '/courseAdviser',
+    name: 'courseAdviser',
+    component: Main,
+    meta: {
+      icon: '',
+      title: '课程顾问'
+    },
+    children: [
+      {
+        path: '/courseAdviserList',
+        name: 'courseAdviserList',
+        component: () => import('@/view/courseAdviser/courseAdviserList.vue'),
+        meta: {
+          icon: '',
+          title: '课程顾问管理'
+        }
+      }
+    ]
+  },
+  {
+    path: '/teacher',
+    name: 'teacher',
+    component: Main,
+    meta: {
+      icon: '',
+      title: '教师管理'
+    },
+    children: [
+      {
+        path: '/teacherList',
+        name: 'teacherList',
+        component: () => import('@/view/teacher/teacherList.vue'),
+        meta: {
+          icon: '',
+          title: '教师列表'
+        }
+      }
+    ]
+  },
+  {
+    path: '/course',
+    name: 'course',
+    component: Main,
+    meta: {
+      icon: '',
+      title: '课程管理'
+    },
+    children: [
+      {
+        path: '/firstList',
+        name: 'firstList',
+        component: () => import('@/view/course/firstList.vue'),
+        meta: {
+          icon: '',
+          title: '一级分类'
+        }
+      },
+      {
+        path: '/secondList',
+        name: 'secondList',
+        component: () => import('@/view/course/secondList.vue'),
+        meta: {
+          icon: '',
+          title: '二级分类'
+        }
+      },
+      {
+        path: '/thirdList',
+        name: 'thirdList',
+        component: () => import('@/view/course/thirdList.vue'),
+        meta: {
+          icon: '',
+          title: '三级分类'
+        }
+      },
+      {
+        path: '/courseList',
+        name: 'courseList',
+        component: () => import('@/view/course/courseList.vue'),
+        meta: {
+          icon: '',
+          title: '课程管理'
+        }
+      },
+      {
+        path: '/packageList',
+        name: 'packageList',
+        component: () => import('@/view/course/packageList.vue'),
+        meta: {
+          icon: '',
+          title: '套餐管理'
+        }
+      }
+    ]
+  },
+  {
+    path: '/material',
+    name: 'material',
+    component: Main,
+    meta: {
+      icon: '',
+      title: '教材管理'
+    },
+    children: [
+      {
+        path: '/materialList',
+        name: 'materialList',
+        component: () => import('@/view/material/materialList.vue'),
+        meta: {
+          icon: '',
+          title: '教材列表'
+        }
+      }
+    ]
+  },
+  {
+    path: '/order',
+    name: 'order',
+    component: Main,
+    meta: {
+      icon: '',
+      title: '订单管理'
+    },
+    children: [
+      {
+        path: '/subscribe',
+        name: 'subscribe',
+        component: () => import('@/view/order/subscribe.vue'),
+        meta: {
+          icon: '',
+          title: '预约订单'
+        }
+      },
+      {
+        path: '/formal',
+        name: 'formal',
+        component: () => import('@/view/order/formal.vue'),
+        meta: {
+          icon: '',
+          title: '正式订单'
+        }
+      },
+      {
+        path: '/refund',
+        name: 'refund',
+        component: () => import('@/view/order/refund.vue'),
+        meta: {
+          icon: '',
+          title: '退款订单'
+        }
+      }
+    ]
+  },
+  {
+    path: '/log',
+    name: 'log',
+    component: Main,
+    meta: {
+      icon: '',
+      title: '日志管理'
+    },
+    children: [
+      {
+        path: '/adviser',
+        name: 'adviser',
+        component: () => import('@/view/log/adviser.vue'),
+        meta: {
+          icon: '',
+          title: '分配顾问'
+        }
+      },
+      {
+        path: '/arrange',
+        name: 'arrange',
+        component: () => import('@/view/log/arrange.vue'),
+        meta: {
+          icon: '',
+          title: '转单日志'
+        }
+      },
+      {
+        path: '/manager',
+        name: 'manager',
+        component: () => import('@/view/log/manager.vue'),
+        meta: {
+          icon: '',
+          title: '后台日志'
+        }
+      },
+      {
+        path: '/web',
+        name: 'web',
+        component: () => import('@/view/log/web.vue'),
+        meta: {
+          icon: '',
+          title: '后台日志'
         }
       }
     ]

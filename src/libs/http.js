@@ -21,6 +21,7 @@ export default {
           vm.$Message.warning(res.data.msg);
           // util.logout(vm);
         } else {
+          console.log('%c code', 'color:red;', res.data);
           vm.$Message.warning(res.data.msg);
           error && error();
         }
