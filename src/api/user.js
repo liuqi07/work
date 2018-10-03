@@ -1,14 +1,9 @@
 import axios from '@/libs/api.request'
 
-export const login = ({ userName, password }) => {
-  const data = {
-    userName,
-    password
-  }
+export const login = ({ loginName, password, validCode }) => {
   return axios.request({
-    url: 'login',
-    data,
-    method: 'post'
+    url: '/manager/login?loginName='+loginName+'&password='+password+'&validCode='+validCode,
+    method: 'POST'
   })
 }
 
@@ -19,9 +14,9 @@ export const getUserInfo = () => {
   })
 }
 
-export const logout = (token) => {
+export const logout = () => {
   return axios.request({
-    url: 'logout',
+    url: '/manager/logOut',
     method: 'post'
   })
 }
@@ -33,5 +28,12 @@ export const getAccessRoutes = (token) => {
     params: {
       token
     }
+  })
+}
+
+export const getValidCode = () => {
+  return axios.request({
+    url: 'manager/getValidCode',
+    method: 'get'
   })
 }

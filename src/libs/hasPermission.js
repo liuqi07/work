@@ -19,9 +19,7 @@ const hasPermission = {
           }
         });
         const isBtn = buttons && buttons.length && buttons.filter(button => button.path===binding.value)
-        console.log('%c isBtn', 'color:red;', isBtn);
         !isBtn.length && el.parentNode.removeChild(el)
-        console.log('%c buttons', 'color:red;', buttons);
         //   console.log('%c vnode.context.$store.state.user.accessRoutes', 'color:red;', vnode.context.$store.state.user.accessRoutes);
         //   console.log('%c binding.value', 'color:red;', binding.value);
         //   if (permissionList && permissionList.length && !permissionList.includes(binding.value)) {

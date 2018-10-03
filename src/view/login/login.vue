@@ -8,7 +8,7 @@
       <Card icon="log-in" title="欢迎登录" :bordered="false">
         <div class="form-con">
           <login-form @on-success-valid="handleSubmit"></login-form>
-          <p class="login-tip">输入任意用户名和密码即可</p>
+          <p class="login-tip">点击验证码可重新获取</p>
         </div>
       </Card>
     </div>
@@ -18,6 +18,7 @@
 <script>
 import LoginForm from '_c/login-form'
 import { mapActions } from 'vuex'
+import axios from 'axios';
 export default {
   components: {
     LoginForm
@@ -28,14 +29,12 @@ export default {
       'getUserInfo',
       'getAccessRoutes'
     ]),
-    handleSubmit ({ userName, password }) {
-      this.handleLogin({ userName, password }).then(res => {
+    handleSubmit ({ loginName, password, validCode }) {
+      this.handleLogin({ loginName, password, validCode }).then(res => {
         this.getUserInfo().then(res => {
-          // this.getAccessRoutes().then(res => {
-            this.$router.push({
-              name: 'home'
-            })
-          // })
+          this.$router.push({
+            name: 'home'
+          })
         })
       })
     }

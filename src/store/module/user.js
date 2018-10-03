@@ -2,11 +2,10 @@ import { login, logout, getUserInfo, getAccessRoutes } from '@/api/user'
 import { setToken, getToken, getMenuByRouter, formatRouter } from '@/libs/util'
 import routers from '@/router/routers';
 import defaultRouters from '@/router/defaultRouters';
-import Main from '@/view/main';
 
 export default {
   state: {
-    userName: '',
+    loginName: '',
     userId: '',
     avatorImgPath: '',
     token: getToken(),
@@ -39,8 +38,8 @@ export default {
     setUserId (state, id) {
       state.userId = id
     },
-    setUserName (state, name) {
-      state.userName = name
+    setloginName (state, name) {
+      state.loginName = name
     },
     setAccess (state, access) {
       state.access = access
@@ -55,16 +54,22 @@ export default {
   },
   actions: {
     // 登录
-    handleLogin ({ commit }, {userName, password}) {
-      userName = userName.trim()
+    handleLogin ({ commit }, {loginName, password, validCode}) {
+      loginName = loginName.trim()
       return new Promise((resolve, reject) => {
         login({
-          userName,
-          password
+          loginName,
+          password,
+          validCode
         }).then(res => {
-          const data = res.data
-          commit('setToken', data.token)
-          resolve()
+          if(res.data.code===1){
+            const data = res.data
+            commit('setToken', data.code)
+            resolve()
+          }else if(res.data.code===2){
+            // this.$Message.error(res.data.msg)
+            alert(res.data.msg)
+          }
         }).catch(err => {
           reject(err)
         })
@@ -91,30 +96,17 @@ export default {
       return new Promise((resolve, reject) => {
         getUserInfo().then(res => {
           const data = res.data
-          console.log('%c data', 'color:red;', data.data);
           const routers = [...defaultRouters, ...formatRouter(data.data)]
           // commit('setAvator', data.avator)
-          // commit('setUserName', data.user_name)
+          // commit('setloginName', data.user_name)
           // commit('setUserId', data.user_id)
           // commit('setAccess', data.access)
-          console.log('%c routers', 'color:red;', routers);
           commit('setAccessRoutes', routers)
           resolve(data)
         }).catch(err => {
           reject(err)
         })
       })
-    },
-    // getAccessRoutes ({ state, commit }) {
-    //   return new Promise((resolve, reject) => {
-    //     getAccessRoutes(state.token='abc').then(res => {
-    //       const accessRoutes = res.data.data
-    //       commit('setAccessRoutes', accessRoutes)
-    //       resolve(accessRoutes)
-    //     }).catch(err => {
-    //       reject(err)
-    //     })
-    //   })
-    // }
+    }
   }
 }

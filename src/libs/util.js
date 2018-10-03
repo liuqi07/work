@@ -4,6 +4,7 @@ import config from '@/config'
 import { forEach, hasOneOf, objEqual } from '@/libs/tools'
 import { getAccessRoutes } from "@/api/user";
 import Main from '@/view/main';
+import { logout } from '../api/user';
 
 export const TOKEN_KEY = 'token'
 
@@ -153,7 +154,6 @@ export const canTurnTo = (name, access, routes) => {
 }
 
 export const _canTurnTo = (name, access, routes) => {
-  console.log('%c name, access', 'color:red;', name, access);
   const accessArr = []
   access.map(r => {
     accessArr.push(r.name)
@@ -163,7 +163,6 @@ export const _canTurnTo = (name, access, routes) => {
       })
     }
   })
-  console.log('%c accessArr.includes(name)', 'color:red;', accessArr.includes(name));
   return accessArr.includes(name);
 }
 
@@ -330,7 +329,6 @@ export const routeHasExist = (tagNavList, routeItem) => {
 
 export const initRoutes  = (vm) => {
   getAccessRoutes().then(res => {
-    console.log('%c res', 'color:red;', res);
     if(res.status === 200 && res.data.code === 1){
       const accessRoutes = res.data.data;
       const children = (child, parentPath) => {
@@ -370,4 +368,23 @@ export const formatRouter = (routers) => {
         title: r.meta.title
       }
   }))
+}
+
+export const handleResponse = (vm, res, success, error) => {
+  if(res.status.toString().startsWith('2')){
+    if(res.data.code===1){
+      success && success(res.data)
+    }
+    else if (res.code===2){
+      vm.$Message.error(res.data.message);
+      error && error(res);
+    }
+    else if(res.code===3){
+      vm.$Message.warning('登陆失效，请重新登陆！');
+      logout()
+      vm.$router.push({
+        name: 'login'
+      })
+    }
+  }
 }
