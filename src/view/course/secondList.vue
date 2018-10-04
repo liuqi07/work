@@ -1,3 +1,145 @@
 <template>
-    <div>二级分类</div>
-  </template>
+  <div>
+    <Form :label-width="100" inline>
+      <FormItem label="一级分类" style="width: 300px;">
+        <Select v-model="postData.parentCode">
+          <Option v-for="item in firstList" :value="item.code">{{item.name}}</Option>
+        </Select>
+      </FormItem>
+      <FormItem>
+        <Button type="primary" v-hasPermission="'secondAdd'" @click="secondAdd">添加二级分类</Button>
+      </FormItem>
+    </Form>
+    <Card style="margin-top: 10px;">
+      <Table :columns="columns" :data="secondList"></Table>
+      <Page :total="total" show-total @on-change="changePage" :page-index="postData.pageIndex" style="margin-top: 10px" />
+    </Card>
+    <Modal title="添加二级分类" v-model="addModal" @on-ok="add">
+      <Form :label-width="100">
+        <FormItem label="一级分类名称：" style="width: 300px;">
+          <Select v-model="addData.parentCode">
+            <Option v-for="item in firstList" :value="item.code">{{item.name}}</Option>
+          </Select>
+        </FormItem>
+        <FormItem label="二级分类名称：" style="width: 300px;">
+          <Input v-model="addData.name" placeholder="请输入二级分类名称" />
+        </FormItem>
+      </Form>
+    </Modal>
+    <Modal title="编辑" v-model="editModal" @on-ok="edit">
+      <Form :label-width="100">
+        <FormItem label="二级分类名称：" style="width: 300px;">
+          <Input v-model="editData.name" placeholder="请输入二级分类名称" />
+        </FormItem>
+      </Form>
+    </Modal>
+  </div>
+</template>
+
+<script>
+  import http from '@/libs/http';
+  export default {
+    data() {
+      return {
+        postData: {
+          pageIndex: 0,
+          pageSize: 20
+        },
+        firstList: [],
+        total: 0,
+        columns: [
+          { title: '序号', type: 'index' },
+          { title: '一级分类名称', key: 'firstName', align: 'center' },
+          { title: '二级分类名称', key: 'name', align: 'center' },
+          { title: '操作时间', key: 'updateTime', align: 'center' },
+          { title: '操作人', key: 'operateName', align: 'center' },
+          {
+            title: '管理', key: 'actions', align: 'center', render: (h, params) => {
+              return h('div', [
+                h('Button', {
+                  props: {
+                    type: 'primary',
+                    size: 'small',
+                  },
+                  on: {
+                    click: () => {
+                      this.secondEdit(params.row)
+                    }
+                  },
+                  directives: [
+                    { name: 'hasPermission', value: "secondEdit" }
+                  ]
+                }, '编辑')
+              ])
+            }
+          },
+        ],
+        secondList: [],
+        addModal: false,
+        editModal: false,
+        addData: {},
+        editData: {},
+      }
+    },
+    methods: {
+      secondAdd() {
+        this.addModal = true
+      },
+      add(){
+        http.post({
+        vm: this,
+        url: '/manager/course-classification/second/add',
+        data: this.addData,
+        success: res => {
+          this.$Message.success('添加成功！')
+          this.getSecondList()
+        }})
+      },
+      secondEdit (row) {
+        this.editModal = true
+        this.editData.name = row.name
+        this.editData.id = row.id
+        this.editData.version = row.version
+      },
+      edit(){
+        http.post({
+        vm: this,
+        url: '/manager/course-classification/second/edit',
+        data: this.editData,
+        success: res => {
+          this.$Message.success('更新成功！')
+          this.getSecondList()
+        }})
+      },
+      getFirstList() {
+        http.get({
+          vm: this,
+          url: '/manager/course-classification/getAll',
+          data: { type: 1 },
+          success: res => {
+            this.firstList = res.data
+            this.getSecondList()
+          }
+        })
+      },
+      getSecondList() {
+        http.get({
+          vm: this,
+          url: '/manager/course-classification/second/list',
+          data: this.postData,
+          success: res => {
+            this.secondList = res.data.list
+            this.total = res.data.total
+          }
+        })
+      },
+      changePage(pageIndex) {
+        this.postData.pageIndex = pageIndex
+      }
+    },
+    mounted() {
+      this.getFirstList()
+      this.getSecondList()
+    }
+  }
+</script>

@@ -1,3 +1,184 @@
 <template>
-  <div>课程顾问管理</div>
+  <div>
+    <Form :model="postData" :label-width="100">
+      <Row>
+        <Col :span="6">
+        <FormItem label="课程顾问：" style="width: 250px;">
+          <Input type="text" v-model="postData.realName" placeholder="请输入课程顾问姓名" />
+        </FormItem>
+        </Col>
+        <Col :span="6">
+        <FormItem label="身份证号：" style="width: 250px;">
+          <Input v-model="postData.idNo" placeholder="请输入课程顾问身份证号" />
+        </FormItem>
+        </Col>
+        <Col :span="6">
+        <FormItem label="顾问状态：" style="width: 250px;">
+          <Select v-model="postData.status" clearable>
+            <Option :value="1">正常</Option>
+            <Option :value="0">停用</Option>
+          </Select>
+        </FormItem>
+        </Col>
+      </Row>
+      <Row>
+        <!-- <Col :span="6">
+        <FormItem label="手机号码：" style="width: 250px;">
+            <Input v-model="postData.mobilePhone" placeholder="请输入所处阶段" />
+        </FormItem>
+        </Col> -->
+        <Col :span="6">
+        <FormItem label="注册日期：" style="width: 250px;">
+          <DatePicker type="date" placeholder="请选择注册时间" v-model="createDate"></DatePicker>
+        </FormItem>
+        </Col>
+        <Col :span="6">
+        <FormItem>
+          <Button type="primary" @click="search">搜索</Button>
+        </FormItem>
+        </Col>
+      </Row>
+    </Form>
+    <Card>
+      <Table :data="courseAdviserList" :columns="columns"></Table>
+      <Page :total="total" show-total show-sizer @on-change="changePage" @on-page-size-change="changePageSize" :page-index="postData.pageIndex" :page-size="postData.pageSize"
+        style="margin-top: 10px" />
+    </Card>
+    <Modal v-model="detailModal" @on-ok="updateDetail">
+      <Form :model="updateDetailData" :label-width="100">
+        <FormItem label="课程顾问编号：" style="width: 300px;">
+          <Input v-model="updateDetailData.code" disabled />
+        </FormItem>
+        <FormItem label="课程顾问：" style="width: 300px;">
+          <Input v-model="updateDetailData.realName" disabled />
+        </FormItem>
+        <FormItem label="手机号码：" style="width: 300px;">
+          <Input v-model="updateDetailData.mobilePhone" disabled />
+        </FormItem>
+        <FormItem label="身份证号：" style="width: 300px;" required>
+          <Input v-model="updateDetailData.idNo" />
+        </FormItem>
+        <FormItem label="性别：" style="width: 300px;" required>
+          <RadioGroup v-model="updateDetailData.sex">
+            <Radio :label="1">男</Radio>
+            <Radio :label="2">女</Radio>
+          </RadioGroup>
+        </FormItem>
+        <FormItem label="年龄" style="width: 300px;" required>
+          <Input v-model="updateDetailData.age" />
+        </FormItem>
+        <FormItem label="提成比例：" style="width: 300px;" required>
+          <Col><Input v-model="updateDetailData.rate" /> %</Col>
+        </FormItem>
+        <FormItem label="邮箱：" style="width: 300px;">
+          <Input v-model="updateDetailData.email" />
+        </FormItem>
+      </Form>
+    </Modal>
+  </div>
 </template>
+
+<script>
+  import http from '@/libs/http';
+  import { formatDate } from '@/libs/tools';
+  export default {
+    data() {
+      return {
+        postData: {
+          pageIndex: 0,
+          pageSize: 10
+        },
+        total: 0,
+        createDate: '',
+        columns: [
+          { title: '课程顾问编号', key: 'code', },
+          { title: '课程顾问', key: 'realName', },
+          { title: '手机号码', key: 'mobilePhone', },
+          { title: '邮箱', key: 'email', },
+          { title: '性别', key: 'sex', render: (h, params) => {
+            const sex = params.row.sex
+            return h('div', {}, sex === 1 ? '男' : (sex === 2 ? '女' : '未知'))
+          } },
+          { title: '年龄', key: 'age', },
+          { title: '身份证号', key: 'idNo', },
+          { title: '提成比例(%)', key: 'rate', },
+          { title: '顾问状态', key: 'status', render: (h, params) => {
+            const status = params.row.status
+            return h('div', {}, status === 1 ? '正常' : '停用')
+          } },
+          { title: '注册时间', key: 'createTime', },
+          {
+            title: '操作', key: 'actions', render: (h, params) => {
+              return h('Button', {
+                props: {
+                  type: 'primary',
+                  size: 'small',
+                },
+                on: {
+                  click: () => {
+                    this.openDetail(params.row)
+                  }
+                },
+                directives: [
+                  { name: 'hasPermission', value: "courseAdviserDetail" }
+                ]
+              }, '完善资料')
+            }
+          },
+        ],
+        courseAdviserList: [],
+        detailModal: false,
+        updateDetailData: {}
+      }
+    },
+    methods: {
+      search() {
+        this.getCourseAdviserList(()=>{
+          this.$Message.success('查询成功')
+        })
+      },
+      getCourseAdviserList(cb) {
+        this.createDate && (this.postData.createDate = formatDate('YYYY-MM-DD', this.createDate))
+        http.get({
+          vm: this,
+          url: '/manager/course-adviser/list',
+          data: this.postData,
+          success: res => {
+            this.courseAdviserList = res.data.list
+            this.total = res.data.total
+            cb && cb()
+          }
+        })
+      },
+      openDetail(row) {
+        this.detailModal = true
+        const {code, realName, mobilePhone, idNo, sex, age, rate, email, id } = row
+        this.updateDetailData = {code, realName, mobilePhone, idNo, sex, age, rate, email, id }
+      },
+      updateDetail () {
+        const updateDetailData = {...this.updateDetailData}
+        delete updateDetailData.code
+        delete updateDetailData.realName
+        delete updateDetailData.mobilePhone
+        http.post({
+          vm: this,
+          url: '/manager/course-adviser/edit',
+          data: updateDetailData,
+          success: res => {
+            this.$Message.success(res.msg)
+            this.getCourseAdviserList()
+          }
+        })
+      },
+      changePage(pageIndex){
+        this.postData.pageIndex = pageIndex
+      },
+      changePageSize(pageSize){
+        this.postData.pageSize = pageSize
+      }
+    },
+    mounted() {
+      this.getCourseAdviserList()
+    }
+  }
+</script>
