@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Table :columns="columns" :data="courseList" />
+    <Table :columns="columns" :data="courseList" @on-select="onSelect" />
   </div>
 </template>
 
@@ -9,7 +9,7 @@
     data() {
       return {
         columns: [
-          { title: '课程编码', key: 'code', align: 'center' },
+          { title: '课程编码', key: 'code', align: 'center', type: 'selection' },
           { title: '课程名称', key: 'name', align: 'center' },
           { title: '课程说明', key: 'courseDesc', align: 'center' },
           { title: '一级分类', key: 'firstName', align: 'center' },
@@ -21,22 +21,7 @@
           // { title: '课程总价', key: '', align: 'center' }, 
           {
             title: '课程状态', key: 'status', align: 'center', render: (h, params) => {
-              let statusDesc = ''
-              switch (params.row.status) {
-                case 1:
-                  statusDesc = '未上架'
-                  break;
-                case 2:
-                  statusDesc = '已上架'
-                  break;
-                case 3:
-                  statusDesc = '已下架'
-                  break;
-                case 4:
-                  statusDesc = '已删除'
-                  break;
-              }
-              return h('div', {}, statusDesc)
+              return h('div', {}, '已上架')
             }
           },
           // { title: '已售出', key: '', align: 'center' },
@@ -45,30 +30,11 @@
               return h('div', [
                 h('Button', {
                   props: {
-                    type: 'success',
-                    size: 'small',
-                  },
-                  style: {
-                    marginRight: '5px',
-                    display: params.row.status===1 ? 'inline-block' : 'none'
-                  },
-                  on: {
-                    click: () => {
-                      this.coursePush(params.row)
-                    }
-                  },
-                  directives: [
-                    { name: 'hasPermission', value: "coursePush" }
-                  ]
-                }, '上架'),
-                h('Button', {
-                  props: {
                     type: 'error',
                     size: 'small',
                   },
                   style: {
-                    marginRight: '5px',
-                    display: params.row.status===1 ? 'none' : 'inline-block'
+                    marginRight: '5px'
                   },
                   on: {
                     click: () => {
@@ -113,23 +79,26 @@
               ])
             }
           }
-      ]
-    }
-  },
-  props: ['courseList'],
+        ]
+      }
+    },
+    props: ['courseList'],
     methods: {
-      coursePush(row) {
-        this.$emit('course_push', row)
-      },
-      courseLower (row) {
+      courseLower(row) {
         this.$emit('course_lower', row)
       },
-      courseEdit (row) {
+      courseEdit(row) {
         this.$emit('course_edit', row)
       },
-      courseDetele (row) {
+      courseDetele(row) {
         this.$emit('course_delete', row)
+      },
+      onSelect (selection, row) {
+        this.$emit('on_select', selection)
+      },
+      onSelectAll (selection) {
+        this.$emit('on_select_all', selection)
       }
+    }
   }
-}
 </script>

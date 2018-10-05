@@ -54,7 +54,7 @@
       </Form>
     </Modal>
     <!-- 编辑管理人员 -->
-    <Modal title="编辑管理人员" v-model="editUserModal" @on-ok="editUser">
+    <Modal title="编辑管理人员" :model="editUserModal" @on-ok="editUser">
         <Form :label-width="80" ref="editUser" :model="editUserData" :rules="editUserRules">
           <FormItem prop="roleId" label="角色：" required>
             <Select v-model="editUserData.roleId" style="width: 300px;">
