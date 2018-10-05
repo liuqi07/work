@@ -21,7 +21,7 @@ export default {
           vm.$Message.warning(res.data.msg);
           // util.logout(vm);
         } else {
-          console.log('%c code', 'color:red;', res.data);
+          console.log("%c code", "color:red;", res.data);
           vm.$Message.warning(res.data.msg);
           error && error();
         }
@@ -31,14 +31,44 @@ export default {
         error && error();
       });
   },
-  post: function({ vm, url, data={}, success, error }) {
+  post: function({ vm, url, data = {}, success, error }) {
     let params = [];
-    for(let k in data) {
-      params.push(k + '=' + data[k])
+    for (let k in data) {
+      params.push(k + "=" + data[k]);
     }
-    params.join('&')
-    axios
-      .post(baseUrl + url + '?'+ params.join('&'))
+    params.join("&");
+    axios({
+      url: baseUrl + url + "?" + params.join("&"),
+      method: 'post',
+      data
+    })
+      .then(res => {
+        if (res.data.code === 1) {
+          success && success(res.data);
+        }
+        // 登录过期，清空token、userName、
+        else if (res.data.code === 3) {
+          vm.$Message.warning(res.data.msg);
+          // util.logout(vm);
+        } else {
+          vm.$Message.warning(res.data.msg);
+          error && error();
+        }
+      })
+      .catch(err => {
+        vm.$Message.error(err.Message || err.message);
+        error && error();
+      });
+  },
+  _postwithupload: function({ vm, url, data = {}, success, error }){
+    axios({
+        url: baseUrl + url,
+        method: 'post',
+        data,
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      })
       .then(res => {
         if (res.data.code === 1) {
           success && success(res.data);

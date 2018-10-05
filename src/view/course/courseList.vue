@@ -4,19 +4,19 @@
       <Tabs name="all" @on-click="handleTabs" style="min-height: 400px;">
         <TabPane label="全部课程" name="all">
           <search-form :status="0" @handle_search="getCourseList" @handle_add_course="openAddCourse"></search-form>
-          <all-course :courseList="courseList"></all-course>
+          <all-course :courseList="courseList" @course_push="coursePush" @course_lower="courseLower" @course_edit="courseEdit" @course_delete="courseDelete" ></all-course>
         </TabPane>
         <TabPane label="未上架" name="unpush">
           <search-form @handle_search="getCourseList" :status="1" @handle_add_course="openAddCourse" @batch_push="batchPush"></search-form>
-          <un-push-course :courseList="courseList" @on_select="onSelect" @on_select_all="onSelectAll" :status="1"></un-push-course>
+          <un-push-course :courseList="courseList" @on_select="onSelect" @on_select_all="onSelectAll" @course_push="coursePush" @course_lower="courseLower" @course_edit="courseEdit" @course_delete="courseDelete"  :status="1"></un-push-course>
         </TabPane>
         <TabPane label="已上架" name="push">
           <search-form @handle_search="getCourseList" :status="2" @handle_add_course="openAddCourse" @batch_lower="batchLower"></search-form>
-          <push-course :courseList="courseList" @on_select="onSelect" @on_select_all="onSelectAll" :status="2"></push-course>
+          <push-course :courseList="courseList" @on_select="onSelect" @on_select_all="onSelectAll" @course_push="coursePush" @course_lower="courseLower" @course_edit="courseEdit" @course_delete="courseDelete"  :status="2"></push-course>
         </TabPane>
         <TabPane label="已下架" name="lower">
           <search-form @handle_search="getCourseList" :status="3" @handle_add_course="openAddCourse" @batch_push="batchPush"></search-form>
-          <lower-course :courseList="courseList" @on_select="onSelect" @on_select_all="onSelectAll" :status="3"></lower-course>
+          <lower-course :courseList="courseList" @on_select="onSelect" @on_select_all="onSelectAll" @course_push="coursePush" @course_lower="courseLower" @course_edit="courseEdit" @course_delete="courseDelete"  :status="3"></lower-course>
         </TabPane>
       </Tabs>
       <Page :total="total" show-total @on-change="changePage" @on-page-size-change="changePageSize" :page-size="postData.pageSize"
@@ -60,7 +60,7 @@
             <!-- <Upload multiple action="//jsonplaceholder.typicode.com/posts/"
             accept="image/*" @on-error="onUpLoadError">
             <Button icon="ios-cloud-upload-outline">Upload files</Button> -->
-            <input type="file" @change="handleFileChange" placeholder="请上传附件">
+            <input type="file" @change="handleFileChange" multiple>
         </Upload>
         </FormItem>
       </Form>
@@ -70,6 +70,8 @@
 
 <script>
   import http from '@/libs/http';
+  import axios from 'axios';
+  import $ from 'jquery';
   import SearchForm from './components/searchForm.vue';
   import AllCourse from './components/allCourse.vue';
   import UnPushCourse from './components/unPushCourse.vue';
@@ -102,7 +104,8 @@
           courseDesc: [
             { required: true, message: '课程介绍不能为空', trigger: 'blur' }
           ]
-        }
+        },
+        file: null,
       }
     },
     methods: {
@@ -124,18 +127,21 @@
       addCourse() {
         this.oneToXArr.length > 0 && (this.addData.oneToX = this.oneToXArr.join(','))
         this.levelHour.length > 0 && (this.addData.levelHourJsonStr = JSON.stringify(this.levelHour))
-        http.post({
+        const formData = new FormData()
+        for(let k in this.addData){
+          formData.append(k, this.addData[k])
+        }
+        http._postwithupload({
           vm: this,
           url: '/manager/course/add',
-          data: this.addData,
+          data: formData,
           success: res => {
             this.$Message.success('添加成功！')
+            this.getCourseList()
           }
         })
-        console.log('%c this.addData', 'color:red;', this.addData);
       },
       handleTabs(name) {
-        console.log('%c name', 'color:red;', name);
         let status = null;
         switch (name) {
           case 'all':
@@ -154,6 +160,12 @@
         this.postData.status = status
         this.getCourseList()
       },
+      coursePush({id, version}) {
+        
+      },
+      courseLower() {},
+      courseEdit() {},
+      courseDelete() {},
       batchPush() { },
       batchLower() { },
       onSelect(selection) {
@@ -177,17 +189,13 @@
         this.levelHour.push(levelHourItem)
       },
       handleFileChange(e){
-        console.log('%c e.target.files[0]', 'color:red;', e.target.files[0]);
-        this.addData.file = JSON.stringify(e.target.files[0])
+        this.addData.file = e.target.files[0]
       },
       changePage(pageIndex) {
         this.postData.pageIndex = pageIndex
       },
       changePageSize(pageSize) {
         this.postData.pageSize = pageSize
-      },
-      onUpLoadError(error, file, fileList) {
-        console.log('%c error, file, fileList', 'color:red;', error, file, fileList);
       }
     },
     mounted(){

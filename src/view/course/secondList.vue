@@ -85,31 +85,38 @@
       secondAdd() {
         this.addModal = true
       },
-      add(){
+      add() {
+        const formData = new FormData()
+        for (let k in this.postData) {
+          this.postData[k] && formData.append(k, this.postData[k])
+        }
         http.post({
-        vm: this,
-        url: '/manager/course-classification/second/add',
-        data: this.addData,
-        success: res => {
-          this.$Message.success('添加成功！')
-          this.getSecondList()
-        }})
+          vm: this,
+          url: '/manager/course-classification/second/add',
+          data: this.addData,
+          success: res => {
+            this.$Message.success('添加成功！')
+            this.getSecondList()
+          }
+        })
+
       },
-      secondEdit (row) {
+      secondEdit(row) {
         this.editModal = true
         this.editData.name = row.name
         this.editData.id = row.id
         this.editData.version = row.version
       },
-      edit(){
+      edit() {
         http.post({
-        vm: this,
-        url: '/manager/course-classification/second/edit',
-        data: this.editData,
-        success: res => {
-          this.$Message.success('更新成功！')
-          this.getSecondList()
-        }})
+          vm: this,
+          url: '/manager/course-classification/second/edit',
+          data: this.editData,
+          success: res => {
+            this.$Message.success('更新成功！')
+            this.getSecondList()
+          }
+        })
       },
       getFirstList() {
         http.get({
