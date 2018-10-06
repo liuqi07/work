@@ -319,12 +319,11 @@
         },
         changePage(pageIndex) {
           this.postData.pageIndex = pageIndex
-          console.log('%c pageIndex', 'color:red;', pageIndex);
-          this.getCourseList('change')
+          this.getCourseList(undefined, 'change')
         },
         changePageSize(pageSize) {
           this.postData.pageSize = pageSize
-          this.getCourseList('change')
+          this.getCourseList(undefined, 'change')
         }
       },
       mounted() {

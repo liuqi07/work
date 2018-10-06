@@ -65,9 +65,11 @@
       },
       changePage(p) {
         this.postData.pageIndex = p
+        this.getCourseList(()=>{this.$Message.success('查询成功！')})
       },
       changePageSize(s) {
         this.postData.pageSize = s
+        this.getCourseList(()=>{this.$Message.success('查询成功！')})
       }
     },
     mounted(){

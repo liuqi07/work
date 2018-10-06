@@ -207,9 +207,11 @@
       },
       changePage(pageIndex) {
         this.postData.pageIndex = pageIndex
+        this.getUserList(()=>{this.$Message.success('查询成功！')})
       },
       changePageSize (pageSize) {
         this.postData.pageSize = pageSize
+        this.getUserList(()=>{this.$Message.success('查询成功！')})
       },
       openEditUser(params) {
         console.log('%c params', 'color:red;', params);

@@ -118,7 +118,7 @@
           }
         })
       },
-      getFirstList() {
+      getFirstList(cb) {
         http.get({
           vm: this,
           url: '/manager/course-classification/getAll',
@@ -126,6 +126,7 @@
           success: res => {
             this.firstList = res.data
             this.getSecondList()
+            cb && cb()
           }
         })
       },
@@ -142,6 +143,7 @@
       },
       changePage(pageIndex) {
         this.postData.pageIndex = pageIndex
+        this.getSecondList(() => {this.$Message.success('查询成功！')})
       }
     },
     mounted() {

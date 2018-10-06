@@ -74,7 +74,7 @@
         this.id = row.id
         this.version = row.version
       },
-      getFirstList() {
+      getFirstList(cb) {
         http.get({
           vm: this,
           url: '/manager/course-classification/first/list',
@@ -82,6 +82,7 @@
           success: res => {
             this.firstList = res.data.list
             this.total = res.data.total
+            cb && cb()
           }
         })
       },
@@ -114,6 +115,7 @@
       },
       changePage(pageIndex) {
         this.postData.pageIndex = pageIndex
+        this.getFirstList(() => {this.$Message.success('查询成功！')})
       }
     },
     mounted() {

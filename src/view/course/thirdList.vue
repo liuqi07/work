@@ -258,6 +258,7 @@
       },
       changePage(pageIndex) {
         this.postData.pageIndex = pageIndex
+        this.getThirdList(()=>{this.$Message.success('查询成功！')})
       }
     },
     mounted() {

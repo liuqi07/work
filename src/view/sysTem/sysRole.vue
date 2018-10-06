@@ -143,7 +143,7 @@
       }
     },
     methods: {
-      getRoleList() {
+      getRoleList(cb) {
         http.get({
           vm: this,
           url: '/manager/sys-role/list-page',
@@ -151,6 +151,7 @@
           success: res => {
             this.roleList = res.data.list
             this.total = res.data.total
+            cb && cb()
           }
         })
       },
@@ -259,8 +260,8 @@
         })
       },
       changePage(pageIndex) {
-        console.log('%c pageIndex', 'color:red;', pageIndex);
         this.postData.pageIndex = pageIndex
+        this.getRoleList(()=>{this.$Message.success('查询成功！')})
       }
     },
     mounted() {

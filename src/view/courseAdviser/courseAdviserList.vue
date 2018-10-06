@@ -172,9 +172,11 @@
       },
       changePage(pageIndex){
         this.postData.pageIndex = pageIndex
+        this.getCourseAdviserList(()=>{this.$Message.success('查询成功！')})
       },
       changePageSize(pageSize){
         this.postData.pageSize = pageSize
+        this.getCourseAdviserList(()=>{this.$Message.success('查询成功！')})
       }
     },
     mounted() {
