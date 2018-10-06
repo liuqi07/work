@@ -310,6 +310,9 @@
           }
         })
       },
+      getThreeLevelData(postData){
+        this.postData = {...this.postData, ...postData}
+      },
       changePage(p){
         this.postData.pageIndex = p
         this.getMaterialList(()=>{this.$Message.success('查询成功！')})

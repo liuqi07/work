@@ -215,7 +215,10 @@ export const objEqual = (obj1, obj2) => {
 }
 
 export const formatDate = (fmt, date2) => {
-    
+  if(!date2) {
+    console.log('%c 时间格式不正确', 'color:red;', date2 )
+    return ''
+  };
   let date = new Date(date2);
   var o = {
       "M+" : date.getMonth()+1,                 //月份
@@ -232,4 +235,19 @@ export const formatDate = (fmt, date2) => {
       if(new RegExp("("+ k +")").test(fmt))
           fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
   return fmt;
+}
+
+export const getWeek = date => {
+  const weekNo = new Date(date).getDay()
+  let week = ''
+  switch(weekNo){
+    case 1: week = '星期一'; break;
+    case 2: week = '星期二'; break;
+    case 3: week = '星期三'; break;
+    case 4: week = '星期四'; break;
+    case 5: week = '星期五'; break;
+    case 6: week = '星期六'; break;
+    case 0: week = '星期日'; break;
+  }
+  return week;
 }

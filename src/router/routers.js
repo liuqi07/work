@@ -50,7 +50,7 @@ export default [
     name: 'sysTem',
     component: Main,
     meta: {
-      icon: 'logo-buffer',
+      icon: 'md-cog',
       title: '后台管理'
     },
     children: [

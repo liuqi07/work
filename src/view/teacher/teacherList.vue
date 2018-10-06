@@ -88,7 +88,7 @@
     </Modal>
     <Modal title="课程维护" v-model="teachCodeModal" @on-ok="saveTeachCode">
       <Select v-model="secondCodes" multiple>
-        <Option v-for="item in secondList" :value="item.id" :key="item.id">{{item.name}}</Option>
+        <Option v-for="item in secondList" :value="item.code" :key="item.id">{{item.name}}</Option>
       </Select>
     </Modal>
   </div>
@@ -204,7 +204,7 @@
             }
           },
         ],
-        teacherList: [],
+        teacherList: this.getTeacherList(),
         total: 0,
         teacherDetail: {},
         titleActive: 0,
@@ -276,6 +276,7 @@
               data: { id, version, status: 2 },
               success: res => {
                 this.$Message.success('审核成功！')
+                this.getTeacherList()
                 this.$Modal.remove()
               }
             })
@@ -321,11 +322,10 @@
           }
         })
       },
-      teachCode({ id, teachCode }) {
+      teachCode({ id, code, teachCode }) {
         this.teachCodeModal = true
         this.teacherId = id
-        const secondCodes = typeof teachCode==='string' && JSON.parse(teachCode) || []
-        this.secondCodes = secondCodes.map(i => parseFloat(i))
+        this.secondCodes = typeof teachCode==='string' && JSON.parse(teachCode) || []
         this.getSecondList()
       },
       saveTeachCode() {
@@ -352,9 +352,6 @@
         this.postData.pageSize = pageSize
         this.getTeacherList(() => { this.$Message.success('查询成功！') })
       }
-    },
-    mounted() {
-      this.getTeacherList()
     }
   }
 </script>

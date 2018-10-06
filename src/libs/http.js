@@ -18,11 +18,17 @@ export default {
         }
         // 登录过期，清空token、userName、
         else if (res.data.code === 3) {
-          vm.$Message.warning(res.data.msg);
+          vm.$Message.warning({
+            content: res.data.msg,
+            duration: 6
+          });
           // util.logout(vm);
         } else {
           console.log("%c code", "color:red;", res.data);
-          vm.$Message.warning(res.data.msg);
+          vm.$Message.warning({
+            content: res.data.msg,
+            duration: 6
+          });
           error && error();
         }
       })
@@ -48,10 +54,16 @@ export default {
         }
         // 登录过期，清空token、userName、
         else if (res.data.code === 3) {
-          vm.$Message.warning(res.data.msg);
+          vm.$Message.warning({
+            content: res.data.msg,
+            duration: 6
+          });
           // util.logout(vm);
         } else {
-          vm.$Message.warning(res.data.msg);
+          vm.$Message.warning({
+            content: res.data.msg,
+            duration: 6
+          });
           error && error();
         }
       })
@@ -75,10 +87,17 @@ export default {
         }
         // 登录过期，清空token、userName、
         else if (res.data.code === 3) {
-          vm.$Message.warning(res.data.msg);
+          vm.$Message.warning({
+            content: res.data.msg,
+            duration: 6
+          });
+          
           // util.logout(vm);
         } else {
-          vm.$Message.warning(res.data.msg);
+          vm.$Message.warning({
+            content: res.data.msg,
+            duration: 6
+          });
           error && error();
         }
       })
