@@ -1,7 +1,6 @@
 <template>
   <div>
-    <Form inline v-model="postData" :label-width="100">
-      <Row>
+    <Form inline v-model="postData" :label-width="80">
         <FormItem label="一级分类" style="width: 220px;">
           <Select v-model="firstCode" @on-change="firstChange" clearable>
             <Option v-for="item in firstList" :value="item.code" :key="item.code">{{item.name}}</Option>
@@ -17,18 +16,13 @@
             <Option v-for="item in thirdList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
-      </Row>
-      <Row>
         <FormItem label="课程名称" style="width: 220px;">
           <Input v-model="postData.name" placeholder="请输入课程名称" />
         </FormItem>
-        <FormItem>
-          <Button type="primary" @click="handleSearch" style="margin-right: 10px;">搜索</Button>
+          <Button type="primary" @click="handleSearch" style="margin: 0 10px 0 20px;">搜索</Button>
           <Button type="primary" v-hasPermission="'courseAdd'" @click="handleAddCourse" style="margin-right: 10px;">添加课程</Button>
           <Button type="success" v-show="status===1||status===3" v-hasPermission="'courseBatchPush'" @click="handleBatchPush" style="margin-right: 10px;">批量上架</Button>
           <Button type="error" v-show="status===2" v-hasPermission="'courseBatchLower'" @click="handleBatchLower">批量下架</Button>
-        </FormItem>
-      </Row>
     </Form>
   </div>
 </template>

@@ -3,16 +3,20 @@
     background-color: #ff6600;
     color: #fff;
   }
+
   .ivu-table .active {
     background-color: #2db7f5;
     color: #fff;
   }
+
   .certificate {
     margin: 10px 0;
   }
+
   .certificate .item {
     margin: 0 5px;
   }
+
   .teacherDetailTitle {
     font-weight: bold;
     margin: 10px 0;
@@ -21,20 +25,20 @@
 
 <template>
   <div>
-    <Form :model="postData" :label-width="100">
+    <Form :model="postData" :label-width="80">
       <Row>
         <Col :span="6">
-        <FormItem label="邮箱：" style="width: 250px;">
+        <FormItem label="邮箱：" style="width: 220px;">
           <Input type="text" v-model="postData.email" placeholder="请输入教师邮箱" />
         </FormItem>
         </Col>
         <Col :span="6">
-        <FormItem label="教师姓名：" style="width: 250px;">
+        <FormItem label="教师姓名：" style="width: 220px;">
           <Input v-model="postData.realName" placeholder="请输入教师姓名" />
         </FormItem>
         </Col>
         <Col :span="6">
-        <FormItem label="教师状态：" style="width: 250px;" placeholder="请选择教师状态" clearable>
+        <FormItem label="教师状态：" style="width: 220px;" placeholder="请选择教师状态" clearable>
           <Select v-model="postData.status">
             <Option :value="1">未审核</Option>
             <Option :value="2">已审核</Option>
@@ -43,13 +47,8 @@
         </Col>
       </Row>
       <Row>
-        <!-- <Col :span="6">
-          <FormItem label="国籍：" style="width: 250px;">
-            
-          </FormItem>
-          </Col> -->
         <Col :span="6">
-        <FormItem label="所获学位：" style="width: 250px;" placeholder="请选择学位" clearable>
+        <FormItem label="所获学位：" style="width: 220px;" placeholder="请选择学位" clearable>
           <Select v-model="postData.degree">
             <Option :value="1">学士</Option>
             <Option :value="2">硕士</Option>
@@ -58,14 +57,12 @@
         </FormItem>
         </Col>
         <Col :span="6">
-        <FormItem label="注册日期：" style="width: 250px;">
+        <FormItem label="注册日期：" style="width: 220px;">
           <DatePicker type="date" placeholder="请选择注册时间" v-model="createDate"></DatePicker>
         </FormItem>
         </Col>
         <Col :span="6">
-        <FormItem>
-          <Button type="primary">搜索</Button>
-        </FormItem>
+        <Button type="primary" @click="search">搜索</Button>
         </Col>
       </Row>
     </Form>
@@ -88,6 +85,11 @@
       <div slot="footer">
         <Button type="primary" @click="lookDetailModal=false">关闭</Button>
       </div>
+    </Modal>
+    <Modal title="课程维护" v-model="teachCodeModal" @on-ok="saveTeachCode">
+      <Select v-model="secondCodes" multiple>
+        <Option v-for="item in secondList" :value="item.id" :key="item.id">{{item.name}}</Option>
+      </Select>
     </Modal>
   </div>
 </template>
@@ -133,7 +135,8 @@
                     disabled: params.row.status === 2
                   },
                   style: {
-                    marginRight: '5px'
+                    marginRight: '5px',
+                    marginBottom: '3px'
                   },
                   on: {
                     click: () => {
@@ -150,7 +153,8 @@
                     size: 'small'
                   },
                   style: {
-                    marginRight: '5px'
+                    marginRight: '5px',
+                    marginBottom: '3px'
                   },
                   on: {
                     click: () => {
@@ -166,6 +170,10 @@
                     type: 'primary',
                     size: 'small'
                   },
+                  style: {
+                    marginRight: '5px',
+                    marginBottom: '3px'
+                  },
                   on: {
                     click: () => {
                       this.openFeeList(params.row)
@@ -174,7 +182,24 @@
                   directives: [
                     { name: 'hasPermission', value: "feeList" }
                   ]
-                }, '收费标准')
+                }, '收费标准'),
+                h('Button', {
+                  props: {
+                    type: 'primary',
+                    size: 'small'
+                  },
+                  style: {
+                    marginBottom: '3px'
+                  },
+                  on: {
+                    click: () => {
+                      this.teachCode(params.row)
+                    }
+                  },
+                  directives: [
+                    { name: 'hasPermission', value: "teachCode" }
+                  ]
+                }, '课程维护'),
               ])
             }
           },
@@ -184,7 +209,8 @@
         teacherDetail: {},
         titleActive: 0,
         columns1: [
-          { title: '周一', key: '1'
+          {
+            title: '周一', key: '1'
             // , renderHeader: (h, params) => {
             //   return h('div', {
             //     class: this.titleActive===params.index ? 'active' : '',
@@ -212,11 +238,15 @@
           'https://i.loli.net/2017/08/21/599a521472424.jpg',
         ],
         selfDesc: '如果你无法简介的表达你的想法，那只说明你还不够了解他\n\n --爱因斯坦',
+        teachCodeModal: false,
+        secondList: [],
+        teacherId: null,
+        secondCodes: [],
       }
     },
     methods: {
       search() {
-        this.postData.createDate = formatDate('YYYY-MM-DD', this.createDate)
+        this.createDate && (this.postData.createDate = formatDate('YYYY-MM-DD', this.createDate))
         this.getTeacherList(() => {
           this.$Message.success('查询成功！')
         })
@@ -281,16 +311,46 @@
           }
         })
       },
+      getSecondList() {
+        http.get({
+          vm: this,
+          url: '/manager/course-classification/getAll',
+          data: { type: 2 },
+          success: res => {
+            this.secondList = res.data
+          }
+        })
+      },
+      teachCode({ id, teachCode }) {
+        this.teachCodeModal = true
+        this.teacherId = id
+        const secondCodes = typeof teachCode==='string' && JSON.parse(teachCode) || []
+        this.secondCodes = secondCodes.map(i => parseFloat(i))
+        this.getSecondList()
+      },
+      saveTeachCode() {
+        const { teacherId, secondCodes } = this
+        http.post({
+          vm: this,
+          url: '/manager/teacher/saveTeachCode',
+          data: { teacherId, secondCodes },
+          success: res => {
+            this.secondCodes = []
+            this.getTeacherList()
+            this.$Message.success('保存成功！')
+          }
+        })
+      },
       openFeeList(row) {
 
       },
       changePage(pageIndex) {
         this.postData.pageIndex = pageIndex
-        this.getTeacherList(()=>{this.$Message.success('查询成功！')})
+        this.getTeacherList(() => { this.$Message.success('查询成功！') })
       },
       changePageSize(pageSize) {
         this.postData.pageSize = pageSize
-        this.getTeacherList(()=>{this.$Message.success('查询成功！')})
+        this.getTeacherList(() => { this.$Message.success('查询成功！') })
       }
     },
     mounted() {
