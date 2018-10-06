@@ -62,7 +62,7 @@
     data() {
       return {
         postData: {
-          pageIndex: 0,
+          pageIndex: 1,
           pageSize: 10
         },
         createDate: '',

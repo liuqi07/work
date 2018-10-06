@@ -4,12 +4,12 @@
       <FormItem label="一级分类" style="width: 300px;">
         <Select v-model="secondPostData.parentCode" @on-change="firstListChange" @on-open-change="firstListOpenChange" @on-clear="clearFirstList"
           clearable>
-          <Option v-for="item in firstList" :value="item.code">{{item.name}}</Option>
+          <Option v-for="item in firstList" :value="item.code" :key="item.code">{{item.name}}</Option>
         </Select>
       </FormItem>
       <FormItem label="二级分类" style="width: 300px;">
         <Select v-model="postData.parentCode" @on-open-change="secondListOpenChange" clearable>
-          <Option v-for="item in secondList" :value="item.code">{{item.name}}</Option>
+          <Option v-for="item in secondList" :value="item.code" :key="item.code">{{item.name}}</Option>
         </Select>
       </FormItem>
       <FormItem>
@@ -26,12 +26,12 @@
         <FormItem label="一级分类名称：" style="width: 300px;">
           <Select v-model="secondPostData.parentCode" size="small" @on-change="firstListChange" @on-open-change="firstListOpenChange" @on-clear="clearFirstList"
             placeholder="请选择一级分类名称">
-            <Option v-for="item in firstList" :value="item.code">{{item.name}}</Option>
+            <Option v-for="item in firstList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
         <FormItem label="二级分类名称：" style="width: 300px;">
           <Select v-model="addData.parentCode" size="small" @on-open-change="secondListOpenChange" placeholder="请选择二级分类名称">
-            <Option v-for="item in secondList" :value="item.code">{{item.name}}</Option>
+            <Option v-for="item in secondList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
         <FormItem label="三级分类名称：" style="width: 300px;">
@@ -97,7 +97,7 @@
     data() {
       return {
         postData: {
-          pageIndex: 0,
+          pageIndex: 1,
           pageSize: 20
         },
         total: 0,

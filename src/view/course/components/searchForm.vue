@@ -4,17 +4,17 @@
       <Row>
         <FormItem label="一级分类" style="width: 220px;">
           <Select v-model="firstCode" @on-change="firstChange" clearable>
-            <Option v-for="item in firstList" :value="item.code">{{item.name}}</Option>
+            <Option v-for="item in firstList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
         <FormItem label="二级分类" style="width: 220px;">
           <Select v-model="secondCode" @on-change="secondChange" clearable>
-            <Option v-for="item in secondList" :value="item.code">{{item.name}}</Option>
+            <Option v-for="item in secondList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
         <FormItem label="三级分类" style="width: 220px;">
           <Select v-model="thirdCode" clearable>
-            <Option v-for="item in thirdList" :value="item.code">{{item.name}}</Option>
+            <Option v-for="item in thirdList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
       </Row>
@@ -57,7 +57,7 @@
         this.postData.secondId = _secondId && _secondId.id || null
         this.postData.thirdId = _thirdId && _thirdId.id || null
 
-        this.$emit('handle_search', this.postData)
+        this.$emit('handle_search', this.postData, 'action')
       },
       handleAddCourse() {
         this.$emit('handle_add_course')
@@ -117,7 +117,7 @@
         this.$emit('batch_push')
       },
       handleBatchLower() {
-        this.$emit('betch_lower')
+        this.$emit('batch_lower')
       }
     },
     mounted() {

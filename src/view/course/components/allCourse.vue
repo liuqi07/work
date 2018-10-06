@@ -41,7 +41,7 @@
           },
           // { title: '已售出', key: '', align: 'center' },
           {
-            title: '管理', key: 'actions', align: 'center', width: 190, render: (h, params) => {
+            title: '管理', key: 'actions', align: 'center', width: 200, render: (h, params) => {
               return h('div', [
                 h('Button', {
                   props: {
@@ -50,7 +50,7 @@
                   },
                   style: {
                     marginRight: '5px',
-                    display: params.row.status===1 ? 'inline-block' : 'none'
+                    display: (params.row.status===1||params.row.status===3) ? 'inline-block' : 'none'
                   },
                   on: {
                     click: () => {
@@ -68,7 +68,7 @@
                   },
                   style: {
                     marginRight: '5px',
-                    display: params.row.status===1 ? 'none' : 'inline-block'
+                    display: params.row.status===2 ? 'inline-bloc' : 'none'
                   },
                   on: {
                     click: () => {
@@ -82,7 +82,8 @@
                 h('Button', {
                   props: {
                     type: 'primary',
-                    size: 'small'
+                    size: 'small',
+                    disabled: params.row.status===4 ? true : false
                   },
                   style: {
                     marginRight: '5px'
@@ -99,7 +100,8 @@
                 h('Button', {
                   props: {
                     type: 'primary',
-                    size: 'small'
+                    size: 'small',
+                    disabled: params.row.status===4 ? true : false
                   },
                   on: {
                     click: () => {

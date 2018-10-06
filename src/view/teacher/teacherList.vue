@@ -81,7 +81,7 @@
       <Table :columns="columns1" :data="weekTime" border size="small" :disabled-hover="true"></Table>
       <div class="certificate">
         <p class="teacherDetailTitle">证书资质</p>
-        <Avatar v-for="item in certificateUrls" class="item" size="large" shape="square" :src="item" />
+        <Avatar v-for="(item, index) in certificateUrls" class="item" size="large" shape="square" :src="item" :key="index" />
       </div>
       <p class="teacherDetailTitle">自我介绍</p>
       <Input type="textarea" :value="selfDesc" :rows="4" readonly/>
@@ -99,7 +99,7 @@
     data() {
       return {
         postData: {
-          pageIndex: 0,
+          pageIndex: 1,
           pageSize: 10
         },
         createDate: '',

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Table :columns="columns" :data="courseList" @on-select="onSelect" />
+    <Table :columns="columns" :data="courseList"  @on-select="onSelect" @on-select-all="onSelectAll" @on-select-cancel="onSelectCancel" @on-select-all-cancel="onSelectAllCancel" />
   </div>
 </template>
 
@@ -26,7 +26,7 @@
           },
           // { title: '已售出', key: '', align: 'center' },
           {
-            title: '管理', key: 'actions', align: 'center', width: 190, render: (h, params) => {
+            title: '管理', key: 'actions', align: 'center', width: 200, render: (h, params) => {
               return h('div', [
                 h('Button', {
                   props: {
@@ -98,6 +98,12 @@
       },
       onSelectAll (selection) {
         this.$emit('on_select_all', selection)
+      },
+      onSelectCancel(selection) {
+        this.$emit('on_select_cancel', selection)
+      },
+      onSelectAllCancel(selection){
+        this.$emit('on_select_all_cancel')
       }
     }
   }

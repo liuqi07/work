@@ -27,7 +27,7 @@
   export default {
     data() {
       return {
-        postData: { pageIndex: 0, pageSize: 10 },
+        postData: { pageIndex: 1, pageSize: 10 },
         columns: [
           { title: '学员编号', key: '', align: 'center' },
           { title: '学员姓名', key: '', align: 'center' },
@@ -42,7 +42,8 @@
           { title: '状态', key: '', align: 'center' },
           { title: '教师评价', key: '', align: 'center' }
         ],
-        courseList: []
+        courseList: [],
+        total: 0,
       }
     },
     methods: {

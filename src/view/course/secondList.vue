@@ -3,7 +3,7 @@
     <Form :label-width="100" inline>
       <FormItem label="一级分类" style="width: 300px;">
         <Select v-model="postData.parentCode">
-          <Option v-for="item in firstList" :value="item.code">{{item.name}}</Option>
+          <Option v-for="item in firstList" :value="item.code" :key="item.code">{{item.name}}</Option>
         </Select>
       </FormItem>
       <FormItem>
@@ -18,7 +18,7 @@
       <Form :label-width="100">
         <FormItem label="一级分类名称：" style="width: 300px;">
           <Select v-model="addData.parentCode">
-            <Option v-for="item in firstList" :value="item.code">{{item.name}}</Option>
+            <Option v-for="item in firstList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
         <FormItem label="二级分类名称：" style="width: 300px;">
@@ -42,7 +42,7 @@
     data() {
       return {
         postData: {
-          pageIndex: 0,
+          pageIndex: 1,
           pageSize: 20
         },
         firstList: [],
