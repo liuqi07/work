@@ -1,3 +1,19 @@
+<style>
+  .detailRow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    margin-left: 40px;
+  }
+
+  .detailRow span {
+    display: inline-block;
+    width: 50%;
+  }
+</style>
+
+
 <template>
   <div>
     <Form :label-width="80" inline :model="postData">
@@ -47,15 +63,21 @@
           <Row v-for="i in formalArrangeData.weekTimeCount" :key="i" style="margin-bottom: 5px;">
             <DatePicker type="date" v-model="formalArrangeData.dateList[i-1].date" @on-change="onDateChange" :clearable="false" placeholder="选择日期"
               style="width: 120px; margin-right: 5px;"></DatePicker>
-            <TimePicker :steps="[1, 30, 60]" v-model="formalArrangeData.dateList[i-1].time" :clearable="false" placeholder="选择时间段" style="width: 100px; margin-right: 5px;"></TimePicker>
+            <TimePicker :steps="[1, 30, 60]" v-model="formalArrangeData.dateList[i-1].time" hide-disabled-options :disabled-hours="[0,1,2,3,4,5,6,7,13,19,20,21,22,23]"
+              :clearable="false" placeholder="选择时间段" style="width: 100px; margin-right: 5px;"></TimePicker>
             <Input v-model="formalArrangeData.dateList[i-1].week" style="width: 80px;" placeholder="星期" readonly />
           </Row>
         </FormItem>
-        <FormItem label="可用教师：">
+        <FormItem label="可用教师：" required>
           <Select v-model="formalArrangeData.teacherId" style="width: 200px;">
             <Option v-for="item in teacherList" :value="item.id" :key="item.id">{{item.realName}} {{item.zoomCode}}</Option>
           </Select>
           <Button type="primary" @click="getTeacherList" style="margin-left: 10px;">查询可用教师</Button>
+        </FormItem>
+        <FormItem label="课程名称：" style="width: 300px;" required>
+          <Select v-model="formalArrangeData.courseId" style="width: 200px;">
+            <Option v-for="item in courseList" :value="item.id" :key="item.id">{{item.name}}</Option>
+          </Select>
         </FormItem>
       </Form>
       <div slot="footer">
@@ -64,104 +86,39 @@
       </div>
     </Modal>
     <Modal title="退款" v-model="formalRefundModal" :width="600">
-      <Form :label-width="100">
-        <FormItem label="订单编号：" style="width: 350px;" required>
-          <Input :value="formalRefundData.orderNo" disabled />
-        </FormItem>
-        <Row>
-          <Col :span="10">
-          <FormItem label="学员姓名：" style="width: 250px;" required>
-            <Input :value="formalRefundData.studentRealName" disabled />
-          </FormItem>
-          </Col>
-          <Col :span="10">
-          <FormItem label="手机电话：" style="width: 250px;" required>
-            <Input :value="formalRefundData.studentMobilePhone" disabled />
-          </FormItem>
-          </Col>
-        </Row>
-        <FormItem label="课程名称：" style="width: 350px;" required>
-          <Input :value="formalRefundData.name" disabled />
-        </FormItem>
-        <Row>
-          <Col :span="10">
-          <FormItem label="课程顾问：" style="width: 250px;" required>
-            <Input :value="formalRefundData.sysUserRealName" disabled />
-          </FormItem>
-          </Col>
-          <Col :span="10">
-          <FormItem label="任课教师：" style="width: 250px;" required>
-            <Input :value="formalRefundData.teacherRealName" disabled />
-          </FormItem>
-          </Col>
-        </Row>
-        <Row>
-          <Col :span="10">
-          <FormItem label="消费课时：" style="width: 250px;" required>
-            <Input :value="formalRefundData.consumeClassHour" disabled />
-          </FormItem>
-          </Col>
-          <Col :span="10">
-          <FormItem label="剩余课时：" style="width: 250px;" required>
-            <Input :value="formalRefundData.surplusClassHour" disabled />
-          </FormItem>
-          </Col>
-        </Row>
-        <Row>
-          <Col :span="10">
-          <FormItem label="课程总价：" style="width: 250px;" required>
-            <Input :value="formalRefundData.allPrice" disabled />
-          </FormItem>
-          </Col>
-          <Col :span="10">
-          <FormItem label="优惠金额：" style="width: 250px;" required>
-            <Input :value="formalRefundData.discountAllPrice" disabled />
-          </FormItem>
-          </Col>
-        </Row>
-        <Row>
-          <Col :span="10">
-          <FormItem label="实收金额：" style="width: 250px;" required>
-            <Input :value="formalRefundData.realRefundAmt" disabled />
-          </FormItem>
-          </Col>
-          <Col :span="10">
-          <FormItem label="应退金额：" style="width: 250px;" required>
-            <Input :value="formalRefundData.shouldRefundAmt" disabled />
-          </FormItem>
-          </Col>
-        </Row>
-        <Row>
-          <Col :span="10">
-          <FormItem label="实退金额：" style="width: 250px;" required>
-            <Input value="" placeholder="输入实际退款金额" /> 元
-          </FormItem>
-          </Col>
-          <Col :span="10">
-          <FormItem label="退款人：" style="width: 250px;" required>
-            <Input value="" placeholder="输入退款人姓名" />
-          </FormItem>
-          </Col>
-        </Row>
-        <FormItem label="退款方式：" style="width: 350px;" required>
-          <Input value="" placeholder="输入退款方式" />
-        </FormItem>
-        <FormItem label="收款人姓名：" style="width: 350px;" required>
-          <Input value="" placeholder="输入收款人姓名" />
-        </FormItem>
-        <FormItem label="收款人手机号：" style="width: 350px;" required>
-          <Input value="" placeholder="输入收款人手机号" />
-        </FormItem>
-        <FormItem label="收款人账号：" style="width: 350px;" required>
-          <Input value="" placeholder="输入收款人账号" />
-        </FormItem>
-        <FormItem label="上传退款凭证：" :label-width="120" style="width: 350px;" required>
-          <input type="file" @change="handleFileChange" />
-        </FormItem>
-      </Form>
+      <div>
+        <p class="detailRow">
+          <span><b>订单编号：</b> {{formalRefundData.orderNo}}</span>
+          <span></span>
+        </p>
+        <p class="detailRow">
+          <span><b>学员姓名：</b> {{formalRefundData.studentRealName}}</span>
+          <span><b>手机电话：</b> {{formalRefundData.studentMobilePhone}}</span>
+        </p>
+        <p class="detailRow">
+          <span><b>套餐名称：</b> {{formalRefundData.name}}</span>
+          <span></span>
+        </p>
+        <p class="detailRow">
+          <span><b>课程顾问：</b> {{formalRefundData.sysUserRealName}}</span>
+          <span><b>任课教师：</b> {{formalRefundData.teacherRealName}}</span>
+        </p>
+        <p class="detailRow">
+          <span><b>消费课时：</b> {{formalRefundData.consumeClassHour}}</span>
+          <span><b>剩余课时：</b> {{formalRefundData.surplusClassHour}}</span>
+        </p>
+        <p class="detailRow">
+          <span><b>课程总价：</b> {{formalRefundData.allPrice}}</span>
+          <span><b>实收金额：</b> {{formalRefundData.orderPrice}}</span>
+        </p>
+        <p class="detailRow">
+          <span><b>优惠价格：</b> {{formalRefundData.discountAllPirce}}</span>
+          <span><b>应退金额：</b> {{formalRefundData.shouldRefundAmt}}</span>
+        </p>
+      </div>
       <div slot="footer">
         <Button type="error" @click="cancelFormalRefund">取消</Button>
-        <Button type="primary" @click="submitFormalRefund">确定</Button>
+        <Button type="primary" @click="submitFormalRefund" :disabled="submitFormalRefundFlag">确定</Button>
       </div>
     </Modal>
   </div>
@@ -193,7 +150,7 @@
           { title: '下单时间', key: 'createTime', algin: 'center' },
           {
             title: '操作', key: 'actions', algin: 'center', width: 180, render: (h, params) => {
-              const status = params.row.status
+              const { status, consumeClassHour, surplusClassHour } = params.row
               return h('div', [
                 h('Button', {
                   props: {
@@ -203,6 +160,7 @@
                   style: {
                     marginRight: '5px',
                     marginBottom: '3px',
+                    display: status===1 ? 'inline-block' : 'none'
                   },
                   on: {
                     click: () => {
@@ -217,10 +175,12 @@
                   props: {
                     type: 'success',
                     size: 'small',
+                    disabled: status===7 ? true : false
                   },
                   style: {
                     marginRight: '5px',
                     marginBottom: '3px',
+                    display: status===1 ? 'none' : 'inlie-block'
                   },
                   on: {
                     click: () => {
@@ -235,10 +195,12 @@
                   props: {
                     type: 'primary',
                     size: 'small',
+                    disabled: status===1 ? true : false
                   },
                   style: {
                     marginRight: '5px',
                     marginBottom: '3px',
+                    display: (status===1||status===2||status===3) ? 'inline-block' : 'none'
                   },
                   on: {
                     click: () => {
@@ -253,10 +215,12 @@
                   props: {
                     type: 'primary',
                     size: 'small',
+                    disabled: (status===7) ? true : false
                   },
                   style: {
                     marginRight: '5px',
                     marginBottom: '3px',
+                    display: (status===1||status===2||status===3) ? 'none' : 'inline-block'
                   },
                   on: {
                     click: () => {
@@ -271,6 +235,7 @@
                   props: {
                     type: 'error',
                     size: 'small',
+                    disabled: (status===1||consumeClassHour>3||surplusClassHour===0) ? true : false
                   },
                   style: {
                     marginRight: '5px',
@@ -298,8 +263,9 @@
         formalArrangeData: { dateList: [] },
         teacherList: [],
         formalRefundModal: false,
-        formalRefundData: {}
-
+        formalRefundData: {},
+        submitFormalRefundFlag: true,
+        courseList: []
       }
     },
     methods: {
@@ -346,7 +312,15 @@
         })
       },
       getCourseList() {
-        // /manager/course/listByThird?thirdId
+        this.courseList = []
+        http.get({
+          vm: this,
+          url: '/manager/course/listByThird',
+          data: { thirdId: this.formalArrangeData.thirdId },
+          success: res => {
+            this.courseList = res.data
+          }
+        })
       },
       // 分配顾问
       formalAllot({ orderId, version }) {
@@ -377,12 +351,15 @@
         this.formalAllotData = { orderId, version }
       },
       // 排课
-      formalArrange({ orderId, weekTimeCount, name }) {
+      formalArrange({ orderId, weekTimeCount, name, thirdId }) {
+        this.formalArrangeData.dateList = []
         this.formalArrangeModal = true
         this.formalArrangeData.weekTimeCount = weekTimeCount
         this.formalArrangeData.name = name
         this.formalArrangeData.orderId = orderId
+        this.formalArrangeData.thirdId = thirdId
         this.formalArrangeData.url = '/manager/order-formal/arrangeCourse'
+        this.getCourseList()
         this.teacherList = []
         for (let i = 0; i < weekTimeCount; i++) {
           this.formalArrangeData.dateList.push({ date: '', time: '', week: '' })
@@ -390,14 +367,16 @@
       },
       // 重新排课
       formalArrangeAgain({ orderId, name }) {
+        this.formalArrangeData.dateList = []
         this.formalArrangeData.url = '/manager/order-formal/arrangeCourseAgain'
         this.formalArrangeData.name = name
         this.formalArrangeData.orderId = orderId
         this.teacherList = []
       },
       saveFormalArrange() {
-        const { url, orderId, datesStr, teacherId } = this.formalArrangeData
-        if (!url || !orderId || !datesStr || !teacherId) {
+        const { url, orderId, datesStr, teacherId, courseId=-1 } = this.formalArrangeData
+        if (!url || !orderId || !datesStr || !teacherId || !courseId) {
+          console.log('%c formalArrangeData', 'color:red;', this.formalArrangeData);
           this.$Message.error({
             content: '标星内容不能为空，请填写后重新提交！',
             duration: 5
@@ -407,7 +386,7 @@
         http.post({
           vm: this,
           url,
-          data: { orderId, datesStr, teacherId },
+          data: { orderId, datesStr, teacherId, courseId },
           success: res => {
             this.$Message.success('排课成功！')
             this.formalArrangeModal = false
@@ -417,14 +396,34 @@
       cancelFormalArrange() {
         this.formalArrangeModal = false
       },
-      // 退款
-      formalRefund(row) {
+      // 打开退款弹框
+      formalRefund({ orderId }) {
         this.formalRefundModal = true
+        this.formalRefundData = {}
+        http.get({
+          vm: this,
+          url: 'manager/order-formal/refundDetail',
+          data: { orderId },
+          success: res => {
+            this.submitFormalRefundFlag = true
+            this.formalRefundData = res.data
+          }
+        })
       },
-      cancelFormalRefund() {
+      cancelFormalRefund({ orderId }) {
         this.formalRefundModal = false
+        this.formalRefundData = {}
       },
-      submitFormalRefund() { },
+      submitFormalRefund() {
+        http.post({
+          vm: this,
+          url: '/manager/order-formal/refund',
+          data: { orderId: this.formalRefundData.orderId },
+          success: res => {
+            this.$Message.success('退款成功！')
+          }
+        })
+      },
 
       changePage(p) {
         this.postData.pageIndex = p
@@ -444,17 +443,13 @@
         this.formalRefundData.file = e.target.files[0]
       },
       formalExport() {
-        // const form = $('form')
-        // form.attr('style', 'display: none')
-        // form.attr('method', 'post')
-        // form.attr('action', '/manager/order-formal/export')
         const { mobilePhone, status } = this.postData
         const { startDateTime, endDateTime } = this
         const formData = { mobilePhone, status, startDateTime: formatDate('YYYY-MM-DD hh:mm:ss', startDateTime), endDateTime: formatDate('YYYY-MM-DD hh:mm:ss', endDateTime) }
         const paramsArr = []
-        for(let k in formData){
-          if(formData[k]){
-            paramsArr.push( k + '=' + formData[k] )
+        for (let k in formData) {
+          if (formData[k]) {
+            paramsArr.push(k + '=' + formData[k])
           }
         }
         const _params = paramsArr.join('&')

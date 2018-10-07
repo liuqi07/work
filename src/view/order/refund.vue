@@ -26,60 +26,13 @@
         <DatePicker type="date" placeholder="请选择提交日期" v-model="refundDate"></DatePicker>
       </FormItem>
       <Button type="primary" @click="search" style="margin-left: 20px;">搜索</Button>
+      <Button type="primary" @click="refundExport" v-hasPermission="refundExport">搜索</Button>
     </Form>
     <Card>
       <Table :columns="columns" :data="refundList"></Table>
       <Page :total="total" show-total @on-change="changePage" @on-page-size-change="changePageSize" :page-size="postData.pageSize"
         :page-index="postData.pageIndex" style="margin-top: 10px" />
     </Card>
-    <Modal title="退款单详情" v-model="detailModal">
-      <div>
-        <p class="detailRow">
-          <span><b>退款单号：</b> {{detailData.aaa}}</span>
-          <span><b>订单编号：</b> {{detailData.aaa}}</span>
-        </p>
-        <p class="detailRow">
-          <span><b>学员姓名：</b> {{detailData.aaa}}</span>
-          <span><b>手机电话：</b> {{detailData.aaa}}</span>
-        </p>
-        <p class="detailRow">
-          <span><b>课程名称：</b> {{detailData.aaa}}</span>
-          <span></span>
-        </p>
-        <p class="detailRow">
-          <span><b>课程顾问：</b> {{detailData.aaa}}</span>
-          <span><b>任课教师：</b> {{detailData.aaa}}</span>
-        </p>
-        <p class="detailRow">
-          <span><b>消费课时：</b> {{detailData.aaa}}</span>
-          <span><b>剩余课时：</b> {{detailData.aaa}}</span>
-        </p>
-        <p class="detailRow">
-          <span><b>课程总价：</b> {{detailData.aaa}}</span>
-          <span><b>实收金额：</b> {{detailData.aaa}}</span>
-        </p>
-        <p class="detailRow">
-          <span><b>应退金额：</b> {{detailData.aaa}}</span>
-          <span><b>实退金额：</b> {{detailData.aaa}}</span>
-        </p>
-        <p class="detailRow">
-          <span><b>退款方式：</b> {{detailData.aaa}}</span>
-          <span><b>退款人：</b> {{detailData.aaa}}</span>
-        </p>
-        <p class="detailRow">
-          <span><b>收款人信息：</b> {{detailData.aaa}}</span>
-          <span></span>
-        </p>
-        <p class="detailRow">
-          <span><b>退款时间：</b> {{detailData.aaa}}</span>
-          <span></span>
-        </p>
-        <p class="detailRow">
-          <span><b>退款凭证：</b> <img :src="detailData.aaa" ></span>
-          <span></span>
-        </p>
-      </div>
-    </Modal>
   </div>
 </template>
 
@@ -104,29 +57,9 @@
           { title: '应退金额', key: 'shouldRefundAmt', align: 'center' },
           { title: '实退金额', key: '', align: 'center' },
           { title: '退款人', key: '', align: 'center' },
-          { title: '提交日期', key: 'createTime', align: 'center' },
-          {
-            title: '操作', key: 'actions', align: 'center', width: 100, render: (h, params) => {
-              return h('Button', {
-                props: {
-                  type: 'primary',
-                  size: 'small'
-                },
-                on: {
-                  click: () => {
-                    this.lookDetail(params.row)
-                  }
-                },
-                directives: [
-                  { name: 'hasPermission', value: "refundLookDetail" }
-                ]
-              }, '查看详情')
-            }
-          }
+          { title: '提交日期', key: 'createTime', align: 'center' }
         ],
         refundList: [],
-        detailModal: false,
-        detailData: { aaa: 12313213 }
       }
     },
     methods: {
@@ -146,10 +79,20 @@
           }
         })
       },
-      lookDetail(row) {
-        this.detailModal = true
+      refundExport() {
+        const { mobilePhone, sysUserName } = this.postData
+        const refundDate = this.refundDate
+        const formData = { mobilePhone, sysUserName, refundDate: formatDate('YYYY-MM-DD hh:mm:ss', refundDate) }
+        const paramsArr = []
+        for (let k in formData) {
+          if (formData[k]) {
+            paramsArr.push(k + '=' + formData[k])
+          }
+        }
+        const _params = paramsArr.join('&')
+        const params = _params && '?' + _params
+        window.open('http://47.94.157.27:8001/manager/order-formal/refund-export' + params)
       },
-
 
       changePage(p) {
         this.postData.pageIndex = p

@@ -233,9 +233,9 @@
         weekTime: [],
         lookDetailModal: false,
         certificateUrls: [
-          'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1538636463586&di=8ec39d17c48af2f5eaaaf214f227f55b&imgtype=0&src=http%3A%2F%2Fimg4q.duitang.com%2Fuploads%2Fitem%2F201503%2F05%2F20150305153445_F5nRx.thumb.700_0.jpeg',
-          'https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1181878726,1542446426&fm=27&gp=0.jpg',
-          'https://i.loli.net/2017/08/21/599a521472424.jpg',
+          // 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1538636463586&di=8ec39d17c48af2f5eaaaf214f227f55b&imgtype=0&src=http%3A%2F%2Fimg4q.duitang.com%2Fuploads%2Fitem%2F201503%2F05%2F20150305153445_F5nRx.thumb.700_0.jpeg',
+          // 'https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1181878726,1542446426&fm=27&gp=0.jpg',
+          // 'https://i.loli.net/2017/08/21/599a521472424.jpg',
         ],
         selfDesc: '如果你无法简介的表达你的想法，那只说明你还不够了解他\n\n --爱因斯坦',
         teachCodeModal: false,
@@ -293,10 +293,24 @@
             this.teacherDetail = res.data
             const weekTimeVOS = res.data.weekTimeVOS
             const weekTime = [
-              { 1: '14:00', 2: '14:30', 3: '15:00', 4: '16:00', 5: '15:30', 6: '13:00', 7: '14:00', cellClassName: {} },
-              { 1: '08:30', 2: '08:00', 3: '14:00', 4: '17:00', 5: '17:30', 6: '14:00', 7: '18:30', cellClassName: {} },
-              { 1: '17:00', 2: '17:00', 3: "17:30", 4: '18:00', 5: '08:00', 6: '08:30', 7: '16:00', cellClassName: {} },
-              { 1: '09:00', 2: '09:30', 3: '17:00', 4: '12:00', 5: '15:00', cellClassName: {} }
+              { 1: '08:00', 2: '08:00', 3: '08:00', 4: '08:00', 5: '08:00', 6: '08:00', 7: '08:00', cellClassName: {} },
+              { 1: '08:30', 2: '08:30', 3: '08:30', 4: '08:30', 5: '08:30', 6: '08:30', 7: '08:30', cellClassName: {} },
+              { 1: '09:00', 2: '09:00', 3: "09:00", 4: '09:00', 5: '09:00', 6: '09:00', 7: '09:00', cellClassName: {} },
+              { 1: '09:30', 2: '09:30', 3: "09:30", 4: '09:30', 5: '09:30', 6: '09:30', 7: '09:30', cellClassName: {} },
+              { 1: '10:00', 2: '10:00', 3: "10:00", 4: '10:00', 5: '10:00', 6: '10:00', 7: '10:00', cellClassName: {} },
+              { 1: '10:30', 2: '10:30', 3: "10:30", 4: '10:30', 5: '10:30', 6: '10:30', 7: '10:30', cellClassName: {} },
+              { 1: '11:00', 2: '11:00', 3: "11:00", 4: '11:00', 5: '11:00', 6: '11:00', 7: '11:00', cellClassName: {} },
+              { 1: '11:30', 2: '11:30', 3: "11:30", 4: '11:30', 5: '11:30', 6: '11:30', 7: '11:30', cellClassName: {} },
+              { 1: '12:00', 2: '12:00', 3: "12:00", 4: '12:00', 5: '12:00', 6: '12:00', 7: '12:00', cellClassName: {} },
+              { 1: '14:00', 2: '14:00', 3: "14:00", 4: '14:00', 5: '14:00', 6: '14:00', 7: '14:00', cellClassName: {} },
+              { 1: '14:30', 2: '14:30', 3: "14:30", 4: '14:30', 5: '14:30', 6: '14:30', 7: '14:30', cellClassName: {} },
+              { 1: '15:00', 2: '15:00', 3: "15:00", 4: '15:00', 5: '15:00', 6: '15:00', 7: '15:00', cellClassName: {} },
+              { 1: '15:30', 2: '15:30', 3: "15:30", 4: '15:30', 5: '15:30', 6: '15:30', 7: '15:30', cellClassName: {} },
+              { 1: '16:00', 2: '16:00', 3: "16:00", 4: '16:00', 5: '16:00', 6: '16:00', 7: '16:00', cellClassName: {} },
+              { 1: '16:30', 2: '16:30', 3: "16:30", 4: '16:30', 5: '16:30', 6: '16:30', 7: '16:30', cellClassName: {} },
+              { 1: '17:00', 2: '17:00', 3: "17:00", 4: '17:00', 5: '17:00', 6: '17:00', 7: '17:00', cellClassName: {} },
+              { 1: '17:30', 2: '17:30', 3: "17:30", 4: '17:30', 5: '17:30', 6: '17:30', 7: '17:30', cellClassName: {} },
+              { 1: '18:00', 2: '18:00', 3: "18:00", 4: '18:00', 5: '18:00', 6: '18:00', 7: '18:00', cellClassName: {} }
             ]
             weekTimeVOS.map(w => {
               weekTime.map(t => {
@@ -307,8 +321,8 @@
             })
             this.weekTime = weekTime
             // 此处注释待有数据返回时需放开
-            // this.certificateUrls = res.data.certificateUrls
-            // this.selfDesc = res.data.selfDesc
+            this.certificateUrls = res.data.certificateUrls
+            this.selfDesc = res.data.selfDesc
           }
         })
       },
@@ -325,7 +339,7 @@
       teachCode({ id, code, teachCode }) {
         this.teachCodeModal = true
         this.teacherId = id
-        this.secondCodes = typeof teachCode==='string' && JSON.parse(teachCode) || []
+        this.secondCodes = typeof teachCode === 'string' && JSON.parse(teachCode) || []
         this.getSecondList()
       },
       saveTeachCode() {
