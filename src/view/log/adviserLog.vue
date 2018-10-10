@@ -45,7 +45,7 @@
       search() {
         this.getAdviserLogList(() => { this.$Message.success('查询成功！') })
       },
-      getAdviserLogList() {
+      getAdviserLogList(cb) {
         http.get({
           vm: this,
           url: '/manager/log/listLogAdviser',
