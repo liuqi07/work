@@ -11,18 +11,22 @@
       />
     </Card>
     <!-- 添加角色 -->
-    <Modal title="添加角色" v-model="addRoleModal" @on-ok="addRole">
-      <Form :label-width="80" ref="addRoleData" v-model="addRoleData" :rules="addRoleRules">
-        <FormItem label="角色名称" prop="name" required>
+    <Modal title="添加角色" v-model="addRoleModal">
+      <Form :label-width="100" ref="addRoleData" :model="addRoleData">
+        <FormItem label="角色名称：" prop="name" required>
           <Input v-model="addRoleData.name" style="width:300px;" placeholder="请输入角色名称"></Input>
         </FormItem>
-        <FormItem label="角色编码" prop="code" required>
+        <FormItem label="角色编码：" prop="code" required>
           <Input v-model="addRoleData.code" style="width:300px;" placeholder="请输入角色编码"></Input>
         </FormItem>
-        <FormItem label="角色描述" prop="roleDesc">
+        <FormItem label="角色描述：" prop="roleDesc">
           <Input type="textarea" v-model="addRoleData.roleDesc" style="width:300px;" placeholder="最多可输入60个字"></Input>
         </FormItem>
       </Form>
+      <div slot="footer">
+        <Button @click="cancelAddRole">取消</Button>
+        <Button type="primary" @click="addRole">确定</Button>
+      </div>
     </Modal>
     <!-- 编辑角色 -->
     <Modal title="编辑角色" v-model="editRoleModal" @on-ok="editRole">
@@ -54,13 +58,14 @@
           { title: '角色名称', key: 'name' },
           { title: '角色描述', key: 'roleDesc' },
           { title: '状态', key: 'status', render: (h, params) => h('div', {}, params.row.status === 1 ? '使用中' : '停用') },
-          { title: '管理', key: 'manager', width: 200, render: (h, params) => {
+          {
+            title: '管理', key: 'manager', width: 200, render: (h, params) => {
               return h('div', [
                 h('Button', {
                   props: {
                     type: 'primary',
                     size: 'small',
-                    disabled: params.row.status !== 1,                    
+                    disabled: params.row.status !== 1,
                   },
                   style: {
                     marginRight: '5px'
@@ -159,22 +164,29 @@
         this.addRoleModal = true
       },
       addRole() {
-        this.$refs['addRoleData'].validate((valid) => {
-          if (valid) {
-            const { code, name, roleDesc } = this.addRoleData
-            http.post({
-              vm: this,
-              url: `/manager/sys-role/add`,
-              data: this.addRoleData,
-              success: res => {
-                this.$Message.success(res.msg);
-                this.getRoleList()
-              }
-            })
-          } else {
-            this.$Message.error('Fail!');
+        const { code, name, roleDesc } = this.addRoleData
+        if (!code || !name) {
+          this.$Message.error({
+            content: '标星内容不能为空！',
+            duration: 5
+          })
+          return
+        }
+        http.post({
+          vm: this,
+          url: `/manager/sys-role/add`,
+          data: this.addRoleData,
+          success: res => {
+            this.$Message.success('添加成功！');
+            this.addRoleModal = false
+            this.getRoleList()
+            this.addRoleData = { code: '', name: '', roleDesc: '' }
           }
         })
+      },
+      cancelAddRole() {
+        this.addRoleData = { code: '', name: '', roleDesc: '' }
+        this.addRoleModal = false
       },
       openEditRole(params) {
         this.editRoleModal = true
@@ -206,11 +218,11 @@
           }
         })
       },
-      authRole () {
+      authRole() {
         const treeData = this.authRoleTree;
         const resourceIds = [];
         const fn = t => {
-          if(t.indeterminate || t.checked){
+          if (t.indeterminate || t.checked) {
             resourceIds.push(t.id)
           }
         }
@@ -226,13 +238,13 @@
             })
           })
         })
-        console.log('%c resourceIds', 'color:red;', resourceIds.sort((a,b)=>a-b));
+        console.log('%c resourceIds', 'color:red;', resourceIds.sort((a, b) => a - b));
         http.post({
           vm: this,
           url: '/manager/sys-role/auth',
           data: {
             id: this.currRoleId,
-            resourceIds: resourceIds.sort((a,b)=>a-b)
+            resourceIds: resourceIds.sort((a, b) => a - b)
           },
           success: res => {
             this.$Message.success(res.msg)
@@ -261,7 +273,7 @@
       },
       changePage(pageIndex) {
         this.postData.pageIndex = pageIndex
-        this.getRoleList(()=>{this.$Message.success('查询成功！')})
+        this.getRoleList(() => { this.$Message.success('查询成功！') })
       }
     },
     mounted() {

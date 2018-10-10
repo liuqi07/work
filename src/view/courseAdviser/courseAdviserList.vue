@@ -41,10 +41,10 @@
     </Form>
     <Card>
       <Table :data="courseAdviserList" :columns="columns"></Table>
-      <Page :total="total" show-total show-sizer @on-change="changePage" @on-page-size-change="changePageSize" :page-index="postData.pageIndex" :page-size="postData.pageSize"
-        style="margin-top: 10px" />
+      <Page :total="total" show-total show-sizer @on-change="changePage" @on-page-size-change="changePageSize" :page-index="postData.pageIndex"
+        :page-size="postData.pageSize" style="margin-top: 10px" />
     </Card>
-    <Modal v-model="detailModal" @on-ok="updateDetail">
+    <Modal v-model="detailModal" title="完善资料">
       <Form :model="updateDetailData" :label-width="100">
         <FormItem label="课程顾问编号：" style="width: 300px;">
           <Input v-model="updateDetailData.code" disabled />
@@ -67,13 +67,18 @@
         <FormItem label="年龄" style="width: 300px;" required>
           <Input v-model="updateDetailData.age" />
         </FormItem>
-        <FormItem label="提成比例：" style="width: 300px;" required>
-          <Col><Input v-model="updateDetailData.rate" /> %</Col>
+        <FormItem label="提成比例：" style="width: 320px;" required>
+          <Row>
+            <Input v-model="updateDetailData.rate" style="width: 200px;" /> %</Row>
         </FormItem>
         <FormItem label="邮箱：" style="width: 300px;">
           <Input v-model="updateDetailData.email" />
         </FormItem>
       </Form>
+      <div slot="footer">
+        <Button @click="cancelUpdateDetail">取消</Button>
+        <Button type="primary" @click="updateDetail">确定</Button>
+      </div>
     </Modal>
   </div>
 </template>
@@ -95,17 +100,21 @@
           { title: '课程顾问', key: 'realName', },
           { title: '手机号码', key: 'mobilePhone', },
           { title: '邮箱', key: 'email', },
-          { title: '性别', key: 'sex', render: (h, params) => {
-            const sex = params.row.sex
-            return h('div', {}, sex === 1 ? '男' : (sex === 2 ? '女' : '未知'))
-          } },
+          {
+            title: '性别', key: 'sex', render: (h, params) => {
+              const sex = params.row.sex
+              return h('div', {}, sex === 1 ? '男' : (sex === 2 ? '女' : '未知'))
+            }
+          },
           { title: '年龄', key: 'age', },
           { title: '身份证号', key: 'idNo', },
           { title: '提成比例(%)', key: 'rate', },
-          { title: '顾问状态', key: 'status', render: (h, params) => {
-            const status = params.row.status
-            return h('div', {}, status === 1 ? '正常' : '停用')
-          } },
+          {
+            title: '顾问状态', key: 'status', render: (h, params) => {
+              const status = params.row.status
+              return h('div', {}, status === 1 ? '正常' : '停用')
+            }
+          },
           { title: '注册时间', key: 'createTime', },
           {
             title: '操作', key: 'actions', render: (h, params) => {
@@ -133,7 +142,7 @@
     },
     methods: {
       search() {
-        this.getCourseAdviserList(()=>{
+        this.getCourseAdviserList(() => {
           this.$Message.success('查询成功')
         })
       },
@@ -150,33 +159,42 @@
           }
         })
       },
-      openDetail(row) {
+      openDetail({ code, realName, mobilePhone, idNo, sex, age, rate, email, id }) {
         this.detailModal = true
-        const {code, realName, mobilePhone, idNo, sex, age, rate, email, id } = row
-        this.updateDetailData = {code, realName, mobilePhone, idNo, sex, age, rate, email, id }
+        this.updateDetailData = { code, realName, mobilePhone, idNo, sex, age, rate, email, id }
       },
-      updateDetail () {
-        const updateDetailData = {...this.updateDetailData}
-        delete updateDetailData.code
-        delete updateDetailData.realName
-        delete updateDetailData.mobilePhone
+      updateDetail() {
+        const { idNo, sex, age, rate } = this.updateDetailData
+        if (!idNo || !sex || !age || !rate) {
+          this.$Message.error({
+            content: '标星内容不能为空！',
+            duration: 5
+          })
+          return
+        }
         http.post({
           vm: this,
           url: '/manager/course-adviser/edit',
-          data: updateDetailData,
+          data: this.updateDetailData,
           success: res => {
-            this.$Message.success(res.msg)
+            this.$Message.success('更新成功！')
+            this.detailModal = false
+            this.updateDetailData = {}
             this.getCourseAdviserList()
           }
         })
       },
-      changePage(pageIndex){
-        this.postData.pageIndex = pageIndex
-        this.getCourseAdviserList(()=>{this.$Message.success('查询成功！')})
+      cancelUpdateDetail() {
+        this.detailModal = false
+        this.updateDetailData = {}
       },
-      changePageSize(pageSize){
+      changePage(pageIndex) {
+        this.postData.pageIndex = pageIndex
+        this.getCourseAdviserList(() => { this.$Message.success('查询成功！') })
+      },
+      changePageSize(pageSize) {
         this.postData.pageSize = pageSize
-        this.getCourseAdviserList(()=>{this.$Message.success('查询成功！')})
+        this.getCourseAdviserList(() => { this.$Message.success('查询成功！') })
       }
     },
     mounted() {

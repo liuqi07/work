@@ -1,35 +1,33 @@
 <template>
   <div>
     <Form :label-width="100" inline>
-      <FormItem label="一级分类" style="width: 300px;">
+      <FormItem label="一级分类：" style="width: 250px;">
         <Select v-model="postData.parentCode">
           <Option v-for="item in firstList" :value="item.code" :key="item.code">{{item.name}}</Option>
         </Select>
       </FormItem>
-      <FormItem>
-        <Button type="primary" v-hasPermission="'secondAdd'" @click="secondAdd">添加二级分类</Button>
-      </FormItem>
+      <Button type="primary" v-hasPermission="'secondAdd'" @click="secondAdd" style="margin-left: 20px;">添加二级分类</Button>
     </Form>
     <Card style="margin-top: 10px;">
       <Table :columns="columns" :data="secondList"></Table>
       <Page :total="total" show-total @on-change="changePage" :page-index="postData.pageIndex" style="margin-top: 10px" />
     </Card>
     <Modal title="添加二级分类" v-model="addModal" @on-ok="add">
-      <Form :label-width="100">
-        <FormItem label="一级分类名称：" style="width: 300px;">
+      <Form :label-width="120">
+        <FormItem label="一级分类名称：" style="width: 300px;" required>
           <Select v-model="addData.parentCode">
             <Option v-for="item in firstList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem label="二级分类名称：" style="width: 300px;">
+        <FormItem label="二级分类名称：" style="width: 300px;" required>
           <Input v-model="addData.name" placeholder="请输入二级分类名称" />
         </FormItem>
       </Form>
     </Modal>
     <Modal title="编辑" v-model="editModal" @on-ok="edit">
-      <Form :label-width="100">
-        <FormItem label="二级分类名称：" style="width: 300px;">
-          <Input v-model="editData.name" placeholder="请输入二级分类名称" />
+      <Form :label-width="120">
+        <FormItem label="二级分类名称：" style="width: 300px;" required>
+          <Input v-model="editData.name" required placeholder="请输入二级分类名称" />
         </FormItem>
       </Form>
     </Modal>
@@ -86,9 +84,17 @@
         this.addModal = true
       },
       add() {
-        const formData = new FormData()
-        for (let k in this.postData) {
-          this.postData[k] && formData.append(k, this.postData[k])
+        // const formData = new FormData()
+        // for (let k in this.postData) {
+        //   this.postData[k] && formData.append(k, this.postData[k])
+        // }
+        const { name, parentCode } = this.addData
+        if (!name || !parentCode) {
+          this.$Message.error({
+            content: '标星内容不能为空！',
+            dutation: 5
+          })
+          return
         }
         http.post({
           vm: this,
@@ -108,12 +114,20 @@
         this.editData.version = row.version
       },
       edit() {
+        if (!this.editData.name) {
+          this.$Message.error({
+            content: '标星内容不能为空！',
+            dutation: 5
+          })
+          return
+        }
         http.post({
           vm: this,
           url: '/manager/course-classification/second/edit',
           data: this.editData,
           success: res => {
             this.$Message.success('更新成功！')
+            this.editData = {}
             this.getSecondList()
           }
         })
@@ -143,7 +157,7 @@
       },
       changePage(pageIndex) {
         this.postData.pageIndex = pageIndex
-        this.getSecondList(() => {this.$Message.success('查询成功！')})
+        this.getSecondList(() => { this.$Message.success('查询成功！') })
       }
     },
     mounted() {

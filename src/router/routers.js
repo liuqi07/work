@@ -1,5 +1,5 @@
-import Main from '@/view/main'
-import parentView from '@/components/parent-view'
+import Main from "@/view/main";
+import parentView from "@/components/parent-view";
 
 /**
  * iview-admin中meta除了原生参数外可配置的参数:
@@ -13,19 +13,19 @@ import parentView from '@/components/parent-view'
 
 export default [
   {
-    path: '/login',
-    name: 'login',
+    path: "/login",
+    name: "login",
     type: 0,
     meta: {
-      title: 'Login - 登录',
+      title: "Login - 登录",
       hideInMenu: true
     },
-    component: () => import('@/view/login/login.vue')
+    component: () => import("@/view/login/login.vue")
   },
   {
-    path: '/',
-    name: '_home',
-    redirect: '/home',
+    path: "/",
+    name: "_home",
+    redirect: "/home",
     component: Main,
     type: 0,
     meta: {
@@ -34,323 +34,323 @@ export default [
     },
     children: [
       {
-        path: '/home',
-        name: 'home',
+        path: "/home",
+        name: "home",
         meta: {
           hideInMenu: true,
-          title: '首页',
+          title: "首页",
           notCache: true
         },
-        component: () => import('@/view/single-page/home')
+        component: () => import("@/view/single-page/home")
       }
     ]
   },
   {
-    path: '/sysTem',
-    name: 'sysTem',
+    path: "/sysTem",
+    name: "sysTem",
     component: Main,
     meta: {
-      icon: 'md-cog',
-      title: '后台管理'
+      icon: "md-cog",
+      title: "后台管理"
     },
     children: [
       {
-        path: '/sysRole',
-        name: 'sysRole',
-        component: () => import('@/view/sysTem/sysRole.vue'),
+        path: "/sysRole",
+        name: "sysRole",
+        component: () => import("@/view/sysTem/sysRole.vue"),
         meta: {
-          icon: 'logo-buffer',
-          title: '角色管理'
+          icon: "logo-buffer",
+          title: "角色管理"
         },
         buttons: [
-          { path: 'addSysRole', title: '添加' },
-          { path: 'editSysRole', title: '编辑' },
-          { path: 'deleteSysRole', title: '删除' },
-          { path: 'authSysRole', title: '授权' },
+          { path: "addSysRole", title: "添加" },
+          { path: "editSysRole", title: "编辑" },
+          { path: "deleteSysRole", title: "删除" },
+          { path: "authSysRole", title: "授权" }
         ]
       },
       {
-        path: '/sysUser',
-        name: 'sysUser',
-        component: () => import('@/view/sysTem/sysUser.vue'),
+        path: "/sysUser",
+        name: "sysUser",
+        component: () => import("@/view/sysTem/sysUser.vue"),
         meta: {
-          icon: 'logo-buffer',
-          title: '人员管理'
+          icon: "logo-buffer",
+          title: "人员管理"
         },
         buttons: [
-          {path: 'editSysUser', title: '编辑'},
-          {path: 'openOrClose', title: '停用启用'}
+          { path: "editSysUser", title: "编辑" },
+          { path: "openOrClose", title: "停用启用" }
         ]
       },
       {
-        path: '/sysResource',
-        name: 'sysResource',
-        component: () => import('@/view/sysTem/sysResource.vue'),
+        path: "/sysResource",
+        name: "sysResource",
+        component: () => import("@/view/sysTem/sysResource.vue"),
         meta: {
-          icon: 'logo-buffer',
-          title: '资源管理'
-        },
+          icon: "logo-buffer",
+          title: "资源管理"
+        }
       }
     ]
   },
   {
-    path: '/student',
-    name: 'student',
+    path: "/student",
+    name: "student",
     component: Main,
     meta: {
-      icon: 'logo-buffer',
-      title: '学员管理'
+      icon: "logo-buffer",
+      title: "学员管理"
     },
     children: [
       {
-        path: '/studentList',
-        name: 'studentList',
-        component: () => import('@/view/student/studentList.vue'),
+        path: "/studentList",
+        name: "studentList",
+        component: () => import("@/view/student/studentList.vue"),
         meta: {
-          icon: 'logo-buffer',
-          title: '学员列表'
+          icon: "logo-buffer",
+          title: "学员列表"
         }
       },
       {
-        path: '/studentCourseList',
-        name: 'studentCourseList',
-        component: () => import('@/view/student/studentCourseList.vue'),
+        path: "/studentCourseList",
+        name: "studentCourseList",
+        component: () => import("@/view/student/studentCourseList.vue"),
         meta: {
-          icon: 'logo-buffer',
-          title: '学员课表'
+          icon: "logo-buffer",
+          title: "学员课表"
         }
       }
     ]
   },
   {
-    path: '/courseAdviser',
-    name: 'courseAdviser',
+    path: "/courseAdviser",
+    name: "courseAdviser",
     component: Main,
     meta: {
-      icon: '',
-      title: '课程顾问'
+      icon: "",
+      title: "课程顾问"
     },
     children: [
       {
-        path: '/courseAdviserList',
-        name: 'courseAdviserList',
-        component: () => import('@/view/courseAdviser/courseAdviserList.vue'),
+        path: "/courseAdviserList",
+        name: "courseAdviserList",
+        component: () => import("@/view/courseAdviser/courseAdviserList.vue"),
         meta: {
-          icon: '',
-          title: '课程顾问管理'
+          icon: "",
+          title: "课程顾问管理"
         }
       }
     ]
   },
   {
-    path: '/teacher',
-    name: 'teacher',
+    path: "/teacher",
+    name: "teacher",
     component: Main,
     meta: {
-      icon: '',
-      title: '教师管理'
+      icon: "",
+      title: "教师管理"
     },
     children: [
       {
-        path: '/teacherList',
-        name: 'teacherList',
-        component: () => import('@/view/teacher/teacherList.vue'),
+        path: "/teacherList",
+        name: "teacherList",
+        component: () => import("@/view/teacher/teacherList.vue"),
         meta: {
-          icon: '',
-          title: '教师列表'
+          icon: "",
+          title: "教师列表"
         }
       }
     ]
   },
   {
-    path: '/course',
-    name: 'course',
+    path: "/course",
+    name: "course",
     component: Main,
     meta: {
-      icon: '',
-      title: '课程管理'
+      icon: "",
+      title: "课程管理"
     },
     children: [
       {
-        path: '/firstList',
-        name: 'firstList',
-        component: () => import('@/view/course/firstList.vue'),
+        path: "/firstList",
+        name: "firstList",
+        component: () => import("@/view/course/firstList.vue"),
         meta: {
-          icon: '',
-          title: '一级分类'
+          icon: "",
+          title: "一级分类"
         }
       },
       {
-        path: '/secondList',
-        name: 'secondList',
-        component: () => import('@/view/course/secondList.vue'),
+        path: "/secondList",
+        name: "secondList",
+        component: () => import("@/view/course/secondList.vue"),
         meta: {
-          icon: '',
-          title: '二级分类'
+          icon: "",
+          title: "二级分类"
         }
       },
       {
-        path: '/thirdList',
-        name: 'thirdList',
-        component: () => import('@/view/course/thirdList.vue'),
+        path: "/thirdList",
+        name: "thirdList",
+        component: () => import("@/view/course/thirdList.vue"),
         meta: {
-          icon: '',
-          title: '三级分类'
+          icon: "",
+          title: "三级分类"
         }
       },
       {
-        path: '/courseList',
-        name: 'courseList',
-        component: () => import('@/view/course/courseList.vue'),
+        path: "/courseList",
+        name: "courseList",
+        component: () => import("@/view/course/courseList.vue"),
         meta: {
-          icon: '',
-          title: '课程管理'
+          icon: "",
+          title: "课程管理"
         }
       },
       {
-        path: '/packageList',
-        name: 'packageList',
-        component: () => import('@/view/course/packageList.vue'),
+        path: "/packageList",
+        name: "packageList",
+        component: () => import("@/view/course/packageList.vue"),
         meta: {
-          icon: '',
-          title: '套餐管理'
+          icon: "",
+          title: "套餐管理"
         }
       }
     ]
   },
   {
-    path: '/material',
-    name: 'material',
+    path: "/material",
+    name: "material",
     component: Main,
     meta: {
-      icon: '',
-      title: '教材管理'
+      icon: "",
+      title: "教材管理"
     },
     children: [
       {
-        path: '/materialList',
-        name: 'materialList',
-        component: () => import('@/view/material/materialList.vue'),
+        path: "/materialList",
+        name: "materialList",
+        component: () => import("@/view/material/materialList.vue"),
         meta: {
-          icon: '',
-          title: '教材列表'
+          icon: "",
+          title: "教材列表"
         }
       }
     ]
   },
   {
-    path: '/order',
-    name: 'order',
+    path: "/order",
+    name: "order",
     component: Main,
     meta: {
-      icon: '',
-      title: '订单管理'
+      icon: "",
+      title: "订单管理"
     },
     children: [
       {
-        path: '/subscribe',
-        name: 'subscribe',
-        component: () => import('@/view/order/subscribe.vue'),
+        path: "/subscribe",
+        name: "subscribe",
+        component: () => import("@/view/order/subscribe.vue"),
         meta: {
-          icon: '',
-          title: '预约订单'
+          icon: "",
+          title: "预约订单"
         }
       },
       {
-        path: '/formal',
-        name: 'formal',
-        component: () => import('@/view/order/formal.vue'),
+        path: "/formal",
+        name: "formal",
+        component: () => import("@/view/order/formal.vue"),
         meta: {
-          icon: '',
-          title: '正式订单'
+          icon: "",
+          title: "正式订单"
         }
       },
       {
-        path: '/refund',
-        name: 'refund',
-        component: () => import('@/view/order/refund.vue'),
+        path: "/refund",
+        name: "refund",
+        component: () => import("@/view/order/refund.vue"),
         meta: {
-          icon: '',
-          title: '退款订单'
+          icon: "",
+          title: "退款订单"
         }
       }
     ]
   },
   {
-    path: '/log',
-    name: 'log',
+    path: "/log",
+    name: "log",
     component: Main,
     meta: {
-      icon: '',
-      title: '日志管理'
+      icon: "",
+      title: "日志管理"
     },
     children: [
       {
-        path: '/adviser',
-        name: 'adviser',
-        component: () => import('@/view/log/adviser.vue'),
+        path: "/adviserLog",
+        name: "adviserLog",
+        component: () => import("@/view/log/adviserLog.vue"),
         meta: {
-          icon: '',
-          title: '分配顾问'
+          icon: "",
+          title: "分配顾问"
         }
       },
       {
-        path: '/arrange',
-        name: 'arrange',
-        component: () => import('@/view/log/arrange.vue'),
+        path: "/arrangeLog",
+        name: "arrangeLog",
+        component: () => import("@/view/log/arrangeLog.vue"),
         meta: {
-          icon: '',
-          title: '转单日志'
+          icon: "",
+          title: "转单日志"
         }
       },
       {
-        path: '/manager',
-        name: 'manager',
-        component: () => import('@/view/log/manager.vue'),
+        path: "/manager",
+        name: "manager",
+        component: () => import("@/view/log/manager.vue"),
         meta: {
-          icon: '',
-          title: '后台日志'
+          icon: "",
+          title: "后台日志"
         }
       },
       {
-        path: '/web',
-        name: 'web',
-        component: () => import('@/view/log/web.vue'),
+        path: "/web",
+        name: "web",
+        component: () => import("@/view/log/web.vue"),
         meta: {
-          icon: '',
-          title: '后台日志'
+          icon: "",
+          title: "后台日志"
         }
       }
     ]
   },
   {
-    path: '/401',
-    name: 'error_401',
+    path: "/401",
+    name: "error_401",
     type: 0,
     meta: {
       hideInMenu: true
     },
-    component: () => import('@/view/error-page/401.vue')
+    component: () => import("@/view/error-page/401.vue")
   },
   {
-    path: '/500',
-    name: 'error_500',
+    path: "/500",
+    name: "error_500",
     type: 0,
     meta: {
       hideInMenu: true
     },
-    component: () => import('@/view/error-page/500.vue')
+    component: () => import("@/view/error-page/500.vue")
   },
   {
-    path: '*',
-    name: 'error_404',
+    path: "*",
+    name: "error_404",
     type: 0,
     meta: {
       hideInMenu: true
     },
-    component: () => import('@/view/error-page/404.vue')
+    component: () => import("@/view/error-page/404.vue")
   }
-]
+];
 
 // export default [
 //   {

@@ -1,13 +1,13 @@
 <template>
   <div>
-    <Button type="primary" v-hasPermission="'firstAdd'" @click="firstAdd">添加一级分类</Button>
+    <Button type="primary" v-hasPermission="'firstAdd'" @click="firstAdd" style="margin-left: 50px;">添加一级分类</Button>
     <Card style="margin-top: 10px;">
       <Table :columns="columns" :data="firstList"></Table>
       <Page :total="total" show-total @on-change="changePage" :page-index="postData.pageIndex" style="margin-top: 10px" />
     </Card>
     <Modal :title="title" v-model="modal" @on-ok="save">
-      <Form :label-width="100">
-        <FormItem label="一级分类名称：" style="width: 300px;">
+      <Form :label-width="120">
+        <FormItem label="一级分类名称：" style="width: 300px;" required>
           <Input v-model="levelName" placeholder="请输入一级分类名称" />
         </FormItem>
       </Form>
@@ -86,16 +86,16 @@
           }
         })
       },
-      save(){
+      save() {
         const type = this.type
         let url = ''
         let msg = ''
-        let data =  {}
-        if(type==='add'){
+        let data = {}
+        if (type === 'add') {
           url = '/manager/course-classification/first/add'
           data = { name: this.levelName }
           msg = '添加成功'
-        }else {
+        } else {
           url = '/manager/course-classification/first/edit'
           data = { name: this.levelName, id: this.id, version: this.version }
           msg = '更新成功'
@@ -115,7 +115,7 @@
       },
       changePage(pageIndex) {
         this.postData.pageIndex = pageIndex
-        this.getFirstList(() => {this.$Message.success('查询成功！')})
+        this.getFirstList(() => { this.$Message.success('查询成功！') })
       }
     },
     mounted() {

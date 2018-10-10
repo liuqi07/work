@@ -26,7 +26,7 @@
         <DatePicker type="date" placeholder="请选择提交日期" v-model="refundDate"></DatePicker>
       </FormItem>
       <Button type="primary" @click="search" style="margin-left: 20px;">搜索</Button>
-      <Button type="primary" @click="refundExport" v-hasPermission="refundExport">搜索</Button>
+      <Button type="primary" @click="refundExport" v-hasPermission="refundExport">导出</Button>
     </Form>
     <Card>
       <Table :columns="columns" :data="refundList"></Table>

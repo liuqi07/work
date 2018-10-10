@@ -25,7 +25,7 @@
         <Page :total="total" show-total @on-change="changePage" @on-page-size-change="changePageSize" :page-size="postData.pageSize"
           :page-index="postData.pageIndex" style="margin-top: 10px" />
       </Card>
-      <Modal title="添加课程" v-model="addCourseModal" @on-ok="addCourse">
+      <Modal title="添加课程" v-model="addCourseModal">
         <Form :label-width="100" :model="addData" :rules="rules">
           <FormItem prop="name" label="课程名称：" style="width: 300px;" required>
             <Input v-model="addData.name" placeholder="请输入课程名称" />
@@ -63,6 +63,10 @@
             <input type="file" @change="handleFileChange">
           </FormItem>
         </Form>
+        <div slot="footer">
+          <Button @click="cancelAddCourse" >取消</Button>
+          <Button type="primary" @click="addCourse" >确定</Button>
+        </div>
       </Modal>
     </div>
   </template>
@@ -132,6 +136,15 @@
           const { oneToXArr, levelHour } = this.addData
           oneToXArr.length > 0 && (this.addData.oneToX = oneToXArr.join(','))
           levelHour.length > 0 && (this.addData.levelHourJsonStr = JSON.stringify(levelHour))
+          const { name, courseDesc, firstId, secondId, thirdId, classType, oneToX, levelHourJsonStr, file } = this.addData
+          if(!(name && courseDesc && firstId && secondId && thirdId && classType && oneToX && levelHourJsonStr && file)){
+            this.$Message.error({
+              content: '标星内容不能为空！',
+              duration: 5
+            })
+            console.log('%c ----> ', 'color:red;', name, courseDesc, firstId, secondId, thirdId, classType, oneToX, levelHourJsonStr, file);
+            return
+          }
           // 这三句待验证
           delete this.addData.oneToXArr
           delete this.addData.levelHour
@@ -146,9 +159,18 @@
             data: formData,
             success: res => {
               this.$Message.success('添加成功！')
+              this.addData = { oneToXArr: [], x: null, levelHour: [] }
+              this.addCourseModal = false
               this.getCourseList()
+            },
+            error: err => {
+              this.addData = { oneToXArr: [], x: null, levelHour: [] }
             }
           })
+        },
+        cancelAddCourse() {
+          this.addCourseModal = false
+          this.addData = { oneToXArr: [], x: null, levelHour: [] }
         },
         handleTabs(name) {
           let status = null;

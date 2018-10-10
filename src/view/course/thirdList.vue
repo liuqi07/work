@@ -12,35 +12,33 @@
           <Option v-for="item in secondList" :value="item.code" :key="item.code">{{item.name}}</Option>
         </Select>
       </FormItem>
-      <FormItem>
-        <Button type="primary" v-hasPermission="'thirdAdd'" @click="thirdAdd">添加三级分类</Button>
-        <Button type="primary" @click="query" style="margin-left: 10px;">查询</Button>
-      </FormItem>
+      <Button type="primary" v-hasPermission="'thirdAdd'" @click="thirdAdd" style="margin-left: 20px;">添加三级分类</Button>
+      <Button type="primary" @click="query" style="margin-left: 10px;">查询</Button>
     </Form>
     <Card style="margin-top: 10px;">
       <Table :columns="columns" :data="thirdList"></Table>
       <Page :total="total" show-total @on-change="changePage" :page-index="postData.pageIndex" style="margin-top: 10px" />
     </Card>
     <Modal title="添加三级分类" v-model="addModal" @on-ok="add">
-      <Form :label-width="100">
-        <FormItem label="一级分类名称：" style="width: 300px;">
-          <Select v-model="secondPostData.parentCode" size="small" @on-change="firstListChange" @on-open-change="firstListOpenChange" @on-clear="clearFirstList"
-            placeholder="请选择一级分类名称">
+      <Form :label-width="120">
+        <FormItem label="一级分类名称：" style="width: 300px;" required>
+          <Select v-model="secondPostData.parentCode" size="small" @on-change="firstListChange" @on-open-change="firstListOpenChange"
+            @on-clear="clearFirstList" placeholder="请选择一级分类名称">
             <Option v-for="item in firstList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem label="二级分类名称：" style="width: 300px;">
+        <FormItem label="二级分类名称：" style="width: 300px;" required>
           <Select v-model="addData.parentCode" size="small" @on-open-change="secondListOpenChange" placeholder="请选择二级分类名称">
             <Option v-for="item in secondList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem label="三级分类名称：" style="width: 300px;">
+        <FormItem label="三级分类名称：" style="width: 300px;" required>
           <Input v-model="addData.name" size="small" placeholder="请输入三级分类名称" />
         </FormItem>
-        <FormItem label="级别：" style="width: 300px;">
+        <FormItem label="级别：" style="width: 300px;" required>
           <Button type="dashed" size="small" long @click="addLevel" icon="md-add">Add Level</Button>
         </FormItem>
-        <FormItem v-for="(item, index) in levelList" :key="index">
+        <FormItem v-for="(item, index) in levelList" :key="index"  required>
           <Row>
             <Col :span="6"> 等级
             <InputNumber :min="1" size="small" v-model="item.level" disabled style="width: 50px;" />
@@ -53,7 +51,7 @@
             </Col>
           </Row>
         </FormItem>
-        <FormItem label="1:x">
+        <FormItem label="1:x" required>
           <Button type="dashed" @click="addOneToX" size="small" style="margin-right: 10px;">增加</Button>
           <InputNumber v-model="x" size="small" :min="1" style="width: 50px; margin-right: 10px;" />
           <Tag v-for="(item, index) in oneToXArr" color="success" :key="index" :name="item" closable @on-close="closeOneToXTag">{{item}}</Tag>
@@ -223,24 +221,25 @@
         const { oneToX, levelQuestions: levelList, id, version, name } = row
         this.editData = { id, version, name }
       },
-      edit(){
+      edit() {
         this.editData.oneToX = this.oneToXArr.join(',')
         this.editData.levelQuestions = JSON.stringify(this.levelList)
         this.editData.level = this.levelList.length
         http.post({
-        vm: this,
-        url: '/manager/course-classification/third/edit',
-        data: this.editData,
-        success: res => {
-          this.$Message.success('更新成功！')
-          this.getThirdList()
-        }})
+          vm: this,
+          url: '/manager/course-classification/third/edit',
+          data: this.editData,
+          success: res => {
+            this.$Message.success('更新成功！')
+            this.getThirdList()
+          }
+        })
       },
       firstListChange(value) {
-        if(value){
+        if (value) {
           delete this.postData.parentCode
           this.getSecondList()
-        }else{
+        } else {
           delete this.postData.parentCode
           this.secondList = [];
         }
@@ -258,7 +257,7 @@
       },
       changePage(pageIndex) {
         this.postData.pageIndex = pageIndex
-        this.getThirdList(()=>{this.$Message.success('查询成功！')})
+        this.getThirdList(() => { this.$Message.success('查询成功！') })
       }
     },
     mounted() {

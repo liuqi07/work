@@ -4,7 +4,7 @@
       <Col :span="18">
       <three-level :inline="true" @on_change="getThreeLevelData"></three-level>
       </Col>
-      <Col :span="6">
+      <Col :span="4">
       <Button type="primary" @click="query" style="margin-right: 10px;">查询</Button>
       <Button type="primary" @click="openAdd" v-hasPermission="'masterialAdd'">添加教材</Button>
       </Col>

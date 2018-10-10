@@ -68,29 +68,26 @@
         createDate: '',
         total: 0,
         columns: [
-          { title: '学员编号', key: 'code' },
-          { title: '学员姓名', key: 'realName' },
-          { title: '手机号码', key: 'mobilePhone' },
-          { title: '邮箱', key: 'email' },
-          { title: '性别', key: 'sex', render: (h, params) => {
+          { title: '学员编号', key: 'code', align: 'center' },
+          { title: '学员姓名', key: 'realName', align: 'center' },
+          { title: '手机号码', key: 'mobilePhone', align: 'center' },
+          { title: '邮箱', key: 'email', align: 'center' },
+          { title: '性别', key: 'sex', align: 'center', render: (h, params) => {
             const sex = params.row.sex
             return h('div', {}, sex === 1 ? '男' : (sex === 2 ? '女' : '未知'))
           } },
-          { title: '年龄', key: 'age' },
-          { title: '学员状态', key: 'status', render: (h, params) => {
+          { title: '年龄', key: 'age', align: 'center' },
+          { title: '学员状态', key: 'status', align: 'center', render: (h, params) => {
             const status = params.row.status
             return h('div', {}, status === 1 ? '正常' : '冻结')
           } },
-          { title: '注册时间', key: 'createTime' },
-          { title: '操作', key: 'actions', width: 160, render: (h, params) => {
+          { title: '注册时间', key: 'createTime', align: 'center' },
+          { title: '操作', key: 'actions', align: 'center', render: (h, params) => {
             return h('div', [
                 h('Button', {
                   props: {
                     type: params.row.status !== 1 ? 'success' : 'error',
                     size: 'small',                  
-                  },
-                  style: {
-                    marginRight: '5px'
                   },
                   on: {
                     click: () => {
@@ -100,21 +97,7 @@
                   directives: [
                     { name: 'hasPermission', value: "frozenOrThaw" }
                   ]
-                }, params.row.status===1 ? '冻结' : '解冻'),
-                h('Button', {
-                  props: {
-                    type: 'primary',
-                    size: 'small'
-                  },
-                  on: {
-                    click: () => {
-                      this.openLevelList(params.row)
-                    }
-                  },
-                  directives: [
-                    { name: 'hasPermission', value: "levelList" }
-                  ]
-                }, '等级列表')
+                }, params.row.status===1 ? '冻结' : '解冻')
               ])
           } },
         ],
