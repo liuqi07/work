@@ -1,50 +1,22 @@
 <template>
   <div>
-    <Form :model="postData" :label-width="100">
-      <Row>
-        <Col :span="6">
-        <FormItem label="手机号码：" style="width: 250px;">
+    <Form :model="postData" :label-width="80" inline>
+        <FormItem label="手机号码：" style="width: 220px;">
           <Input type="text" v-model="postData.mobilePhone" placeholder="请输入学员手机号码" />
         </FormItem>
-        </Col>
-        <Col :span="6">
-        <FormItem label="学员姓名：" style="width: 250px;">
+        <FormItem label="学员姓名：" style="width: 220px;">
           <Input v-model="postData.realName" placeholder="请输入学员姓名" />
         </FormItem>
-        </Col>
-        <!-- <Col :span="6">
-          <FormItem label="课程等级：" style="width: 250px;">
-            <Select v-model="postData.status">
-              <Option :value="1"></Option>
-              <Option :value="2"></Option>
-            </Select>
-          </FormItem>
-          </Col> -->
-      </Row>
-      <Row>
-        <!-- <Col :span="6">
-          <FormItem label="所处阶段：" style="width: 250px;">
-            
-          </FormItem>
-          </Col> -->
-        <Col :span="6">
-        <FormItem label="学员状态：" style="width: 250px;">
+        <FormItem label="学员状态：" style="width: 220px;">
           <Select v-model="postData.status" placeholder="请选择学员状态" clearable>
             <Option :value="1">正常</Option>
             <Option :value="0">冻结</Option>
           </Select>
         </FormItem>
-        </Col>
-        <Col :span="6">
-        <FormItem label="注册日期：" style="width: 250px;">
+        <FormItem label="注册日期：" style="width: 220px;">
           <DatePicker type="date" placeholder="请选择注册时间" v-model="createDate"></DatePicker>
         </FormItem>
-        </Col>
-        <Col :span="6">
-        <FormItem>
-          <Button type="primary">搜索</Button>
-        </FormItem>
-        </Col>
+          <Button type="primary" @click="search" style="margin-left: 20px;">搜索</Button>
       </Row>
     </Form>
     <Card>

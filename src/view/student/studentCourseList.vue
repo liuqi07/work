@@ -16,9 +16,7 @@
       <FormItem label="任课教师：" style="width: 220px;">
         <Input v-model="postData.teacherRealName" placeholder="请输入任课教师姓名" />
       </FormItem>
-      <FormItem>
-        <Button type="primary" @click="query">查询</Button>
-      </FormItem>
+      <Button type="primary" @click="query" style="margin-left: 20px;">查询</Button>
     </Form>
     <Card>
       <Table :columns="columns" :data="courseList"></Table>
@@ -278,7 +276,6 @@
           url: '/manager/student/lookTaskFile',
           data: { tableId },
           success: res => {
-            console.log('%c res', 'color:red;', res);
             const data = res.data
             if (data.type) {
               this.$Notice.open({
@@ -287,7 +284,7 @@
               });
               window.open(data.url)
             } else if (data.type) {
-              this.audioUrl = data.url
+              window.open(data.url)
             }
           }
         })
@@ -321,7 +318,7 @@
               this.$Message.success('上传成功！')
             }
           })
-        }else{
+        } else {
           this.$Message.error('请先选择文件后点击上传！')
         }
       },

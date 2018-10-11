@@ -143,7 +143,7 @@
                 }, '修改资料'),
                 h('Button', {
                   props: {
-                    type: params.row.status===1?'error':'success',
+                    type: params.row.status === 1 ? 'error' : 'success',
                     size: 'small',
                     // disabled: params.row.status !== 1
                   },
@@ -158,7 +158,7 @@
                   directives: [
                     { name: 'hasPermission', value: "openOrClose" }
                   ]
-                }, params.row.status===1?'停用':'启用')
+                }, params.row.status === 1 ? '停用' : '启用')
               ])
             }
           }
@@ -266,7 +266,7 @@
 
       },
       disuse({ id, status, version }) {
-        const action = status===1 ? '停用' : '启用'
+        const action = status === 1 ? '停用' : '启用'
         this.$Modal.confirm({
           title: 'Title',
           content: `确定${action}此账号吗？`,

@@ -10,7 +10,7 @@
           <Option :value="3">正式订单</Option>
         </Select>
       </FormItem>
-      <Button type="primary" @click="search">搜索</Button>
+      <Button type="primary" @click="search" style="margin-left: 20px;">搜索</Button>
     </Form>
     <Card>
       <Table :columns="columns" :data="adviserLogList"></Table>

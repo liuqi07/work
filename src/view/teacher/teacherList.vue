@@ -25,46 +25,30 @@
 
 <template>
   <div>
-    <Form :model="postData" :label-width="80">
-      <Row>
-        <Col :span="6">
-        <FormItem label="邮箱：" style="width: 220px;">
-          <Input type="text" v-model="postData.email" placeholder="请输入教师邮箱" />
-        </FormItem>
-        </Col>
-        <Col :span="6">
-        <FormItem label="教师姓名：" style="width: 220px;">
-          <Input v-model="postData.realName" placeholder="请输入教师姓名" />
-        </FormItem>
-        </Col>
-        <Col :span="6">
-        <FormItem label="教师状态：" style="width: 220px;" placeholder="请选择教师状态" clearable>
-          <Select v-model="postData.status">
-            <Option :value="1">未审核</Option>
-            <Option :value="2">已审核</Option>
-          </Select>
-        </FormItem>
-        </Col>
-      </Row>
-      <Row>
-        <Col :span="6">
-        <FormItem label="所获学位：" style="width: 220px;" placeholder="请选择学位" clearable>
-          <Select v-model="postData.degree">
-            <Option :value="1">学士</Option>
-            <Option :value="2">硕士</Option>
-            <Option :value="3">博士</Option>
-          </Select>
-        </FormItem>
-        </Col>
-        <Col :span="6">
-        <FormItem label="注册日期：" style="width: 220px;">
-          <DatePicker type="date" placeholder="请选择注册时间" v-model="createDate"></DatePicker>
-        </FormItem>
-        </Col>
-        <Col :span="6">
-        <Button type="primary" @click="search">搜索</Button>
-        </Col>
-      </Row>
+    <Form :model="postData" :label-width="80" inline>
+      <FormItem label="邮箱：" style="width: 220px;">
+        <Input type="text" v-model="postData.email" placeholder="请输入教师邮箱" />
+      </FormItem>
+      <FormItem label="教师姓名：" style="width: 220px;">
+        <Input v-model="postData.realName" placeholder="请输入教师姓名" />
+      </FormItem>
+      <FormItem label="教师状态：" style="width: 220px;" placeholder="请选择教师状态" clearable>
+        <Select v-model="postData.status">
+          <Option :value="1">未审核</Option>
+          <Option :value="2">已审核</Option>
+        </Select>
+      </FormItem>
+      <FormItem label="所获学位：" style="width: 220px;" placeholder="请选择学位" clearable>
+        <Select v-model="postData.degree">
+          <Option :value="1">学士</Option>
+          <Option :value="2">硕士</Option>
+          <Option :value="3">博士</Option>
+        </Select>
+      </FormItem>
+      <FormItem label="注册日期：" style="width: 220px;">
+        <DatePicker type="date" placeholder="请选择注册时间" v-model="createDate"></DatePicker>
+      </FormItem>
+      <Button type="primary" @click="search" style="margin-left: 20px;">搜索</Button>
     </Form>
     <Card>
       <Table :columns="columns" :data="teacherList"></Table>

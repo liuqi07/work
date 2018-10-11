@@ -1,7 +1,7 @@
 <template>
   <div>
     <Row>
-      <Col :span="18">
+      <Col :span="16">
       <three-level :inline="true" @on_change="getThreeLevelData"></three-level>
       </Col>
       <Col :span="4">

@@ -1,43 +1,22 @@
 <template>
   <div>
-    <Form :model="postData" :label-width="100">
-      <Row>
-        <Col :span="6">
-        <FormItem label="课程顾问：" style="width: 250px;">
-          <Input type="text" v-model="postData.realName" placeholder="请输入课程顾问姓名" />
-        </FormItem>
-        </Col>
-        <Col :span="6">
-        <FormItem label="身份证号：" style="width: 250px;">
-          <Input v-model="postData.idNo" placeholder="请输入课程顾问身份证号" />
-        </FormItem>
-        </Col>
-        <Col :span="6">
-        <FormItem label="顾问状态：" style="width: 250px;">
-          <Select v-model="postData.status" clearable>
-            <Option :value="1">正常</Option>
-            <Option :value="0">停用</Option>
-          </Select>
-        </FormItem>
-        </Col>
-      </Row>
-      <Row>
-        <!-- <Col :span="6">
-        <FormItem label="手机号码：" style="width: 250px;">
-            <Input v-model="postData.mobilePhone" placeholder="请输入所处阶段" />
-        </FormItem>
-        </Col> -->
-        <Col :span="6">
-        <FormItem label="注册日期：" style="width: 250px;">
-          <DatePicker type="date" placeholder="请选择注册时间" v-model="createDate"></DatePicker>
-        </FormItem>
-        </Col>
-        <Col :span="6">
-        <FormItem>
-          <Button type="primary" @click="search">搜索</Button>
-        </FormItem>
-        </Col>
-      </Row>
+    <Form :model="postData" :label-width="80" inline>
+      <FormItem label="课程顾问：" style="width: 220px;">
+        <Input type="text" v-model="postData.realName" placeholder="请输入课程顾问姓名" />
+      </FormItem>
+      <FormItem label="身份证号：" style="width: 230px;">
+        <Input v-model="postData.idNo" placeholder="请输入课程顾问身份证号" />
+      </FormItem>
+      <FormItem label="顾问状态：" style="width: 220px;">
+        <Select v-model="postData.status" clearable>
+          <Option :value="1">正常</Option>
+          <Option :value="0">停用</Option>
+        </Select>
+      </FormItem>
+      <FormItem label="注册日期：" style="width: 220px;">
+        <DatePicker type="date" placeholder="请选择注册时间" v-model="createDate"></DatePicker>
+      </FormItem>
+      <Button type="primary" @click="search" style="margin-left: 20px;">搜索</Button>
     </Form>
     <Card>
       <Table :data="courseAdviserList" :columns="columns"></Table>

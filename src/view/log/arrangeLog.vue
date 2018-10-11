@@ -10,7 +10,7 @@
             <Option :value="3">正式订单</Option>
           </Select>
         </FormItem>
-        <Button type="primary" @click="search">搜索</Button>
+        <Button type="primary" @click="search" style="margin-left: 20px;">搜索</Button>
       </Form>
       <Card>
         <Table :columns="columns" :data="arrangeLogList"></Table>
@@ -27,13 +27,12 @@
         return {
           postData: { pageIndex: 1, pageSize: 10 },
           columns: [
-            // { title: 'Id', key: 'id', align: 'center' },
-            // { title: '订单类型', key: 'type', align: 'center', render: (h, params) => {
-            //   return h('div', {}, params.row.type===2?'预约订单':'正式订单')
-            // } },
-            // { title: '订单编号', key: 'orderNo', align: 'center' },
-            // { title: '创建时间', key: 'createTime', align: 'center' },
-            // { title: '课程顾问Id', key: 'sysUserId', align: 'center' }
+            { title: 'Id', key: 'id', align: 'center' },
+            { title: '订单类型', key: 'classType', align: 'center', render: (h, params) => {
+              return h('div', {}, params.row.type===2?'预约订单':'正式订单')
+            } },
+            { title: '订单编号', key: 'orderNo', align: 'center' },
+            { title: '创建时间', key: 'createTime', align: 'center' },
           ],
           arrangeLogList: [],
           total: 0,
@@ -43,7 +42,7 @@
         search() {
           this.getArrangeLogList(() => {this.$Message.success('查询成功！')})
         },
-        getArrangeLogList() {
+        getArrangeLogList(cb) {
           http.get({
             vm: this,
             url: '/manager/log/listLogArrange',
