@@ -34,6 +34,11 @@
             <Input v-model="addData.courseDesc" placeholder="请输入课程介绍" />
           </FormItem>
           <three-level :required="true" @on_change="onThreeLevelChange" :threeLevelData="addData.threeLevelData"></three-level>
+          <FormItem label="平台：" style="width: 300px;" required>
+            <Select v-model="addData.platform">
+              <Option :value="1">百度云</Option>
+            </Select>
+          </FormItem>
           <FormItem prop="classType" label="课程类型：" style="width: 300px;" required>
             <RadioGroup v-model="addData.classType">
               <Radio :label="1">公开课</Radio>
@@ -136,13 +141,13 @@
           const { oneToXArr, levelHour } = this.addData
           oneToXArr.length > 0 && (this.addData.oneToX = oneToXArr.join(','))
           levelHour.length > 0 && (this.addData.levelHourJsonStr = JSON.stringify(levelHour))
-          const { name, courseDesc, firstId, secondId, thirdId, classType, oneToX, levelHourJsonStr, file } = this.addData
-          if(!(name && courseDesc && firstId && secondId && thirdId && classType && oneToX && levelHourJsonStr && file)){
+          const { name, courseDesc, firstId, secondId, thirdId, classType, oneToX, levelHourJsonStr, file, platform } = this.addData
+          if(!(name && courseDesc && firstId && secondId && thirdId && classType && oneToX && levelHourJsonStr && file && platform)){
             this.$Message.error({
               content: '标星内容不能为空！',
               duration: 5
             })
-            console.log('%c ----> ', 'color:red;', name, courseDesc, firstId, secondId, thirdId, classType, oneToX, levelHourJsonStr, file);
+            console.log('%c ----> ', 'color:red;', name, courseDesc, firstId, secondId, thirdId, classType, oneToX, levelHourJsonStr, file, platform);
             return
           }
           // 这三句待验证

@@ -17,7 +17,7 @@
 
 #### 使用说明
 
-1. 克隆项目 `git clone `
+1. 克隆项目 `git clone git@gitee.com:liuqi07/work.git`
 2. 进入项目目录 `cd front-end`
 3. 安装依赖包 `npm install / yarn`
 4. 本地运行 

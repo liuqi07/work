@@ -75,6 +75,33 @@
         <Option v-for="item in secondList" :value="item.code" :key="item.id">{{item.name}}</Option>
       </Select>
     </Modal>
+    <Modal title="收费标准" v-model="feeListModal" :width="900">
+      <Form :label-width="90" inline>
+        <FormItem label="一级分类：" style="width: 200px;" required>
+          <Select v-model="feeListData.firstCode" @on-change="firstChange" clearable>
+            <Option v-for="item in firstList2" :value="item.code" :key="item.code">{{item.name}}</Option>
+          </Select>
+        </FormItem>
+        <FormItem label="二级分类：" style="width: 200px;" required>
+          <Select v-model="feeListData.secondCode" @on-change="secondChange" clearable>
+            <Option v-for="item in secondList2" :value="item.code" :key="item.code">{{item.name}}</Option>
+          </Select>
+        </FormItem>
+        <FormItem label="三级分类：" style="width: 200px;" required>
+          <Select v-model="feeListData.thirdCode" @on-change="thirdChange" clearable>
+            <Option v-for="item in thirdList2" :value="item.code" :key="item.code">{{item.name}}</Option>
+          </Select>
+        </FormItem>
+        <FormItem label="课程名称：" style="width: 200px;" required>
+          <Select v-model="feeListData.courseId" @on-change="courseChange" clearable>
+            <Option v-for="item in courseList2" :value="item.id" :key="item.id">{{item.name}}</Option>
+          </Select>
+        </FormItem>
+      </Form>
+      <Table :columns="feeColumns" :data="feeList" size="small" :disabled-hover="true" ></Table>
+      <Page :total="total2" show-total @on-change="changePage2" :page-index="postData.pageIndex"
+        :page-size="postData.pageSize" style="margin-top: 10px" />
+    </Modal>
   </div>
 </template>
 
@@ -188,7 +215,7 @@
             }
           },
         ],
-        teacherList: this.getTeacherList(),
+        teacherList: [],
         total: 0,
         teacherDetail: {},
         titleActive: 0,
@@ -221,11 +248,20 @@
           // 'https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1181878726,1542446426&fm=27&gp=0.jpg',
           // 'https://i.loli.net/2017/08/21/599a521472424.jpg',
         ],
-        selfDesc: '如果你无法简介的表达你的想法，那只说明你还不够了解他\n\n --爱因斯坦',
+        selfDesc: '',
         teachCodeModal: false,
         secondList: [],
         teacherId: null,
         secondCodes: [],
+        firstList2: [],
+        secondList2: [],
+        thirdList2: [],
+        courseList2: [],
+        feeListData: { pageIndex: 1, pageSize: 10 },
+        feeListModal: false,
+        total2: 0,
+        feeColumns: [],
+        feeList: [],
       }
     },
     methods: {
@@ -339,8 +375,22 @@
           }
         })
       },
-      openFeeList(row) {
-
+      openFeeList({ id }) {
+        this.feeListModal = true
+        this.feeListData = { pageIndex: 1, pageSize: 10, teacherId: id }
+        this._getFirstList()
+      },
+      getFeeList(cb) {
+        http.get({
+          vm: this,
+          url: '/manager/teacher/listFee',
+          data: this.feeListData,
+          success: res => {
+            this.feeList = res.data.list
+            this.total2 = res.data.total
+            cb && cb()
+          }
+        })
       },
       changePage(pageIndex) {
         this.postData.pageIndex = pageIndex
@@ -349,7 +399,98 @@
       changePageSize(pageSize) {
         this.postData.pageSize = pageSize
         this.getTeacherList(() => { this.$Message.success('查询成功！') })
+      },
+
+      firstChange(val) {
+        this.feeListData.secondCode = null
+        this.feeListData.thirdCode = null
+        this.feeListData.courseId = null
+        if (val) {
+          const _firstId = this.firstList2.find(f => f.code === val)
+          this.feeListData.firstId = _firstId && _firstId.id || null
+          this._getSecondList()
+        } else {
+          this.secondList2 = []
+          this.thirdList2 = []
+          this.courseList2 = []
+        }
+      },
+      secondChange(val) {
+        this.feeListData.thirdCode = null
+        this.feeListData.courseId = null
+        if (val) {
+          const _secondId = this.secondList2.find(s => s.code === val)
+          this.feeListData.secondId = _secondId && _secondId.id || null
+          this._getThirdList()
+        } else {
+          this.thirdList2 = []
+          this.courseList2 = []
+        }
+      },
+      thirdChange(val) {
+        this.feeListData.courseId = null
+        if (val) {
+          const _thirdId = this.thirdList2.find(item => item.code === val)
+          this.feeListData.thirdId = _thirdId && _thirdId.id || null
+          this._getCourseList()
+        } else {
+          this.courseList2 = []
+        }
+      },
+      courseChange(val) {
+        this.feeListData.courseId = val
+      },
+      _getFirstList() {
+        http.get({
+          vm: this,
+          url: '/manager/course-classification/getAll',
+          data: { type: 1 },
+          success: res => {
+            this.firstList2 = res.data
+            this.getFeeList(()=>{this.$Message.success('查询成功！')})
+          }
+        })
+      },
+      _getSecondList() {
+        http.get({
+          vm: this,
+          url: '/manager/course-classification/getAll',
+          data: { type: 2, parentCode: this.feeListData.firstCode },
+          success: res => {
+            this.secondList2 = res.data
+            this.getFeeList(()=>{this.$Message.success('查询成功！')})
+          }
+        })
+      },
+      _getThirdList() {
+        http.get({
+          vm: this,
+          url: '/manager/course-classification/getAll',
+          data: { type: 3, parentCode: this.feeListData.secondCode },
+          success: res => {
+            this.thirdList2 = res.data
+            this.getFeeList(()=>{this.$Message.success('查询成功！')})
+          }
+        })
+      },
+      _getCourseList() {
+        http.get({
+          vm: this,
+          url: '/manager/course/listByThird',
+          data: { thirdId: this.feeListData.thirdId },
+          success: res => {
+            this.courseList2 = res.data
+            this.getFeeList(()=>{this.$Message.success('查询成功！')})
+          }
+        })
+      },
+      changePage2 (pageIndex) {
+        this.feeListData.pageIndex = pageIndex
+        this.getFeeList(()=>{this.$Message.success('查询成功！')})
       }
+    },
+    mounted () {
+      this.getTeacherList()
     }
   }
 </script>
