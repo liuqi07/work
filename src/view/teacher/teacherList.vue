@@ -97,10 +97,54 @@
             <Option v-for="item in courseList2" :value="item.id" :key="item.id">{{item.name}}</Option>
           </Select>
         </FormItem>
+        <Button type="primary" @click="searchFee" style="margin: 0 10px 10px;">查询</Button>
+        <Button type="primary" @click="addFee" style="margin-bottom: 10px;">新增收费标准</Button>
       </Form>
-      <Table :columns="feeColumns" :data="feeList" size="small" :disabled-hover="true" ></Table>
-      <Page :total="total2" show-total @on-change="changePage2" :page-index="postData.pageIndex"
-        :page-size="postData.pageSize" style="margin-top: 10px" />
+      <Table :columns="feeColumns" :data="feeList" size="small" :disabled-hover="true"></Table>
+      <Page :total="total2" show-total @on-change="changePage2" :page-index="postData.pageIndex" :page-size="postData.pageSize"
+        style="margin-top: 10px" />
+    </Modal>
+    <Modal v-model="feeModal" title="新增收费标准" @on-ok="saveFee" @on-cancel="cancelFee">
+      <Form :label-width="90" inline>
+        <FormItem label="一级分类：" style="width: 200px;" required>
+          <Select v-model="feeListData.firstCode" @on-change="firstChange" clearable>
+            <Option v-for="item in firstList2" :value="item.code" :key="item.code">{{item.name}}</Option>
+          </Select>
+        </FormItem>
+        <FormItem label="二级分类：" style="width: 200px;" required>
+          <Select v-model="feeListData.secondCode" @on-change="secondChange" clearable>
+            <Option v-for="item in secondList2" :value="item.code" :key="item.code">{{item.name}}</Option>
+          </Select>
+        </FormItem>
+        <FormItem label="三级分类：" style="width: 200px;" required>
+          <Select v-model="feeListData.thirdCode" @on-change="thirdChange" clearable>
+            <Option v-for="item in thirdList2" :value="item.code" :key="item.code">{{item.name}}</Option>
+          </Select>
+        </FormItem>
+        <FormItem label="课程名称：" style="width: 200px;" required>
+          <Select v-model="feeListData.courseId" @on-change="courseChange" clearable>
+            <Option v-for="item in courseList2" :value="item.id" :key="item.id">{{item.name}}</Option>
+          </Select>
+        </FormItem>
+        <FormItem label="收费标准：" style="width: 300px;" required>
+          <Button type="dashed" size="small" long @click="addOneToXFee" icon="md-add">增加</Button>
+        </FormItem>
+        <FormItem v-for="(item, index) in feeListData.oneToXFeeList" :key="index" required style="width: 350px;">
+          <Row>
+            <Col :span="10">
+            <Row>
+              一对
+              <InputNumber :min="1" size="small" v-model="item.x" style="width: 50px;" />
+            </Row>
+            </Col>
+            <Col :span="14">
+            <Row>每课时
+              <InputNumber :min="1" size="small" v-model="item.fee" style="width: 50px;" /> 美元
+            </Row>
+            </Col>
+          </Row>
+        </FormItem>
+      </Form>
     </Modal>
   </div>
 </template>
@@ -260,16 +304,58 @@
         feeListData: { pageIndex: 1, pageSize: 10 },
         feeListModal: false,
         total2: 0,
-        feeColumns: [],
+        feeColumns: [
+          { title: '课程名称', key: 'courseName', align: 'center' },
+          { title: '一级分类', key: 'firstName', align: 'center' },
+          { title: '二级分类', key: 'secondName', align: 'center' },
+          { title: '三级分类', key: 'thirdName', align: 'center' }
+        ],
         feeList: [],
+        feeModal: false,
+        oneToXFeeList: [],
+        teacherId2: '',
       }
     },
     methods: {
+      addFee() {
+        this.feeModal = true
+        this.secondList2 = []
+        this.thirdList2 = []
+        this.courseList2 = []
+        this.feeListData = { oneToXFeeList: [], teacherId: this.teacherId2 }
+      },
+      saveFee() {
+        http.post({
+          vm: this,
+          url: '/manager/teacher/saveTeacherFee',
+          data: this.feeListData,
+          success: res => {
+            this.$Message.success('新增成功')
+            this.getFeeList()
+          }
+        })
+        this.secondList2 = []
+        this.thirdList2 = []
+        this.courseList2 = []
+        this.feeListData = { pageIndex: 1, pageSize: 10 }
+      },
+      cancelFee() {
+        this.secondList2 = []
+        this.thirdList2 = []
+        this.courseList2 = []
+        this.feeListData = { pageIndex: 1, pageSize: 10 }
+      },
+      addOneToXFee() {
+        this.feeListData.oneToXFeeList.push({})
+      },
       search() {
         this.createDate && (this.postData.createDate = formatDate('YYYY-MM-DD', this.createDate))
         this.getTeacherList(() => {
           this.$Message.success('查询成功！')
         })
+      },
+      searchFee() {
+        this.getFeeList(() => { this.$Message.success('查询成功！') })
       },
       getTeacherList(cb) {
         http.get({
@@ -377,6 +463,7 @@
       },
       openFeeList({ id }) {
         this.feeListModal = true
+        this.teacherId2 = id
         this.feeListData = { pageIndex: 1, pageSize: 10, teacherId: id }
         this._getFirstList()
       },
@@ -405,6 +492,9 @@
         this.feeListData.secondCode = null
         this.feeListData.thirdCode = null
         this.feeListData.courseId = null
+        this.feeListData.firstId = null
+        this.feeListData.secondId = null
+        this.feeListData.thirdId = null
         if (val) {
           const _firstId = this.firstList2.find(f => f.code === val)
           this.feeListData.firstId = _firstId && _firstId.id || null
@@ -418,6 +508,8 @@
       secondChange(val) {
         this.feeListData.thirdCode = null
         this.feeListData.courseId = null
+        this.feeListData.secondId = null
+        this.feeListData.thirdId = null
         if (val) {
           const _secondId = this.secondList2.find(s => s.code === val)
           this.feeListData.secondId = _secondId && _secondId.id || null
@@ -429,6 +521,7 @@
       },
       thirdChange(val) {
         this.feeListData.courseId = null
+        this.feeListData.thirdId = null
         if (val) {
           const _thirdId = this.thirdList2.find(item => item.code === val)
           this.feeListData.thirdId = _thirdId && _thirdId.id || null
@@ -447,7 +540,7 @@
           data: { type: 1 },
           success: res => {
             this.firstList2 = res.data
-            this.getFeeList(()=>{this.$Message.success('查询成功！')})
+            this.getFeeList()
           }
         })
       },
@@ -458,7 +551,7 @@
           data: { type: 2, parentCode: this.feeListData.firstCode },
           success: res => {
             this.secondList2 = res.data
-            this.getFeeList(()=>{this.$Message.success('查询成功！')})
+            this.getFeeList()
           }
         })
       },
@@ -469,7 +562,7 @@
           data: { type: 3, parentCode: this.feeListData.secondCode },
           success: res => {
             this.thirdList2 = res.data
-            this.getFeeList(()=>{this.$Message.success('查询成功！')})
+            this.getFeeList()
           }
         })
       },
@@ -480,16 +573,16 @@
           data: { thirdId: this.feeListData.thirdId },
           success: res => {
             this.courseList2 = res.data
-            this.getFeeList(()=>{this.$Message.success('查询成功！')})
+            this.getFeeList()
           }
         })
       },
-      changePage2 (pageIndex) {
+      changePage2(pageIndex) {
         this.feeListData.pageIndex = pageIndex
-        this.getFeeList(()=>{this.$Message.success('查询成功！')})
+        this.getFeeList(() => { this.$Message.success('查询成功！') })
       }
     },
-    mounted () {
+    mounted() {
       this.getTeacherList()
     }
   }

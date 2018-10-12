@@ -142,7 +142,7 @@ export default {
   },
   mounted () {
     // console.log('%c this.$store.state.user.accessRoutes', 'color:red;', this.$store.state.user.accessRoutes);
-    console.log('%c this.$store.getters.menuList', 'color:red;', this.$store.getters.menuList, this);
+    // console.log('%c this.$store.getters.menuList', 'color:red;', this.$store.getters.menuList, this);
     // this.$router.addRoutes(this.$store.getters.menuList)
     // this.$router.options.routes.push(this.$store.getters.menuList)
     // this.$router

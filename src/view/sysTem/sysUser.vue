@@ -9,10 +9,8 @@
           <Option v-for="item in roleList" :value="item.id" :key="item.roleId">{{item.name}}</Option>
         </Select>
       </FormItem>
-      <FormItem>
-        <Button type="primary" @click="search" style="margin-right: 10px;">搜索</Button>
+        <Button type="primary" @click="search" style="margin:0 10px;">搜索</Button>
         <Button type="primary" v-hasPermission="'addSysUser'" @click="openAddModal">添加</Button>
-      </FormItem>
     </Form>
     <Card>
       <Table :columns="userColumns" :data="userList"></Table>
@@ -110,18 +108,18 @@
         roleList: [],
         userColumns: [
           { type: 'index', title: '序号', },
-          { title: '登录名', key: 'userName' },
-          { title: '姓名', key: 'realName' },
-          { title: '手机', key: 'mobilePhone' },
-          { title: '角色', key: 'roleName' },
+          { title: '登录名', key: 'userName', align: 'center' },
+          { title: '姓名', key: 'realName', align: 'center' },
+          { title: '手机', key: 'mobilePhone', align: 'center' },
+          { title: '角色', key: 'roleName', align: 'center' },
           {
-            title: '状态', key: 'status', render: (h, params) => {
+            title: '状态', key: 'status', align: 'center', render: (h, params) => {
               return h('div', {}, params.row.status === 1 ? '使用中' : '停用')
             }
           },
-          { title: '创建时间', key: 'createTime', width: 150 },
+          { title: '创建时间', key: 'createTime', align: 'center', width: 150 },
           {
-            title: '管理', key: 'actions', width: 160, render: (h, params) => {
+            title: '管理', key: 'actions', align: 'center', width: 220, render: (h, params) => {
               return h('div', [
                 h('Button', {
                   props: {
@@ -141,6 +139,24 @@
                     { name: 'hasPermission', value: "editSysUser" }
                   ]
                 }, '修改资料'),
+                h('Button', {
+                  props: {
+                    type: 'primary',
+                    size: 'small',
+                    disabled: params.row.status !== 1
+                  },
+                  style: {
+                    marginRight: '5px'
+                  },
+                  on: {
+                    click: () => {
+                      this.resetPwd(params.row)
+                    }
+                  },
+                  directives: [
+                    // { name: 'hasPermission', value: "resetPwd" }
+                  ]
+                }, '重置密码'),
                 h('Button', {
                   props: {
                     type: params.row.status === 1 ? 'error' : 'success',
@@ -228,6 +244,27 @@
             this.$Message.success('保存成功！')
             this.addUserModal = false
             this.addUserData = { type: 2, roleId: '', userName: '', password: '', realName: '' }
+          }
+        })
+      },
+      resetPwd({ id }) {
+        this.$Modal.confirm({
+          title: 'Title',
+          content: '确认重置此用户的密码吗？',
+          loading: true,
+          onOk: () => {
+            http.post({
+              vm: this,
+              url: '/manager/sys-user/resetPassword',
+              data: { id },
+              success: res => {
+                this.$Message.success({
+                  content: '密码重置成功，初始密码为N5fa2mVG，请通知用户尽快修改！',
+                  duration: 15
+                })
+                this.$Modal.remove()
+              }
+            })
           }
         })
       },

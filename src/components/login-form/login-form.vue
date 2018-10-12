@@ -69,8 +69,8 @@ export default {
   data () {
     return {
       form: {
-        loginName: 'admin',
-        password: '123456',
+        loginName: '',
+        password: '',
         validCode: ''
       },
       validCodeImg: ''
@@ -105,18 +105,6 @@ export default {
         else if(res.data.code===2){
           this.$Message.error(res.data.message);
         }
-        else if(res.data.code===3){
-          this.$Message.info('登陆过期，请重新登陆！');
-          // logout();
-          this.$router.push({
-            name: 'login'
-          })
-        }
-      //   handleResponse(this, response, function(res){
-      //     this.validCodeImg = res.data
-      //     console.log('%c this.validCodeImg', 'color:red;', this.validCodeImg);
-      //   })
-      // })
       })
     }
   },
