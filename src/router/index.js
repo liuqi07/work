@@ -37,6 +37,15 @@ router.beforeEach((to, from, next) => {
       const routers = [...defaultRouters, ...user.data]
       if(_canTurnTo(to.name, routers, routes)) next()
       else next({ replace: true, name: 'error_401' }) // 无权限，重定向到401页面
+      // if(user.data instanceof Array === 'array'){
+      //   const routers = [...defaultRouters, ...user.data]
+      //   if(_canTurnTo(to.name, routers, routes)) next()
+      //   else next({ replace: true, name: 'error_401' }) // 无权限，重定向到401页面
+      // }else{
+      //   next({
+      //     name: LOGIN_PAGE_NAME // 跳转到登录页
+      //   })
+      // }
     })
   }
 })

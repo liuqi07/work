@@ -126,7 +126,7 @@
             <Option v-for="item in courseList2" :value="item.id" :key="item.id">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem label="授课学生数：" style="width: 250px;" required>
+        <FormItem label="授课学生数：" style="width: 250px;" :label-width="100" required>
           <Input v-model="feeListData.oneToX" placeholder="请先选择三级分类" disabled/>
         </FormItem>
         <FormItem label="收费标准：" style="width: 300px;" required>
@@ -321,7 +321,7 @@
         this.secondList2 = []
         this.thirdList2 = []
         this.courseList2 = []
-        this.feeListData = { teacherId: this.teacherId2 }
+        this.feeListData = { teacherId: this.teacherId2, fee: 1 }
       },
       saveFee() {
         http.post({
