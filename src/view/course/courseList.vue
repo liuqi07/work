@@ -54,7 +54,7 @@
         </FormItem>
         <FormItem label="授课比例：" style="width: 300px;" required>
           <Select v-model="addData.oneToX" placeholder="请先选择三级分类" clearable>
-            <Option v-for="item in addData.oneToXArr" :key="item" :value="item"></Option>
+            <Option v-for="item in addData.oneToXArr" :key="item" :value="item">{{item}}</Option>
           </Select>
         </FormItem>
         <FormItem label="平台：" style="width: 300px;" required>
@@ -125,9 +125,6 @@
         total: 0,
         addCourseModal: false,
         addData: { oneToXArr: [], levelHour: [], firstList: [], secondList: [], thirdList: [] },
-        // x: null,
-        // oneToXArr: [],
-        // levelHour: [],
         rules: {
           name: [
             { required: true, message: '课程名称不能为空', trigger: 'blur' }
@@ -174,9 +171,6 @@
           console.log('%c ----> ', 'color:red;', name, courseDesc, firstId, secondId, thirdId, classType, oneToX, levelHourJsonStr, file, platform);
           return
         }
-        // 这三句待验证
-        delete this.addData.oneToXArr
-        delete this.addData.levelHour
         const formData = new FormData()
         for (let k in this.addData) {
           formData.append(k, this.addData[k])
@@ -187,7 +181,7 @@
           data: formData,
           success: res => {
             this.$Message.success('添加成功！')
-            this.addData = { oneToXArr: [], levelHour: [] }
+            this.addData = { oneToXArr: [], levelHour: [], firstList: [], secondList: [], thirdList: [] }
             this.addCourseModal = false
             this.getCourseList()
           },
@@ -198,7 +192,7 @@
       },
       cancelAddCourse() {
         this.addCourseModal = false
-        this.addData = { oneToXArr: [], x: null, levelHour: [] }
+        this.addData = { oneToXArr: [], levelHour: [], firstList: [], secondList: [], thirdList: [] }
       },
       handleTabs(name) {
         let status = null;
@@ -258,12 +252,30 @@
           }
         })
       },
+      // 编辑课程
       courseEdit(courseData) {
         console.log('%c courseData', 'color:red;', courseData);
-        const { oneToX, levelHourJsonStr } = courseData
-        const oneToXArr = oneToX.toString().split(',')
+        const { firstId, secondId, thirdId, oneToX, levelHourJsonStr } = courseData
+        this.getFirstList(() => {
+          const _firstCode = this.addData.firstList.find(f => f.id === firstId)
+          const firstCode = _firstCode && _firstCode.code || ''
+          this.addData = Object.assign({}, this.addData, { firstCode })
+          this.getSecondList(() => {
+            const _secondCode = this.addData.secondList.find(s => s.id === secondId)
+            const secondCode = _secondCode && _secondCode.code || ''
+            this.addData = Object.assign({}, this.addData, { secondCode })
+            this.getThirdList(() => {
+              const _thirdCode = this.addData.thirdList.find(s => s.id === thirdId)
+              const thirdCode = _thirdCode && _thirdCode.code || ''
+              const oneToXArr = (_thirdCode && _thirdCode.oneToX && _thirdCode.oneToX.split(',') || []).map(i=>parseInt(i))
+              this.addData = Object.assign({}, this.addData, { thirdCode, oneToXArr, oneToX })
+              console.log('%c firstList, secondList, thirdList', 'color:red;', this.addData.firstList, this.addData.secondList, this.addData.thirdList, oneToXArr, oneToX);
+            })
+          })
+        })
+
         const levelHour = JSON.parse(levelHourJsonStr) || []
-        this.addData = Object.assign({}, { oneToXArr, levelHour, x: null }, courseData)
+        this.addData = Object.assign({}, { levelHour }, courseData)
         this.courseEditUrl = '/manager/course/edit'
         this.addCourseModal = true
       },
@@ -348,21 +360,6 @@
       onSelectAllCancel(selection) {
         this.batchList = selection
       },
-      // onThreeLevelChange(data) {
-      //   this.addData = Object.assign(this.addData, data)
-      //   const { thirdId, oneToXArr } = data
-      //   if(thirdId && oneToXArr && oneToXArr.length > 0){
-      //     this.addData.oneToXArr = oneToXArr
-      //   }
-      // },
-      // addOneToX() {
-      //   this.addData.x && this.addData.oneToXArr.push(this.addData.x)
-      //   this.addData.x = null
-      // },
-      closeOneToXTag(event, name) {
-        const oneToXArr = this.addData.oneToXArr
-        oneToXArr.splice(oneToXArr.indexOf(name), 1)
-      },
       addLevelHour() {
         const levelHour = this.addData.levelHour
         const levelHourItem = { level: levelHour.length + 1, hour: 1 }
@@ -380,33 +377,37 @@
         this.getCourseList(undefined, 'change')
       },
 
-      getFirstList() {
+      getFirstList(cb) {
+        console.log('%c ----------', 'color:red;');
         http.get({
           vm: this,
           url: '/manager/course-classification/getAll',
           data: { type: 1 },
           success: res => {
             this.addData.firstList = res.data
+            cb && cb()
           }
         })
       },
-      getSecondList() {
+      getSecondList(cb) {
         http.get({
           vm: this,
           url: '/manager/course-classification/getAll',
           data: { type: 2, parentCode: this.addData.firstCode },
           success: res => {
             this.addData.secondList = res.data
+            cb && cb()
           }
         })
       },
-      getThirdList() {
+      getThirdList(cb) {
         http.get({
           vm: this,
           url: '/manager/course-classification/getAll',
           data: { type: 3, parentCode: this.addData.secondCode },
           success: res => {
             this.addData.thirdList = res.data
+            cb && cb()
           }
         })
       },
@@ -426,7 +427,7 @@
       },
       secondChange(val) {
         const _secondId = this.addData.secondList.find(f => f.code === val)
-        this.addData.firstId = _secondId && _secondId.id || null
+        this.addData.secondId = _secondId && _secondId.id || null
         this.addData.thirdCode = null
         this.addData.oneToX = null
         if (val) {
@@ -440,8 +441,10 @@
         this.addData.oneToX = ''
         if (val) {
           const _thirdId = this.addData.thirdList.find(t => t.code === val)
-          this.addData.thirdId = _thirdId && _thirdId.id || null
-          this.addData.oneToXArr = _thirdId && _thirdId.oneToX && _thirdId.oneToX.split(',') || []
+          const thirdId = _thirdId && _thirdId.id || null
+          const oneToXArr = _thirdId && _thirdId.oneToX && _thirdId.oneToX.split(',') || []
+          console.log('%c oneToXArr, oneToX', 'color:red;', oneToXArr, _thirdId.oneToX);
+          this.addData = Object.assign({}, this.addData, { thirdId, oneToXArr })
         } else {
           this.addData.oneToXArr = []
         }

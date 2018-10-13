@@ -48,8 +48,12 @@
         <Button type="primary" @click="lookExamModal=false">关闭</Button>
       </div>
     </Modal>
-    <Modal title="上传课程回放" v-model="uploadModal" @on-ok="uploadFile">
+    <Modal title="上传课程回放" v-model="uploadModal">
       <input type="file" @change="handleFileChange">
+      <div slot="footer" >
+        <Button @click="cancel" style="margin-right: 10px;">取消</Button>
+        <Button @click="uploadFile" type="primary" >确定</Button>
+      </div>
     </Modal>
   </div>
 </template>
@@ -307,7 +311,8 @@
       },
       uploadFile() {
         if (this.file) {
-          const formData = new formData()
+          console.log('%c file', 'color:red;', this.file);
+          const formData = new FormData()
           formData.append('tableId', this.tableId)
           formData.append('file', this.file)
           http._postwithupload({
@@ -316,11 +321,16 @@
             data: formData,
             success: res => {
               this.$Message.success('上传成功！')
+              this.uploadModal = false
             }
           })
         } else {
           this.$Message.error('请先选择文件后点击上传！')
         }
+      },
+      cancel(){
+        this.file = null
+        this.uploadModal = false
       },
       handleFileChange(e) {
         this.file = e.target.files[0]

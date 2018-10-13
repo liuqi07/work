@@ -37,9 +37,24 @@
         <FormItem prop="courseDesc" label="套餐介绍：" style="width: 300px;" required>
           <Input v-model="addData.courseDesc" placeholder="请输入套餐介绍" />
         </FormItem>
-        <three-level :required="true" @on_change="onThreeLevelChange" :threeLevelData="addData.threeLevelData"></three-level>
+        <!-- <three-level :required="true" @on_change="onThreeLevelChange" :threeLevelData="addData.threeLevelData"></three-level> -->
+        <FormItem label="一级分类：" style="width: 250px;" required>
+          <Select v-model="addData.firstCode" @on-change="firstChange" clearable>
+            <Option v-for="item in addData.firstList" :value="item.code" :key="item.code">{{item.name}}</Option>
+          </Select>
+        </FormItem>
+        <FormItem label="二级分类：" style="width: 250px;" required>
+          <Select v-model="addData.secondCode" @on-change="secondChange" clearable>
+            <Option v-for="item in addData.secondList" :value="item.code" :key="item.code">{{item.name}}</Option>
+          </Select>
+        </FormItem>
+        <FormItem label="三级分类：" style="width: 250px;" required>
+          <Select v-model="addData.thirdCode" @on-change="thirdChange" clearable>
+            <Option v-for="item in addData.thirdList" :value="item.code" :key="item.code">{{item.name}}</Option>
+          </Select>
+        </FormItem>
         <FormItem label="授课比例：" style="width: 300px;" required>
-          <Select v-model="addData.oneToX" placeholder="请先选择三级分类">
+          <Select v-model="addData.oneToX" placeholder="请先选择三级分类" clearable>
             <Option v-for="item in addData.oneToXArr" :key="item" :value="item">{{item}}</Option>
           </Select>
         </FormItem>
@@ -131,7 +146,7 @@
         packageList: [],
         total: 0,
         addPackageModal: false,
-        // addData: { oneToXArr: [], x: null, levelHour: [] },
+        // addData: { oneToXArr: [], levelHour: [], firstList: [], secondList: [], thirdList: [] },
         addData: { oneToXArr: [] },
         rules: {
           name: [
@@ -163,7 +178,7 @@
       },
       openAddPackage() {
         this.addPackageModal = true
-        this.addData = { oneToXArr: [] }
+        this.addData = { oneToXArr: [], levelHour: [], firstList: [], secondList: [], thirdList: [] }
         this.packageEditUrl = ''
       },
       addPackage() {
@@ -171,9 +186,6 @@
         const { levelHour } = this.addData
 
         levelHour.length > 0 && (this.addData.levelHourJsonStr = JSON.stringify(levelHour))
-        // 这三句待验证
-        delete this.addData.oneToXArr
-        delete this.addData.levelHour
         const formData = new FormData()
         for (let k in this.addData) {
           formData.append(k, this.addData[k])
@@ -184,7 +196,7 @@
           data: formData,
           success: res => {
             this.$Message.success('添加成功！')
-            this.addData = { oneToXArr: [], levelHour: [] }
+            this.addData = { oneToXArr: [], levelHour: [], firstList: [], secondList: [], thirdList: [] }
             this.addCourseModal = false
             this.getPackageList()
           }
@@ -248,11 +260,27 @@
         })
       },
       packageEdit(packageData) {
-        // console.log('%c packageData', 'color:red;', packageData);
-        // const { oneToX, levelHourJsonStr } = packageData
-        // const levelHour = JSON.parse(levelHourJsonStr) || []
-        // this.addData = Object.assign({}, { levelHour, x: null }, packageData)
-        this.addData = Object.assign({}, packageData)
+	console.log('%c packageData', 'color:red;', packageData);
+        const { firstId, secondId, thirdId, oneToX } = packageData
+        this.getFirstList(() => {
+          const _firstCode = this.addData.firstList.find(f => f.id === firstId)
+          const firstCode = _firstCode && _firstCode.code || ''
+          this.addData = Object.assign({}, this.addData, { firstCode })
+          this.getSecondList(() => {
+            const _secondCode = this.addData.secondList.find(s => s.id === secondId)
+            const secondCode = _secondCode && _secondCode.code || ''
+            this.addData = Object.assign({}, this.addData, { secondCode })
+            this.getThirdList(() => {
+              const _thirdCode = this.addData.thirdList.find(s => s.id === thirdId)
+              const thirdCode = _thirdCode && _thirdCode.code || ''
+              const oneToXArr = (_thirdCode && _thirdCode.oneToX && _thirdCode.oneToX.split(',') || []).map(i=>parseInt(i))
+              this.addData = Object.assign({}, this.addData, { thirdCode, oneToXArr, oneToX })
+              console.log('%c firstList, secondList, thirdList', 'color:red;', this.addData.firstList, this.addData.secondList, this.addData.thirdList, oneToXArr, oneToX);
+            })
+          })
+        })
+
+	this.addData = Object.assign({}, packageData)
         this.packageEditUrl = '/manager/course-package/edit'
         this.addPackageModal = true
       },
@@ -340,17 +368,6 @@
       onSelectAllCancel(selection) {
         this.batchList = selection
       },
-      onThreeLevelChange(data) {
-        this.addData = Object.assign(this.addData, data)
-        const { thirdId, oneToXArr } = data
-        if (thirdId && oneToXArr && oneToXArr.length > 0) {
-          this.addData.oneToXArr = oneToXArr
-        }
-      },
-      closeOneToXTag(event, name) {
-        const oneToXArr = this.addData.oneToXArr
-        oneToXArr.splice(oneToXArr.indexOf(name), 1)
-      },
       addLevelHour() {
         const levelHour = this.addData.levelHour
         const levelHourItem = { level: levelHour.length + 1, hour: 1 }
@@ -366,6 +383,78 @@
       changePageSize(pageSize) {
         this.postData.pageSize = pageSize
         this.getPackageList(undefined, 'change')
+      },
+      getFirstList(cb) {
+        console.log('%c ----------', 'color:red;');
+        http.get({
+          vm: this,
+          url: '/manager/course-classification/getAll',
+          data: { type: 1 },
+          success: res => {
+            this.addData.firstList = res.data
+            cb && cb()
+          }
+        })
+      },
+      getSecondList(cb) {
+        http.get({
+          vm: this,
+          url: '/manager/course-classification/getAll',
+          data: { type: 2, parentCode: this.addData.firstCode },
+          success: res => {
+            this.addData.secondList = res.data
+            cb && cb()
+          }
+        })
+      },
+      getThirdList(cb) {
+        http.get({
+          vm: this,
+          url: '/manager/course-classification/getAll',
+          data: { type: 3, parentCode: this.addData.secondCode },
+          success: res => {
+            this.addData.thirdList = res.data
+            cb && cb()
+          }
+        })
+      },
+      firstChange(val) {
+        const _firstId = this.addData.firstList.find(f => f.code === val)
+        this.addData.firstId = _firstId && _firstId.id || null
+        this.addData.secondCode = null
+        this.addData.thirdCode = null
+        this.addData.oneToX = null
+        if (val) {
+          this.getSecondList()
+        } else {
+          this.addData.secondList = []
+          this.addData.thirdList = []
+          this.addData.oneToXArr = []
+        }
+      },
+      secondChange(val) {
+        const _secondId = this.addData.secondList.find(f => f.code === val)
+        this.addData.secondId = _secondId && _secondId.id || null
+        this.addData.thirdCode = null
+        this.addData.oneToX = null
+        if (val) {
+          this.getThirdList()
+        } else {
+          this.addData.thirdList = []
+          this.addData.oneToXArr = []
+        }
+      },
+      thirdChange(val) {
+        this.addData.oneToX = ''
+        if (val) {
+          const _thirdId = this.addData.thirdList.find(t => t.code === val)
+          const thirdId = _thirdId && _thirdId.id || null
+          const oneToXArr = _thirdId && _thirdId.oneToX && _thirdId.oneToX.split(',') || []
+          console.log('%c oneToXArr, oneToX', 'color:red;', oneToXArr, _thirdId.oneToX);
+          this.addData = Object.assign({}, this.addData, { thirdId, oneToXArr })
+        } else {
+          this.addData.oneToXArr = []
+        }
       }
     },
     mounted() {

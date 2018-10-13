@@ -215,6 +215,15 @@ export default [
           icon: "",
           title: "套餐管理"
         }
+      },
+      {
+        path: "/questionList",
+        name: "questionList",
+        component: () => import("@/view/course/questionList.vue"),
+        meta: {
+          icon: "",
+          title: "题库管理"
+        }
       }
     ]
   },
