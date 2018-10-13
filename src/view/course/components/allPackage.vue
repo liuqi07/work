@@ -96,7 +96,7 @@
                     directives: [
                       { name: 'hasPermission', value: "packageEdit" }
                     ]
-                  }, '课程编辑'),
+                  }, '套餐编辑'),
                   h('Button', {
                     props: {
                       type: 'primary',

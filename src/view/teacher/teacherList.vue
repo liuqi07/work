@@ -464,6 +464,7 @@
         this.feeListModal = true
         this.teacherId2 = id
         this.feeListData = { pageIndex: 1, pageSize: 10, teacherId: id }
+        this.getFeeList()
         this._getFirstList()
       },
       getFeeList(cb) {
@@ -503,6 +504,7 @@
           this.secondList2 = []
           this.thirdList2 = []
           this.courseList2 = []
+          this.courseList2 = []
         }
       },
       secondChange(val) {
@@ -535,8 +537,7 @@
       courseChange(val) {
         this.feeListData.courseId = val
         const _courseId = this.courseList2.find(item => item.id === val)
-        this.feeListData.oneToX = _courseId && _courseId.oneToX || null
-        console.log('%c _courseId, oneToX', 'color:red;', _courseId, this.feeListData.oneToX);
+        this.feeListData = Object.assign({}, this.feeListData, { oneToX: _courseId && _courseId.oneToX }) //.oneToX = _courseId && _courseId.oneToX || null
       },
       _getFirstList() {
         http.get({
