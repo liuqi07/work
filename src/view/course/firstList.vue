@@ -1,6 +1,7 @@
 <template>
   <div>
-    <Button type="primary" v-hasPermission="'firstAdd'" @click="firstAdd" style="margin-left: 50px;">添加一级分类</Button>
+    <Button type="primary" v-hasPermission="'firstAdd'" @click="firstAdd" style="margin-left: 50px; margin-right: 10px;">添加一级分类</Button>
+    <Button type="primary" @click="search">查询</Button>
     <Card style="margin-top: 10px;">
       <Table :columns="columns" :data="firstList"></Table>
       <Page :total="total" show-total @on-change="changePage" :page-index="postData.pageIndex" style="margin-top: 10px" />
@@ -61,6 +62,9 @@
       }
     },
     methods: {
+      search() {
+        this.getFirstList(()=>{this.$Message.success('查询成功！')})
+      },
       firstAdd() {
         this.modal = true
         this.title = '添加一级分类'

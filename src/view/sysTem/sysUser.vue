@@ -154,7 +154,7 @@
                     }
                   },
                   directives: [
-                    // { name: 'hasPermission', value: "resetPwd" }
+                    { name: 'hasPermission', value: "resetPassword" }
                   ]
                 }, '重置密码'),
                 h('Button', {

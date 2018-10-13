@@ -2,11 +2,12 @@
   <div>
     <Form :label-width="100" inline>
       <FormItem label="一级分类：" style="width: 250px;">
-        <Select v-model="postData.parentCode">
+        <Select v-model="postData.parentCode" clearable>
           <Option v-for="item in firstList" :value="item.code" :key="item.code">{{item.name}}</Option>
         </Select>
       </FormItem>
-      <Button type="primary" v-hasPermission="'secondAdd'" @click="secondAdd" style="margin-left: 20px;">添加二级分类</Button>
+      <Button type="primary" v-hasPermission="'secondAdd'" @click="secondAdd" style="margin-left: 20px; margin-right: 10px;">添加二级分类</Button>
+      <Button type="primary" @click="search">查询</Button>
     </Form>
     <Card style="margin-top: 10px;">
       <Table :columns="columns" :data="secondList"></Table>
@@ -80,6 +81,9 @@
       }
     },
     methods: {
+      search () {
+        this.getSecondList(()=>{this.$Message.success('查询成功！')})
+      },
       secondAdd() {
         this.addModal = true
       },
@@ -132,7 +136,7 @@
           }
         })
       },
-      getFirstList(cb) {
+      getFirstList() {
         http.get({
           vm: this,
           url: '/manager/course-classification/getAll',
@@ -140,11 +144,10 @@
           success: res => {
             this.firstList = res.data
             this.getSecondList()
-            cb && cb()
           }
         })
       },
-      getSecondList() {
+      getSecondList(cb) {
         http.get({
           vm: this,
           url: '/manager/course-classification/second/list',
@@ -152,6 +155,7 @@
           success: res => {
             this.secondList = res.data.list
             this.total = res.data.total
+            cb && cb()
           }
         })
       },
