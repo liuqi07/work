@@ -98,13 +98,13 @@
           </Select>
         </FormItem>
         <Button type="primary" @click="searchFee" style="margin: 0 10px 10px;">查询</Button>
-        <Button type="primary" @click="addFee" style="margin-bottom: 10px;">新增收费标准</Button>
+        <Button type="primary" @click="addFee" style="margin-bottom: 10px;">收费标准</Button>
       </Form>
       <Table :columns="feeColumns" :data="feeList" size="small" :disabled-hover="true"></Table>
       <Page :total="total2" show-total @on-change="changePage2" :page-index="postData.pageIndex" :page-size="postData.pageSize"
         style="margin-top: 10px" />
     </Modal>
-    <Modal v-model="feeModal" title="新增收费标准" @on-ok="saveFee" @on-cancel="cancelFee">
+    <Modal v-model="feeModal" title="收费标准" @on-ok="saveFee" @on-cancel="cancelFee">
       <Form :label-width="90" inline>
         <FormItem label="一级分类：" style="width: 200px;" required>
           <Select v-model="feeListData.firstCode" @on-change="firstChange" clearable>
@@ -126,20 +126,20 @@
             <Option v-for="item in courseList2" :value="item.id" :key="item.id">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem label="收费标准：" style="width: 300px;" required>
-          <Button type="dashed" size="small" long @click="addOneToXFee" icon="md-add">增加</Button>
+        <FormItem label="授课学生数：" style="width: 250px;" required>
+          <Input v-model="feeListData.oneToX" placeholder="请先选择三级分类" disabled/>
         </FormItem>
-        <FormItem v-for="(item, index) in feeListData.oneToXFeeList" :key="index" required style="width: 350px;">
+        <FormItem label="收费标准：" style="width: 300px;" required>
           <Row>
             <Col :span="10">
             <Row>
               一对
-              <InputNumber :min="1" size="small" v-model="item.x" style="width: 50px;" />
+              <Input size="small" v-model="feeListData.oneToX" style="width: 50px;" disabled />
             </Row>
             </Col>
             <Col :span="14">
             <Row>每课时
-              <InputNumber :min="1" size="small" v-model="item.fee" style="width: 50px;" /> 美元
+              <InputNumber :min="1" size="small" v-model="feeListData.fee" style="width: 50px;" /> 美元
             </Row>
             </Col>
           </Row>
@@ -312,7 +312,6 @@
         ],
         feeList: [],
         feeModal: false,
-        oneToXFeeList: [],
         teacherId2: '',
       }
     },
@@ -322,7 +321,7 @@
         this.secondList2 = []
         this.thirdList2 = []
         this.courseList2 = []
-        this.feeListData = { oneToXFeeList: [], teacherId: this.teacherId2 }
+        this.feeListData = { teacherId: this.teacherId2 }
       },
       saveFee() {
         http.post({
@@ -331,7 +330,7 @@
           data: this.feeListData,
           success: res => {
             this.$Message.success('新增成功')
-            this.getFeeList()
+            this.feeListModal = false
           }
         })
         this.secondList2 = []
@@ -495,6 +494,7 @@
         this.feeListData.firstId = null
         this.feeListData.secondId = null
         this.feeListData.thirdId = null
+        this.feeListData.oneToX = null
         if (val) {
           const _firstId = this.firstList2.find(f => f.code === val)
           this.feeListData.firstId = _firstId && _firstId.id || null
@@ -510,6 +510,7 @@
         this.feeListData.courseId = null
         this.feeListData.secondId = null
         this.feeListData.thirdId = null
+        this.feeListData.oneToX = null
         if (val) {
           const _secondId = this.secondList2.find(s => s.code === val)
           this.feeListData.secondId = _secondId && _secondId.id || null
@@ -522,6 +523,7 @@
       thirdChange(val) {
         this.feeListData.courseId = null
         this.feeListData.thirdId = null
+        this.feeListData.oneToX = null
         if (val) {
           const _thirdId = this.thirdList2.find(item => item.code === val)
           this.feeListData.thirdId = _thirdId && _thirdId.id || null
@@ -532,6 +534,9 @@
       },
       courseChange(val) {
         this.feeListData.courseId = val
+        const _courseId = this.courseList2.find(item => item.id === val)
+        this.feeListData.oneToX = _courseId && _courseId.oneToX || null
+        console.log('%c _courseId, oneToX', 'color:red;', _courseId, this.feeListData.oneToX);
       },
       _getFirstList() {
         http.get({
@@ -540,7 +545,6 @@
           data: { type: 1 },
           success: res => {
             this.firstList2 = res.data
-            this.getFeeList()
           }
         })
       },
@@ -551,7 +555,6 @@
           data: { type: 2, parentCode: this.feeListData.firstCode },
           success: res => {
             this.secondList2 = res.data
-            this.getFeeList()
           }
         })
       },
@@ -562,7 +565,6 @@
           data: { type: 3, parentCode: this.feeListData.secondCode },
           success: res => {
             this.thirdList2 = res.data
-            this.getFeeList()
           }
         })
       },
@@ -573,7 +575,6 @@
           data: { thirdId: this.feeListData.thirdId },
           success: res => {
             this.courseList2 = res.data
-            this.getFeeList()
           }
         })
       },

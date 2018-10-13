@@ -46,10 +46,15 @@
               <Radio :label="3">正式课</Radio>
             </RadioGroup>
           </FormItem>
-          <FormItem label="授课比例：" required>
+          <!-- <FormItem label="授课比例xxxx：" required>
             <Button type="dashed" @click="addOneToX" size="small" style="margin-right: 10px;">增加</Button>
             <InputNumber v-model="addData.x" size="small" :min="1" style="width: 50px; margin-right: 10px;" />
             <Tag v-for="(item, index) in addData.oneToXArr" color="success" :key="index" :name="item" closable @on-close="closeOneToXTag">{{item}}</Tag>
+          </FormItem> -->
+          <FormItem label="授课比例：" style="width: 300px;" required>
+            <Select v-model="addData.oneToX" placeholder="请先选择三级分类" >
+              <Option v-for="item in addData.oneToXArr" :key="item" :value="item" >{{item}}</Option>
+            </Select>
           </FormItem>
           <FormItem label="级别：" style="width: 300px;" required>
             <Button type="dashed" size="small" long @click="addLevelHour" icon="md-add">Add Level</Button>
@@ -138,8 +143,7 @@
         },
         addCourse() {
           const url = this.courseEditUrl || '/manager/course/add'
-          const { oneToXArr, levelHour } = this.addData
-          oneToXArr.length > 0 && (this.addData.oneToX = oneToXArr.join(','))
+          const { levelHour } = this.addData
           levelHour.length > 0 && (this.addData.levelHourJsonStr = JSON.stringify(levelHour))
           const { name, courseDesc, firstId, secondId, thirdId, classType, oneToX, levelHourJsonStr, file, platform } = this.addData
           if(!(name && courseDesc && firstId && secondId && thirdId && classType && oneToX && levelHourJsonStr && file && platform)){
@@ -153,7 +157,6 @@
           // 这三句待验证
           delete this.addData.oneToXArr
           delete this.addData.levelHour
-          delete this.addData.x
           const formData = new FormData()
           for (let k in this.addData) {
             formData.append(k, this.addData[k])
@@ -164,12 +167,12 @@
             data: formData,
             success: res => {
               this.$Message.success('添加成功！')
-              this.addData = { oneToXArr: [], x: null, levelHour: [] }
+              this.addData = { oneToXArr: [], levelHour: [] }
               this.addCourseModal = false
               this.getCourseList()
             },
             error: err => {
-              this.addData = { oneToXArr: [], x: null, levelHour: [] }
+              this.addData = { oneToXArr: [], levelHour: [] }
             }
           })
         },
@@ -327,11 +330,15 @@
         },
         onThreeLevelChange(data) {
           this.addData = Object.assign(this.addData, data)
+          const { thirdId, oneToXArr } = data
+          if(thirdId && oneToXArr && oneToXArr.length > 0){
+            this.addData.oneToXArr = oneToXArr
+          }
         },
-        addOneToX() {
-          this.addData.x && this.addData.oneToXArr.push(this.addData.x)
-          this.addData.x = null
-        },
+        // addOneToX() {
+        //   this.addData.x && this.addData.oneToXArr.push(this.addData.x)
+        //   this.addData.x = null
+        // },
         closeOneToXTag(event, name) {
           const oneToXArr = this.addData.oneToXArr
           oneToXArr.splice(oneToXArr.indexOf(name), 1)

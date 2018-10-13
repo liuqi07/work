@@ -22,6 +22,7 @@ export default {
             content: res.data.msg,
             duration: 6
           });
+          error && error();
         }
         // 登录过期，清空token、userName、
         else if (res.data.code === 3) {
@@ -31,6 +32,7 @@ export default {
           });
           Cookie.remove('token')
           sessionStorage.removeItem('tagNaveList')
+          error && error();
           vm.$router.push({
             name: 'login'
           })
@@ -68,6 +70,7 @@ export default {
             content: res.data.msg,
             duration: 6
           });
+          error && error();
         }
         // 登录过期，清空token、userName、
         else if (res.data.code === 3) {
@@ -77,6 +80,7 @@ export default {
           });
           sessionStorage.removeItem('tagNaveList')
           Cookie.remove('token')
+          error && error();
           vm.$router.push({
             name: 'login'
           })
@@ -112,6 +116,7 @@ export default {
             content: res.data.msg,
             duration: 6
           });
+          error && error();
         }
         // 登录过期，清空token、userName、
         else if (res.data.code === 3) {
@@ -121,6 +126,7 @@ export default {
           });
           sessionStorage.removeItem('tagNaveList')
           Cookie.remove('token')
+          error && error();
           vm.$router.push({
             name: 'login'
           })

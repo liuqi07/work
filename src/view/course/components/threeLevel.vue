@@ -48,6 +48,7 @@
           this.postData.firstId = _firstId && _firstId.id || null
           this.postData.secondId = _secondId && _secondId.id || null
           this.postData.thirdId = _thirdId && _thirdId.id || null
+          this.postData.oneToXArr = _thirdId && _thirdId.oneToX.split(',') || null
   
           this.$emit('on_change', this.postData)
         },

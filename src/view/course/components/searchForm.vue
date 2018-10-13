@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Form inline v-model="postData" :label-width="80">
+    <Form inline v-model="postData" :label-width="80" style="margin-bottom: 15px;">
         <FormItem label="一级分类" style="width: 220px;">
           <Select v-model="firstCode" @on-change="firstChange" clearable>
             <Option v-for="item in firstList" :value="item.code" :key="item.code">{{item.name}}</Option>
