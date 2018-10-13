@@ -26,7 +26,7 @@
     <Modal v-model="detailModal" :width="600">
       <p class="comment-detail-title">课程等级： <span>{{lookCommentData.courseLevel}}</span></p>
       <p class="comment-detail-title">教师评语：</p>
-      <Tag class="comment-detail-title" v-for="(item, index) in lookCommentData.labels" color="item.color" :key="index">{{item.desc}}</Tag>
+      <Tag class="comment-detail-title" v-for="(item, index) in lookCommentData.labels" :color="item.color" :key="index">{{item.desc}}</Tag>
       <Input class="comment-detail-title" type="textarea" :value="lookCommentData.commentDesc" :rows="3" readonly disabled />
       <div slot="footer">
         <Button type="primary" @click="detailModal=false">关闭</Button>

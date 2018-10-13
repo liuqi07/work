@@ -25,8 +25,8 @@
       <FormItem label="提交日期：" style="width: 220px;">
         <DatePicker type="date" placeholder="请选择提交日期" v-model="refundDate"></DatePicker>
       </FormItem>
-      <Button type="primary" @click="search" style="margin-left: 20px;">搜索</Button>
-      <Button type="primary" @click="refundExport" v-hasPermission="refundExport">导出</Button>
+      <Button type="primary" @click="search" style="margin-left: 20px; margin-right: 20px;">搜索</Button>
+      <Button type="primary" @click="refundExport" v-hasPermission="'refundExport'">导出</Button>
     </Form>
     <Card>
       <Table :columns="columns" :data="refundList"></Table>
@@ -91,7 +91,7 @@
         }
         const _params = paramsArr.join('&')
         const params = _params && '?' + _params
-        window.open('http://47.94.157.27:8001/manager/order-formal/refund-export' + params)
+        window.open('http://www.zilongshu.com/manager/order-formal/refund-export' + params)
       },
 
       changePage(p) {

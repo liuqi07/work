@@ -454,7 +454,7 @@
         }
         const _params = paramsArr.join('&')
         const params = _params && '?' + _params
-        window.open('http://47.94.157.27:8001/manager/order-formal/export' + params)
+        window.open('http://www.zilongshu.com/manager/order-formal/export' + params)
       }
     },
     mounted() {

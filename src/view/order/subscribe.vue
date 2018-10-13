@@ -20,7 +20,8 @@
       <FormItem label="结束日期：" style="width: 220px;">
         <DatePicker type="datetime" placeholder="请选择结束时间" v-model="endDateTime"></DatePicker>
       </FormItem>
-      <Button type="primary" @click="search" style="margin-left: 20px;">搜索</Button>
+      <Button type="primary" @click="search" style="margin-left: 20px; margin-right: 10px;">搜索</Button>
+      <Button type="primary" @click="subscribeExport" v-hasPermission="'subscribeExport'">导出</Button>
     </Form>
     <Card>
       <Table :columns="columns" :data="subscribeList" border></Table>
@@ -540,6 +541,20 @@
       changePageSize(s) {
         this.postData.pageSize = s
         this.getSubscribeList(()=>{this.$Message.success('查询成功！')})
+      },
+      subscribeExport(){
+        const { mobilePhone, status } = this.postData
+        const { startDateTime, endDateTime } = this
+        const formData = { mobilePhone, status, startDateTime: formatDate('YYYY-MM-DD hh:mm:ss', startDateTime), endDateTime: formatDate('YYYY-MM-DD hh:mm:ss', endDateTime) }
+        const paramsArr = []
+        for (let k in formData) {
+          if (formData[k]) {
+            paramsArr.push(k + '=' + formData[k])
+          }
+        }
+        const _params = paramsArr.join('&')
+        const params = _params && '?' + _params
+        window.open('http://www.zilongshu.com/manager/order-subscribe/export' + params)
       }
 
     },
