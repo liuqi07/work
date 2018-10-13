@@ -31,6 +31,7 @@ export default {
     ]),
     handleSubmit ({ loginName, password, validCode }) {
       this.handleLogin({ loginName, password, validCode }).then(res => {
+        this.$Message.success('登陆成功！')
         this.getUserInfo().then(res => {
           this.$router.push({
             name: 'home'

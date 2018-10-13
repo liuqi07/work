@@ -31,6 +31,7 @@ router.beforeEach((to, from, next) => {
     })
   } else {
     store.dispatch('getUserInfo').then(user => {
+      console.log('%c user', 'color:red;', user);
       // 拉取用户信息，通过用户权限和跳转的页面的name来判断是否有权限访问;access必须是一个数组，如：['super_admin'] ['super_admin', 'admin']
       // if (canTurnTo(to.name, user.access, routes)) next() // 有权限，可访问
       const routers = [...defaultRouters, ...user.data]

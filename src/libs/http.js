@@ -1,10 +1,42 @@
 import axios from "axios";
 import config from "@/config";
-import Cookie from 'js-cookie';
+import Cookie from "js-cookie";
 const baseUrl =
   process.env.NODE_ENV === "development"
     ? config.baseUrl.dev
     : config.baseUrl.pro;
+
+const handleResponse = (vm, success, error) => res => {
+  // 成功
+  if (res.data.code === 1) {
+    success && success(res.data);
+  } else if (res.data.code === 2) {
+    vm.$Message.warning({
+      content: res.data.msg,
+      duration: 6
+    });
+    error && error();
+  }
+  // 登录过期，清空token、userName、
+  else if (res.data.code === 3) {
+    vm.$Message.warning({
+      content: res.data.msg,
+      duration: 6
+    });
+    sessionStorage.removeItem("tagNaveList");
+    Cookie.remove("token");
+    error && error();
+    vm.$router.push({
+      name: "login"
+    });
+  } else {
+    vm.$Message.warning({
+      content: res.data.msg,
+      duration: 6
+    });
+    error && error();
+  }
+};
 
 export default {
   get: function({ vm, url, data, success, error }) {
@@ -12,39 +44,7 @@ export default {
       .get(baseUrl + url, {
         params: data
       })
-      .then(res => {
-        // 成功
-        if (res.data.code === 1) {
-          success && success(res.data);
-        } 
-        else if (res.data.code === 2) {
-          vm.$Message.warning({
-            content: res.data.msg,
-            duration: 6
-          });
-          error && error();
-        }
-        // 登录过期，清空token、userName、
-        else if (res.data.code === 3) {
-          vm.$Message.warning({
-            content: res.data.msg,
-            duration: 6
-          });
-          Cookie.remove('token')
-          sessionStorage.removeItem('tagNaveList')
-          error && error();
-          vm.$router.push({
-            name: 'login'
-          })
-          // util.logout(vm);
-        } else {
-          vm.$Message.warning({
-            content: res.data.msg,
-            duration: 6
-          });
-          error && error();
-        }
-      })
+      .then(handleResponse(vm, success, error))
       .catch(err => {
         vm.$Message.error(err.Message || err.message);
         error && error();
@@ -61,38 +61,7 @@ export default {
       method: "post",
       data
     })
-      .then(res => {
-        if (res.data.code === 1) {
-          success && success(res.data);
-        }
-        else if(res.data.code === 2){
-          vm.$Message.warning({
-            content: res.data.msg,
-            duration: 6
-          });
-          error && error();
-        }
-        // 登录过期，清空token、userName、
-        else if (res.data.code === 3) {
-          vm.$Message.warning({
-            content: res.data.msg,
-            duration: 6
-          });
-          sessionStorage.removeItem('tagNaveList')
-          Cookie.remove('token')
-          error && error();
-          vm.$router.push({
-            name: 'login'
-          })
-          // util.logout(vm);
-        } else {
-          vm.$Message.warning({
-            content: res.data.msg,
-            duration: 6
-          });
-          error && error();
-        }
-      })
+      .then(handleResponse(vm, success, error))
       .catch(err => {
         vm.$Message.error(err.Message || err.message);
         error && error();
@@ -107,38 +76,7 @@ export default {
         "Content-Type": "application/x-www-form-urlencoded"
       }
     })
-      .then(res => {
-        if (res.data.code === 1) {
-          success && success(res.data);
-        }
-        else if(res.data.code === 2){
-          vm.$Message.warning({
-            content: res.data.msg,
-            duration: 6
-          });
-          error && error();
-        }
-        // 登录过期，清空token、userName、
-        else if (res.data.code === 3) {
-          vm.$Message.warning({
-            content: res.data.msg,
-            duration: 6
-          });
-          sessionStorage.removeItem('tagNaveList')
-          Cookie.remove('token')
-          error && error();
-          vm.$router.push({
-            name: 'login'
-          })
-          // util.logout(vm);
-        } else {
-          vm.$Message.warning({
-            content: res.data.msg,
-            duration: 6
-          });
-          error && error();
-        }
-      })
+      .then(handleResponse(vm, success, error))
       .catch(err => {
         vm.$Message.error(err.Message || err.message);
         error && error();

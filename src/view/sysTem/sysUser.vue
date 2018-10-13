@@ -244,6 +244,7 @@
             this.$Message.success('保存成功！')
             this.addUserModal = false
             this.addUserData = { type: 2, roleId: '', userName: '', password: '', realName: '' }
+            this.getUserList()
           }
         })
       },

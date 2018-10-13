@@ -172,7 +172,7 @@
               this.getCourseList()
             },
             error: err => {
-              this.addData = { oneToXArr: [], levelHour: [] }
+              
             }
           })
         },
