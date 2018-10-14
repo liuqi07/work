@@ -29,13 +29,13 @@
       <Page :total="total" show-total @on-change="changePage" @on-page-size-change="changePageSize" :page-size="postData.pageSize"
         :page-index="postData.pageIndex" style="margin-top: 10px" />
     </Card>
-    <Modal title="添加套餐" v-model="addPackageModal" @on-ok="addPackage">
+    <Modal title="添加套餐" v-model="addPackageModal">
       <Form :label-width="100" :model="addData" :rules="rules">
         <FormItem prop="name" label="套餐名称：" style="width: 300px;" required>
           <Input v-model="addData.name" placeholder="请输入套餐名称" />
         </FormItem>
-        <FormItem prop="courseDesc" label="套餐介绍：" style="width: 300px;" required>
-          <Input v-model="addData.courseDesc" placeholder="请输入套餐介绍" />
+        <FormItem label="套餐描述：" style="width: 300px;">
+          <Input v-model="addData.coursePackageDesc" placeholder="请输入套餐描述" />
         </FormItem>
         <!-- <three-level :required="true" @on_change="onThreeLevelChange" :threeLevelData="addData.threeLevelData"></three-level> -->
         <FormItem label="一级分类：" style="width: 250px;" required>
@@ -58,19 +58,6 @@
             <Option v-for="item in addData.oneToXArr" :key="item" :value="item">{{item}}</Option>
           </Select>
         </FormItem>
-        <!-- <FormItem label="级别：" style="width: 300px;" required>
-          <Button type="dashed" size="small" long @click="addLevelHour" icon="md-add">Add Level</Button>
-        </FormItem>
-        <FormItem v-for="(item, index) in addData.levelHour" :key="index" required>
-          <Row>
-            <Col :span="6"> 等级
-            <InputNumber :min="1" size="small" v-model="item.level" disabled style="width: 50px;" />
-            </Col>
-            <Col :span="8"> 课时
-            <InputNumber :min="1" size="small" v-model="item.hour" style="width: 50px;" />
-            </Col>
-          </Row>
-        </FormItem> -->
         <Row>
           <Col :span="10">
             <FormItem label="周数：" style="width: 300px;" required>
@@ -101,13 +88,14 @@
         <FormItem label="优惠课时单价：" style="width: 300px;" :label-width="110" :required="discountUnitPriceRequire">
           <InputNumber v-model="addData.discountUnitPrice" :min="0" placeholder="请输入优惠课时单价" :disabled="!discountUnitPriceRequire" />
         </FormItem>
-        <FormItem label="套餐描述：" style="width: 300px;">
-          <Input v-model="addData.coursePackageDesc" placeholder="请输入套餐描述" />
-        </FormItem>
-        <FormItem label="上传图片：" required>
+        <!-- <FormItem label="上传图片：" required v-if="uploadIsShow">
           <input type="file" @change="handleFileChange">
-        </FormItem>
+        </FormItem> -->
       </Form>
+      <div slot="footer">
+        <Button @click="cancelAddPackage" style="margin-right: 10px;" >取消</Button>
+        <Button type="primary" @click="addPackage" >确定</Button>
+      </div>
     </Modal>
   </div>
 </template>
@@ -146,20 +134,21 @@
         packageList: [],
         total: 0,
         addPackageModal: false,
-        // addData: { oneToXArr: [], levelHour: [], firstList: [], secondList: [], thirdList: [] },
-        addData: { oneToXArr: [] },
+        addData: { oneToXArr: [], levelHour: [], firstList: [], secondList: [], thirdList: [], isDiscount: 0, weekClassHour: 0, weekCount: 0, unitPrice: 0, discountUnitPrice: 0 },
+        // addData: { oneToXArr: [] },
         rules: {
           name: [
             { required: true, message: '套餐名称不能为空', trigger: 'blur' }
           ],
-          courseDesc: [
+          coursePackageDesc: [
             { required: true, message: '套餐介绍不能为空', trigger: 'blur' }
           ]
         },
         batchList: [],
-        packageEditUrl: '',
+        packageUrl: '',
         discountUnitPriceRequire: false,
-
+        uploadIsShow: true,
+        addOrEdit: true,
       }
     },
     methods: {
@@ -178,29 +167,60 @@
       },
       openAddPackage() {
         this.addPackageModal = true
-        this.addData = { oneToXArr: [], levelHour: [], firstList: [], secondList: [], thirdList: [] }
-        this.packageEditUrl = ''
+        this.uploadIsShow = true
+        this.addData = { oneToXArr: [], levelHour: [], firstList: [], secondList: [], thirdList: [], isDiscount: 0, weekClassHour: 0, weekCount: 0, unitPrice: 0, discountUnitPrice: 0 }
+        this.packageUrl = '/manager/course-package/add'
+        this.addOrEdit = true
+        this.getFirstList()
       },
       addPackage() {
-        const url = this.packageEditUrl || '/manager/course-package/add'
-        const { levelHour } = this.addData
+        const url = this.packageUrl
+        const addOrEdit = this.addOrEdit
+        const { levelHour, id, name, coursePackageDesc, firstId, secondId, thirdId, weekClassHour, weekCount, unitPrice, isDiscount, oneToX, discountUnitPrice, version } = this.addData
 
         levelHour.length > 0 && (this.addData.levelHourJsonStr = JSON.stringify(levelHour))
-        const formData = new FormData()
-        for (let k in this.addData) {
-          formData.append(k, this.addData[k])
+        if(!name || !firstId || !secondId || !thirdId || !weekClassHour || !weekCount || !unitPrice || !oneToX ) {
+          this.$Message.error({
+            content: '标星内容不能为空！',
+            duration: 6
+          })
+          console.log('%c addPackage', 'color:red;', name, firstId, secondId, thirdId, weekClassHour, weekCount, unitPrice, isDiscount, oneToX );
+          return
         }
-        http._postwithupload({
+        else if(isDiscount === 1 && !discountUnitPrice){
+          this.$Message.error({
+            content: '优惠金额不能为空！',
+            duration: 6
+          })
+          return
+        }
+        const addData = { id, name, coursePackageDesc, firstId, secondId, thirdId, weekClassHour, weekCount, unitPrice, isDiscount, oneToX, discountUnitPrice, version }
+        if(addOrEdit){
+          delete addData.id
+          delete addData.version
+        }
+        // const formData = new FormData()
+        // for (let k in addData) {
+        //   formData.append(k, addData[k])
+        // }
+        const msg = addOrEdit ? '添加成功！' : '编辑成功！'
+        http.post({
           vm: this,
           url,
-          data: formData,
+          data: addData,
           success: res => {
-            this.$Message.success('添加成功！')
-            this.addData = { oneToXArr: [], levelHour: [], firstList: [], secondList: [], thirdList: [] }
-            this.addCourseModal = false
+            this.$Message.success(msg)
+            this.addData = { oneToXArr: [], levelHour: [], firstList: [], secondList: [], thirdList: [], isDiscount: 0, weekClassHour: 0, weekCount: 0, unitPrice: 0, discountUnitPrice: 0 }
+            this.discountUnitPriceRequire = false
+            this.addPackageModal = false
             this.getPackageList()
           }
         })
+      },
+      cancelAddPackage () {
+        this.addPackageModal = false
+        this.addData = { oneToXArr: [], levelHour: [], firstList: [], secondList: [], thirdList: [], isDiscount: 0, weekClassHour: 0, weekCount: 0, unitPrice: 0, discountUnitPrice: 0 }
+        this.packageUrl = ''
       },
       handleTabs(name) {
         let status = null;
@@ -260,28 +280,31 @@
         })
       },
       packageEdit(packageData) {
-	console.log('%c packageData', 'color:red;', packageData);
-        const { firstId, secondId, thirdId, oneToX } = packageData
+        this.uploadIsShow = false
+        this.addOrEdit = false
+	      // console.log('%c packageData', 'color:red;', packageData)
+        const { id, firstId, secondId, thirdId, oneToX, isDiscount=0, weekClassHour=0, weekCount=0, unitPrice=0, discountUnitPrice=0, version } = packageData
+        this.discountUnitPriceRequire = isDiscount===1 ? true : false
         this.getFirstList(() => {
           const _firstCode = this.addData.firstList.find(f => f.id === firstId)
           const firstCode = _firstCode && _firstCode.code || ''
-          this.addData = Object.assign({}, this.addData, { firstCode })
+          this.addData = Object.assign({}, this.addData, { id, firstCode, firstId, isDiscount, weekClassHour, weekCount, unitPrice, discountUnitPrice, version })
           this.getSecondList(() => {
             const _secondCode = this.addData.secondList.find(s => s.id === secondId)
             const secondCode = _secondCode && _secondCode.code || ''
-            this.addData = Object.assign({}, this.addData, { secondCode })
+            this.addData = Object.assign({}, this.addData, { secondCode, secondId })
             this.getThirdList(() => {
               const _thirdCode = this.addData.thirdList.find(s => s.id === thirdId)
               const thirdCode = _thirdCode && _thirdCode.code || ''
               const oneToXArr = (_thirdCode && _thirdCode.oneToX && _thirdCode.oneToX.split(',') || []).map(i=>parseInt(i))
-              this.addData = Object.assign({}, this.addData, { thirdCode, oneToXArr, oneToX })
-              console.log('%c firstList, secondList, thirdList', 'color:red;', this.addData.firstList, this.addData.secondList, this.addData.thirdList, oneToXArr, oneToX);
+              this.addData = Object.assign({}, this.addData, { thirdCode, oneToXArr, oneToX, thirdId })
+              // console.log('%c firstList, secondList, thirdList', 'color:red;', this.addData.firstList, this.addData.secondList, this.addData.thirdList, oneToXArr, oneToX);
             })
           })
         })
 
-	this.addData = Object.assign({}, packageData)
-        this.packageEditUrl = '/manager/course-package/edit'
+	      this.addData = Object.assign({}, packageData, this.addData)
+        this.packageUrl = '/manager/course-package/edit'
         this.addPackageModal = true
       },
       packageDelete({ id, version }) {

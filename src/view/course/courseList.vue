@@ -139,6 +139,7 @@
         batchList: [],
         courseEditUrl: '',
         fileIsRequire: false,
+        addOrEdit: true,
       }
     },
     methods: {
@@ -158,6 +159,7 @@
       openAddCourse() {
         this.fileIsRequire = true
         this.addCourseModal = true
+        this.addOrEdit = true
         this.addData = { oneToXArr: [], levelHour: [], firstList: [], secondList: [], thirdList: [] }
         this.courseEditUrl = ''
         this.getFirstList()
@@ -166,7 +168,7 @@
         const url = this.courseEditUrl || '/manager/course/add'
         const { levelHour } = this.addData
         levelHour.length > 0 && (this.addData.levelHourJsonStr = JSON.stringify(levelHour))
-        const { name, courseDesc, firstId, secondId, thirdId, classType, oneToX, levelHourJsonStr, file, platform } = this.addData
+        const { id, name, courseDesc, firstId, secondId, thirdId, classType, oneToX, levelHourJsonStr, file, platform } = this.addData
         if (!(name && courseDesc && firstId && secondId && thirdId && classType && oneToX && levelHourJsonStr && (this.fileIsRequire ? file : true) && platform)) {
           this.$Message.error({
             content: '标星内容不能为空！',
@@ -175,25 +177,22 @@
           console.log('%c ----> ', 'color:red;', name, courseDesc, firstId, secondId, thirdId, classType, oneToX, levelHourJsonStr, file, platform);
           return
         }
-        delete this.addData.firstList
-        delete this.addData.secondList
-        delete this.addData.thirdList
+        const addData = { id, name, courseDesc, firstId, secondId, thirdId, classType, oneToX, levelHourJsonStr, file, platform }
+        if(!id){ delete addData.id }
         const formData = new FormData()
-        for (let k in this.addData) {
-          formData.append(k, this.addData[k])
+        for (let k in addData) {
+          formData.append(k, addData[k])
         }
+        const msg = this.addOrEdit ? '添加成功' : '编辑成功'
         http._postwithupload({
           vm: this,
           url,
           data: formData,
           success: res => {
-            this.$Message.success('添加成功！')
+            this.$Message.success(msg)
             this.addData = { oneToXArr: [], levelHour: [], firstList: [], secondList: [], thirdList: [] }
             this.addCourseModal = false
             this.getCourseList()
-          },
-          error: err => {
-
           }
         })
       },
@@ -262,6 +261,7 @@
       // 编辑课程
       courseEdit(courseData) {
         this.fileIsRequire = false
+        this.addOrEdit = false
         console.log('%c courseData', 'color:red;', courseData);
         const { firstId, secondId, thirdId, oneToX, id, platform } = courseData
         this.getFirstList(() => {
