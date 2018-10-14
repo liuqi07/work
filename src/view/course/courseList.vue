@@ -74,20 +74,23 @@
             <InputNumber v-model="addData.x" size="small" :min="1" style="width: 50px; margin-right: 10px;" />
             <Tag v-for="(item, index) in addData.oneToXArr" color="success" :key="index" :name="item" closable @on-close="closeOneToXTag">{{item}}</Tag>
           </FormItem> -->
-        <FormItem label="级别：" style="width: 300px;" required>
-          <Button type="dashed" size="small" long @click="addLevelHour" icon="md-add">Add Level</Button>
+        <FormItem label="级别：" style="width: 350px;" required>
+          <Button type="dashed" size="small" @click="addLevelHour" long icon="md-add" style="margin-right: 10px;">Add Level</Button>
         </FormItem>
         <FormItem v-for="(item, index) in addData.levelHour" :key="index" required>
           <Row>
             <Col :span="6"> 等级
             <InputNumber :min="1" size="small" v-model="item.level" disabled style="width: 50px;" />
             </Col>
-            <Col :span="8"> 课时
+            <Col :span="6"> 课时
             <InputNumber :min="1" size="small" v-model="item.hour" style="width: 50px;" />
+            </Col>
+            <Col :span="6">
+              <Button type="error" size="small" @click="removeLevelHour" >Remove Level {{index+1}}</Button>
             </Col>
           </Row>
         </FormItem>
-        <FormItem label="上传图片：" required>
+        <FormItem label="上传图片：" :required="fileIsRequire" >
           <input type="file" @change="handleFileChange">
         </FormItem>
       </Form>
@@ -135,7 +138,7 @@
         },
         batchList: [],
         courseEditUrl: '',
-
+        fileIsRequire: false,
       }
     },
     methods: {
@@ -153,6 +156,7 @@
         })
       },
       openAddCourse() {
+        this.fileIsRequire = true
         this.addCourseModal = true
         this.addData = { oneToXArr: [], levelHour: [], firstList: [], secondList: [], thirdList: [] }
         this.courseEditUrl = ''
@@ -163,7 +167,7 @@
         const { levelHour } = this.addData
         levelHour.length > 0 && (this.addData.levelHourJsonStr = JSON.stringify(levelHour))
         const { name, courseDesc, firstId, secondId, thirdId, classType, oneToX, levelHourJsonStr, file, platform } = this.addData
-        if (!(name && courseDesc && firstId && secondId && thirdId && classType && oneToX && levelHourJsonStr && file && platform)) {
+        if (!(name && courseDesc && firstId && secondId && thirdId && classType && oneToX && levelHourJsonStr && (this.fileIsRequire ? file : true) && platform)) {
           this.$Message.error({
             content: '标星内容不能为空！',
             duration: 5
@@ -171,6 +175,9 @@
           console.log('%c ----> ', 'color:red;', name, courseDesc, firstId, secondId, thirdId, classType, oneToX, levelHourJsonStr, file, platform);
           return
         }
+        delete this.addData.firstList
+        delete this.addData.secondList
+        delete this.addData.thirdList
         const formData = new FormData()
         for (let k in this.addData) {
           formData.append(k, this.addData[k])
@@ -254,30 +261,43 @@
       },
       // 编辑课程
       courseEdit(courseData) {
+        this.fileIsRequire = false
         console.log('%c courseData', 'color:red;', courseData);
-        const { firstId, secondId, thirdId, oneToX, levelHourJsonStr } = courseData
+        const { firstId, secondId, thirdId, oneToX, id, platform } = courseData
         this.getFirstList(() => {
           const _firstCode = this.addData.firstList.find(f => f.id === firstId)
           const firstCode = _firstCode && _firstCode.code || ''
-          this.addData = Object.assign({}, this.addData, { firstCode })
+          this.addData = Object.assign({}, this.addData, { firstCode, firstId, platform })
           this.getSecondList(() => {
             const _secondCode = this.addData.secondList.find(s => s.id === secondId)
             const secondCode = _secondCode && _secondCode.code || ''
-            this.addData = Object.assign({}, this.addData, { secondCode })
+            this.addData = Object.assign({}, this.addData, { secondCode, secondId })
             this.getThirdList(() => {
               const _thirdCode = this.addData.thirdList.find(s => s.id === thirdId)
               const thirdCode = _thirdCode && _thirdCode.code || ''
-              const oneToXArr = (_thirdCode && _thirdCode.oneToX && _thirdCode.oneToX.split(',') || []).map(i=>parseInt(i))
-              this.addData = Object.assign({}, this.addData, { thirdCode, oneToXArr, oneToX })
-              console.log('%c firstList, secondList, thirdList', 'color:red;', this.addData.firstList, this.addData.secondList, this.addData.thirdList, oneToXArr, oneToX);
+              const oneToXArr = (_thirdCode && _thirdCode.oneToX && _thirdCode.oneToX.split(',') || []).map(i => parseInt(i))
+              this.addData = Object.assign({}, this.addData, { thirdCode, thirdId, oneToXArr, oneToX })
+              // console.log('%c firstList, secondList, thirdList', 'color:red;', this.addData.firstList, this.addData.secondList, this.addData.thirdList, oneToXArr, oneToX);
+              this.getCourseDetail(id, ()=>{
+                this.addData = Object.assign({}, courseData, this.addData)
+              })
             })
           })
         })
 
-        const levelHour = JSON.parse(levelHourJsonStr) || []
-        this.addData = Object.assign({}, { levelHour }, courseData)
         this.courseEditUrl = '/manager/course/edit'
         this.addCourseModal = true
+      },
+      getCourseDetail(id, cb) {
+        http.get({
+          vm: this,
+          url: '/manager/course/detail',
+          data: { id },
+          success: res => {
+            this.addData.levelHour = res.data.levelHours
+            cb && cb()
+          }
+        })
       },
       courseDelete({ id, version }) {
         this.$Modal.confirm({
@@ -364,6 +384,11 @@
         const levelHour = this.addData.levelHour
         const levelHourItem = { level: levelHour.length + 1, hour: 1 }
         levelHour.push(levelHourItem)
+      },
+      removeLevelHour(e) {
+        const levelHour = this.addData.levelHour
+        const index = e.target.innerText.substr(13) - 1
+        levelHour.splice(index, 1)
       },
       handleFileChange(e) {
         this.addData.file = e.target.files[0]
