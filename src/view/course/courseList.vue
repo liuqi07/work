@@ -60,6 +60,7 @@
         <FormItem label="平台：" style="width: 300px;" required>
           <Select v-model="addData.platform">
             <Option :value="1">百度云</Option>
+            <Option :value="2">Zoom</Option>
           </Select>
         </FormItem>
         <FormItem prop="classType" label="课程类型：" style="width: 300px;" required>
