@@ -29,15 +29,19 @@
       </div>
     </Modal>
     <!-- 编辑角色 -->
-    <Modal title="编辑角色" v-model="editRoleModal" @on-ok="editRole">
-      <Form :label-width="80" ref="editRoleData" :model="editRoleData" :rules="editRoleRules">
-        <FormItem prop="name" label="角色名称" required>
+    <Modal title="编辑角色" v-model="editRoleModal">
+      <Form :label-width="80" ref="editRoleData" :model="editRoleData">
+        <FormItem label="角色名称" required>
           <Input v-model="editRoleData.name" style="width:300px;" placeholder="请输入角色名称"></Input>
         </FormItem>
-        <FormItem prop="roleDesc" label="角色描述">
+        <FormItem label="角色描述">
           <Input type="textarea" v-model="editRoleData.roleDesc" style="width:300px;" placeholder="最多可输入60个字"></Input>
         </FormItem>
       </Form>
+      <div slot="footer">
+        <Button @click="cancelEdit">取消</Button>
+        <Button type="primary" @click="editRole">确定</Button>
+      </div>
     </Modal>
     <!-- 角色权限授权 -->
     <Modal title="角色授权" v-model="authRoleModal" @on-ok="authRole">
@@ -194,15 +198,29 @@
         this.editRoleData = { name: row.name, roleDesc: row.roleDesc, version: row.version, id: row.id }
       },
       editRole() {
+        const { name } = this.editRoleData
+        if(!name){
+          this.$Message.error({
+            content: '标星内容不能为空，请检查后重新输入！',
+            duration: 5
+          })
+          return
+        }
         http.post({
           vm: this,
           url: 'manager/sys-role/edit',
           data: this.editRoleData,
           success: res => {
-            this.$Message.success(res.msg);
+            this.$Message.success('编辑成功!');
+            this.editRoleModal = false
+            this.editRoleData = {}
             this.getRoleList()
           }
         })
+      },
+      cancelEdit(){
+        this.editRoleModal = false
+        this.editRoleData = {}
       },
       openEditAuth(params) {
         this.authRoleModal = true

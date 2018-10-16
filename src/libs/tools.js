@@ -251,3 +251,10 @@ export const getWeek = date => {
   }
   return week;
 }
+
+export const filterNull = data => {
+  for(let key in data){
+    (data[key]=='null' || data[key]==null) && (data[key] = '')
+  }
+  return data
+}

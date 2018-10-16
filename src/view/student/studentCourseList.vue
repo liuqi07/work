@@ -7,15 +7,25 @@
 <template>
   <div>
     <Form :model="postData" :label-width="80" inline>
-      <FormItem label="手机号码：" style="width: 220px;">
+      <FormItem label="手机号码：" style="width: 210px;">
         <Input v-model="postData.studentMobilePhone" placeholder="请输入学员手机号码" />
       </FormItem>
-      <FormItem label="学员姓名：" style="width: 220px;">
+      <FormItem label="学员姓名：" style="width: 210px;">
         <Input v-model="postData.studentRealName" placeholder="请输入学员姓名" />
       </FormItem>
-      <FormItem label="任课教师：" style="width: 220px;">
+      <FormItem label="任课教师：" style="width: 210px;">
         <Input v-model="postData.teacherRealName" placeholder="请输入任课教师姓名" />
       </FormItem>
+      <FormItem label="二级分类：" style="width: 210px;">
+          <Select v-model="postData.secondCode" @on-change="secondChange" @on-open-change="secondOpenChange" clearable>
+            <Option v-for="item in postData.secondList" :value="item.code" :key="item.code">{{item.name}}</Option>
+          </Select>
+        </FormItem>
+        <FormItem label="三级分类：" style="width: 210px;">
+          <Select v-model="postData.thirdCode" @on-change="thirdChange" clearable>
+            <Option v-for="item in postData.thirdList" :value="item.code" :key="item.code">{{item.name}}</Option>
+          </Select>
+        </FormItem>
       <Button type="primary" @click="query" style="margin-left: 20px;">查询</Button>
     </Form>
     <Card>
@@ -64,11 +74,13 @@
   export default {
     data() {
       return {
-        postData: { pageIndex: 1, pageSize: 10 },
+        postData: { pageIndex: 1, pageSize: 10, secondList: [], thirdList: [] },
         columns: [
           { title: '学员编号', key: 'studentCode', align: 'center' },
           { title: '学员姓名', key: 'studentRealName', align: 'center' },
           { title: '手机号码', key: 'studentMobilePhone', align: 'center' },
+          { title: '二级分类', key: 'secondName', align: 'center' },
+          { title: '三级分类', key: 'thirdName', align: 'center' },
           { title: '课程名称', key: 'courseName', align: 'center' },
           {
             title: '上课时间', key: 'classBeginTime', align: 'center', render: (h, params) => {
@@ -251,10 +263,11 @@
         })
       },
       getCourseList(cb) {
+        const { pageIndex, pageSize, studentMobilePhone, studentRealName, teacherRealName, secondId, thirdId } = this.postData
         http.get({
           vm: this,
           url: '/manager/student/queryStudentCourseTable',
-          data: this.postData,
+          data: { pageIndex, pageSize, studentMobilePhone, studentRealName, teacherRealName, secondId, thirdId },
           success: res => {
             this.courseList = res.data.list
             this.total = res.data.total
@@ -334,6 +347,45 @@
       },
       handleFileChange(e) {
         this.file = e.target.files[0]
+      },
+      secondOpenChange(action){
+        action && this.getSecondList()
+      },
+      getSecondList(cb) {
+        http.get({
+          vm: this,
+          url: '/manager/course-classification/getAll',
+          data: { type: 2 },
+          success: res => {
+            this.postData.secondList = res.data
+            cb && cb()
+          }
+        })
+      },
+      getThirdList(cb) {
+        http.get({
+          vm: this,
+          url: '/manager/course-classification/getAll',
+          data: { type: 3, parentCode: this.postData.secondCode },
+          success: res => {
+            this.postData.thirdList = res.data
+            cb && cb()
+          }
+        })
+      },
+      secondChange(val) {
+        const _secondId = this.postData.secondList.find(f => f.code === val)
+        this.postData.secondId = _secondId && _secondId.id || null
+        this.postData.thirdCode = null
+        if (val) {
+          this.getThirdList()
+        } else {
+          this.postData.thirdList = []
+        }
+      },
+      thirdChange(val) {
+        const _thirdId = this.postData.thirdList.find(t => t.code === val)
+        this.postData.thirdId = _thirdId && _thirdId.id || null
       }
     },
     mounted() {
