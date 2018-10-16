@@ -13,7 +13,7 @@
       <Table :columns="columns" :data="secondList"></Table>
       <Page :total="total" show-total @on-change="changePage" :page-index="postData.pageIndex" style="margin-top: 10px" />
     </Card>
-    <Modal title="添加二级分类" v-model="addModal" @on-ok="add">
+    <Modal title="添加二级分类" v-model="addModal">
       <Form :label-width="120">
         <FormItem label="一级分类名称：" style="width: 300px;" required>
           <Select v-model="addData.parentCode">
@@ -24,6 +24,10 @@
           <Input v-model="addData.name" placeholder="请输入二级分类名称" />
         </FormItem>
       </Form>
+      <div slot="footer" >
+        <Button @click="cancel">取消</Button>
+        <Button @click="add" type="primary" >确定</Button>
+      </div>
     </Modal>
     <Modal title="编辑" v-model="editModal" @on-ok="edit">
       <Form :label-width="120">
@@ -106,10 +110,15 @@
           data: this.addData,
           success: res => {
             this.$Message.success('添加成功！')
+            this.addModal = false
             this.getSecondList()
           }
         })
 
+      },
+      cancel(){
+        this.addData = {}
+        this.addModal = false
       },
       secondEdit(row) {
         this.editModal = true

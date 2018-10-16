@@ -19,7 +19,7 @@
       <Table :columns="columns" :data="thirdList"></Table>
       <Page :total="total" show-total @on-change="changePage" :page-index="postData.pageIndex" style="margin-top: 10px" />
     </Card>
-    <Modal title="添加三级分类" v-model="addModal" @on-ok="add">
+    <Modal title="添加三级分类" v-model="addModal">
       <Form :label-width="120">
         <FormItem label="一级分类名称：" style="width: 300px;" required>
           <Select v-model="secondPostData.parentCode" size="small" @on-change="firstListChange" @on-open-change="firstListOpenChange"
@@ -51,20 +51,25 @@
             </Col>
           </Row>
         </FormItem>
-        <FormItem label="1:x" required>
+        <FormItem label="授课比例：" required>
           <Button type="dashed" @click="addOneToX" size="small" style="margin-right: 10px;">增加</Button>
           <InputNumber v-model="x" size="small" :min="1" style="width: 50px; margin-right: 10px;" />
           <Tag v-for="(item, index) in oneToXArr" color="success" :key="index" :name="item" closable @on-close="closeOneToXTag">{{item}}</Tag>
         </FormItem>
       </Form>
+      <div slot="footer">
+        <Button @click="cancel" >取消</Button>
+        <Button @click="add" type="primary" >确定</Button>
+      </div>
     </Modal>
     <Modal title="编辑" v-model="editModal" @on-ok="edit">
       <Form :label-width="100">
         <FormItem label="三级分类名称：" style="width: 300px;">
           <Input v-model="editData.name" size="small" placeholder="请输入三级分类名称" />
         </FormItem>
-        <FormItem label="级别：" style="width: 300px;">
-          <Button type="dashed" size="small" long @click="addLevel" icon="md-add">Add Level</Button>
+        <FormItem label="级别：" style="width: 500px;">
+          <Button type="dashed" size="small" @click="addLevel" icon="md-add" style="margin-right: 15px;">Add Level</Button>
+          <Button type="error" size="small" @click="removeLevel" icon="md-remove">Remove Level</Button>
         </FormItem>
         <FormItem v-for="(item, index) in levelList" :key="index">
           <Row>
@@ -186,23 +191,39 @@
         this.addData.levelQuestions = JSON.stringify(this.levelList)
         this.addData.oneToX = this.oneToXArr.join(',')
         this.addData.level = this.levelList.length
-        console.log('%c this.addData', 'color:red;', this.addData);
+        const { name, parentCode, level, oneToX, levelQuestions } = this.addData
+        if(!name || !parentCode || !level || !oneToX || !levelQuestions){
+          this.$Message.error({
+            content: '标星内容不能为空！',
+            duration: 6
+          })
+          return
+        }
         http.post({
           vm: this,
           url: '/manager/course-classification/third/add',
           data: this.addData,
           success: res => {
             this.$Message.success('添加成功！')
+            this.addModal = false
             this.getThirdList()
             this.addData = {}
           }
         })
       },
+      cancel () {
+        this.addModal = false
+        this.addData = {}
+      },
       addLevel() {
-        const levelList = [...this.levelList];
+        const levelList = [...this.levelList]
         const levelObj = { level: levelList.length + 1, selectCount: 1, blankCount: 1 }
         levelList.push(levelObj);
-        this.levelList = levelList;
+        this.levelList = levelList
+      },
+      removeLevel(e){
+        const levelList = this.levelList
+        levelList.splice(levelList.length-1 ,1)
       },
       addOneToX() {
         this.x && this.oneToXArr.push(this.x)
