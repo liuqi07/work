@@ -208,7 +208,7 @@
         }
         http.post({
           vm: this,
-          url: 'manager/sys-role/edit',
+          url: '/manager/sys-role/edit',
           data: this.editRoleData,
           success: res => {
             this.$Message.success('编辑成功!');
