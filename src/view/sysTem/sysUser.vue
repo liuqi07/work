@@ -18,8 +18,8 @@
         :page-size="postData.pageSize" style="margin-top: 10px" />
     </Card>
     <!-- 添加管理人员 -->
-    <Modal title="添加管理人员" v-model="addUserModal" >
-      <Form ref="addUserData" :model="addUserData" :label-width="100">
+    <Modal title="添加管理人员" v-model="addUserModal">
+      <Form ref="addUser" :model="addUserData" :rules="addUserRules" :label-width="100">
         <FormItem prop="roleId" label="角色名称：">
           <Select v-model="addUserData.roleId" style="width: 300px;">
             <Option v-for="item in roleList" :value="item.id" :key="item.id" :label="item.name"></Option>
@@ -40,10 +40,10 @@
         <FormItem prop="realName" label="姓名：">
           <Input v-model="addUserData.realName" style="width:300px;" placeholder="请输入管理人员真实姓名"></Input>
         </FormItem>
-        <FormItem label="邮箱：">
+        <FormItem prop="email" label="邮箱：">
           <Input v-model="addUserData.email" style="width:300px;" placeholder="请输入邮箱"></Input>
         </FormItem>
-        <FormItem label="手机：">
+        <FormItem prop="mobilePhone" label="手机：">
           <Input v-model="addUserData.mobilePhone" style="width:300px;" placeholder="请输入管理人员手机号码"></Input>
         </FormItem>
         <FormItem label="座机：">
@@ -57,22 +57,22 @@
     </Modal>
     <!-- 编辑管理人员 -->
     <Modal title="编辑管理人员" v-model="editUserModal">
-      <Form :label-width="80" ref="editUser" :model="editUserData">
-        <FormItem label="角色：" required>
+      <Form :label-width="80" ref="editUserData" :model="editUserData" :rules="editUserRules">
+        <FormItem prop="roleId" label="角色：" >
           <Select v-model="editUserData.roleId" style="width: 300px;">
             <Option v-for="item in roleList" :value="item.id" :key="item.id" :label="item.name"></Option>
           </Select>
         </FormItem>
-        <FormItem label="登录名：" required>
+        <FormItem prop="userName" label="登录名：" >
           <Input v-model="editUserData.userName" style="width:300px;" placeholder="请输入登录名"></Input>
         </FormItem>
-        <FormItem label="姓名：" required>
+        <FormItem prop="realName" label="姓名：" >
           <Input v-model="editUserData.realName" style="width:300px;" placeholder="请输入管理人员真实姓名"></Input>
         </FormItem>
-        <FormItem label="邮箱：">
+        <FormItem prop="email" label="邮箱：">
           <Input v-model="editUserData.email" style="width:300px;" placeholder="请输入邮箱"></Input>
         </FormItem>
-        <FormItem label="手机：">
+        <FormItem prop="mobilePhone" label="手机：">
           <Input v-model="editUserData.mobilePhone" style="width:300px;" placeholder="请输入管理人员手机号码"></Input>
         </FormItem>
         <FormItem label="座机：">
@@ -93,14 +93,49 @@ import { filterNull } from '@/libs/tools'
 import md5 from "md5";
 export default {
   data() {
-    const validateUserName = (rule, value, callback) => {
-      console.log(rule, value, callback)
-        if (value) {
-            callback(new Error('Please enter your password'));
-        } else {
-            callback();
-        }
-    };
+    const validateUserName = (rule, value, cb) => {
+      if (!value) {
+        cb(new Error('登录名不能为空'))
+      }else{
+        http.post({
+          vm: this,
+          url: "/manager/sys-user/valid",
+          data: { userName: value },
+          success: res => {
+            res.data && cb() || cb(new Error('登录名已存在'))
+          }
+        })
+      }
+    }
+    const validateMobilePhone = (rule, value, cb) => {
+      console.log(rule, value)
+      if(!value){
+        cb()
+      }else{
+        http.post({
+          vm: this,
+          url: "/manager/sys-user/valid",
+          data: { mobilePhone: value },
+          success: res => {
+            res.data && cb() || cb(new Error('手机号已存在'))
+          }
+        })
+      }
+    }
+    const validateEmail = (rule, value, cb) => {
+      if(!value){
+        cb()
+      }else{
+        http.post({
+          vm: this,
+          url: "/manager/sys-user/valid",
+          data: { email: value },
+          success: res => {
+            res.data && cb() || cb(new Error('邮箱已存在'))
+          }
+        });
+      }
+    }
     return {
       formInline: {
         user: "",
@@ -229,21 +264,52 @@ export default {
       },
       addUserRules: {
         userName: [
-          { validator: validateUserName, trigger: 'blur' },
           { required: true, message: "请输入登录名", trigger: "blur" },
-          { type: 'string', min: 8, message: "登录名最少输入8位", trigger: "blur" },
+          { type: 'string', min: 8, max: 20, message: "登录名要求8-20位之间", trigger: "blur" },
+          { validator: validateUserName, trigger: 'blur' }
         ],
-        password: [{ required: true, message: "请输入密码", trigger: "blur" }],
+        password: [
+          { required: true, message: "请输入密码", trigger: "blur" },
+          { type: 'string', message: '密码要求6-20位，字母数字组合密码', pattern: /^(?![0-9]*$)[a-zA-Z0-9]{6,20}$/, trigger: 'blur' }
+        ],
         realName: [
           { required: true, message: "请输入真实姓名", trigger: "blur" }
         ],
         roleId: [
           { required: true, message: "请选择一个角色", pattern: /.+/, trigger: "change" }
+        ],
+        mobilePhone: [
+          { type: 'string', message: '请输入正确的手机号', pattern: /^1[34578]\d{9}$/, trigger: 'blur' },
+          { validator: validateMobilePhone, trigger: 'blur' }
+        ],
+        email: [
+          { type: 'email', message: '请输入正确的邮箱', trigger: 'blur' },
+          { validator: validateEmail, trigger: 'blur' }
         ]
       },
       editUserModal: false,
       editUserData: {},
-      editUserRules: {}
+      editUserRules: {
+        userName: [
+          { required: true, message: "请输入登录名", trigger: "blur" },
+          { type: 'string', min: 8, max: 20, message: "登录名要求8-20位之间", trigger: "blur" },
+          { validator: validateUserName, trigger: 'blur' }
+        ],
+        realName: [
+          { required: true, message: "真实姓名不能为空", trigger: "blur" }
+        ],
+        roleId: [
+          { required: true, message: "请选择一个角色", pattern: /.+/, trigger: "change" }
+        ],
+        mobilePhone: [
+          { type: 'string', message: '请输入正确的手机号', pattern: /^1[34578]\d{9}$/, trigger: 'blur' },
+          { validator: validateMobilePhone, trigger: 'blur' }
+        ],
+        email: [
+          { type: 'email', message: '请输入正确的邮箱', trigger: 'blur' },
+          { validator: validateEmail, trigger: 'blur' }
+        ]
+      }
     };
   },
   methods: {
@@ -279,49 +345,29 @@ export default {
       // this.getRoleList();
     },
     addUser() {
-      // this.$refs['addUserData'].validate((valid) => {
-      //     if (valid) {
-      //         this.$Message.success('Success!');
-      //     } else {
-      //         this.$Message.error('Fail!');
-      //     }
-      // })
-      const { type, roleId, userName, password, realName } = this.addUserData;
-      if (!type || !roleId || !userName || !password || !realName) {
-        this.$Message.error({
-          content: "标星内容不能为空，请填写后重新提交！",
-          duration: 5
-        });
-        return;
-      }
-      if (!/^(?![0-9]*$)[a-zA-Z0-9]{6,20}$/.test(password)) {
-        this.$Message.error({
-          content: "密码输入不符合要求，请输入6-20位之间，字母和数字组合！",
-          duration: 5
-        });
-        return;
-      }
-      this.addUserData.password = md5(password);
-      http.post({
-        vm: this,
-        url: "/manager/sys-user/add",
-        data: this.addUserData,
-        success: res => {
-          this.$Message.success("保存成功！");
-          this.addUserModal = false;
-          this.addUserData = {
-            type: 2,
-            roleId: "",
-            userName: "",
-            password: "",
-            realName: ""
-          };
-          this.getUserList();
-        },
-        error: err => {
-          this.addUserData.password = "";
+      this.$refs['addUser'].validate((valid) => {
+        if (valid) {
+          const { type, roleId, userName, password, realName } = this.addUserData;
+          this.addUserData.password = md5(password);
+          http.post({
+            vm: this,
+            url: "/manager/sys-user/add",
+            data: this.addUserData,
+            success: res => {
+              this.$Message.success("保存成功！");
+              this.addUserModal = false;
+              this.addUserData = { type: 2 };
+              this.$refs['addUser'].resetFields()
+              this.getUserList();
+            },
+            error: err => {
+              this.addUserData.password = "";
+            }
+          });
+        } else {
+            this.$Message.error('请检查后再次提交！');
         }
-      });
+      })
     },
     resetPwd({ id }) {
       this.$Modal.confirm({
@@ -347,13 +393,8 @@ export default {
     },
     cancelAddUser() {
       this.addUserModal = false;
-      this.addUserData = {
-        type: 2,
-        roleId: "",
-        userName: "",
-        password: "",
-        realName: ""
-      };
+      this.addUserData = { type: 2 };
+      this.$refs['addUser'].resetFields()
     },
     changePage(pageIndex) {
       this.postData.pageIndex = pageIndex;
@@ -363,67 +404,35 @@ export default {
       this.postData.pageSize = pageSize;
       this.getUserList();
     },
-    openEditUser({
-      id,
-      roleId,
-      userName,
-      realName,
-      version,
-      email,
-      mobilePhone,
-      seatPhone
-    }) {
+    openEditUser({ id, roleId, userName, realName, version, email, mobilePhone, seatPhone }) {
       this.editUserModal = true;
-      this.editUserData = {
-        id,
-        roleId,
-        userName,
-        realName,
-        version,
-        email,
-        mobilePhone,
-        seatPhone
-      };
+      this.editUserData = { id, roleId, userName, realName, version, email, mobilePhone, seatPhone }
     },
     editUser() {
-      const { roleId, userName, realName } = this.editUserData
-      if(!roleId || !userName || !realName){
-        this.$Message.error({
-          content: '标星内容不能为空，请检查后输入！',
-          duration: 5
-        })
-        return
-      }
-      http.post({
-        vm: this,
-        url: "/manager/sys-user/edit",
-        data: filterNull(this.editUserData),
-        success: res => {
-          this.$Message.success('修改成功！');
-          this.editUserModal = false
-          this.editUserData = {}
-          this.getUserList();
+      this.$refs['editUser'].validate(valid => {
+        if(valid){
+          const { roleId, userName, realName } = this.editUserData
+          http.post({
+            vm: this,
+            url: "/manager/sys-user/edit",
+            data: filterNull(this.editUserData),
+            success: res => {
+              this.$Message.success('修改成功！');
+              this.editUserModal = false
+              this.$refs['editUser'].resetFields()
+              this.editUserData = {}
+              this.getUserList();
+            }
+          });
+        }else{
+          this.$Message.error('请检查后再次提交！');
         }
-      });
-      // this.$refs['editUser'].validate((valid) => {
-      //   if (valid) {
-      //     http.post({
-      //       vm: this,
-      //       url: '/manager/sys-user/edit',
-      //       data: this.editUserData,
-      //       success: res => {
-      //         this.$Message.success(res.msg)
-      //         this.getUserList()
-      //       }
-      //     })
-      //   } else {
-      //     this.$Message.error('Error');
-      //   }
-      // })
+      })
     },
     cancelEditUser() {
       this.editUserModal = false
       this.editUserData = {}
+      this.$refs['editUser'].resetFields()
     },
     disuse({ id, status, version }) {
       const action = status === 1 ? "停用" : "启用";

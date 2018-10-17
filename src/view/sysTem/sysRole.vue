@@ -12,14 +12,14 @@
     </Card>
     <!-- 添加角色 -->
     <Modal title="添加角色" v-model="addRoleModal">
-      <Form :label-width="100" ref="addRoleData" :model="addRoleData">
-        <FormItem label="角色名称：" prop="name" required>
+      <Form :label-width="100" ref="addRole" :model="addRoleData" :rules="addRoleRules">
+        <FormItem prop="name" label="角色名称：" >
           <Input v-model="addRoleData.name" style="width:300px;" placeholder="请输入角色名称"></Input>
         </FormItem>
-        <FormItem label="角色编码：" prop="code" required>
+        <FormItem prop="code" label="角色编码：" >
           <Input v-model="addRoleData.code" style="width:300px;" placeholder="请输入角色编码"></Input>
         </FormItem>
-        <FormItem label="角色描述：" prop="roleDesc">
+        <FormItem prop="roleDesc" label="角色描述：" >
           <Input type="textarea" v-model="addRoleData.roleDesc" style="width:300px;" placeholder="最多可输入60个字"></Input>
         </FormItem>
       </Form>
@@ -30,11 +30,11 @@
     </Modal>
     <!-- 编辑角色 -->
     <Modal title="编辑角色" v-model="editRoleModal">
-      <Form :label-width="80" ref="editRoleData" :model="editRoleData">
-        <FormItem label="角色名称" required>
+      <Form :label-width="80" ref="editRole" :model="editRoleData" :rules="editRoleRules">
+        <FormItem prop="name" label="角色名称">
           <Input v-model="editRoleData.name" style="width:300px;" placeholder="请输入角色名称"></Input>
         </FormItem>
-        <FormItem label="角色描述">
+        <FormItem prop="roleDesc" label="角色描述">
           <Input type="textarea" v-model="editRoleData.roleDesc" style="width:300px;" placeholder="最多可输入60个字"></Input>
         </FormItem>
       </Form>
@@ -55,6 +55,34 @@
   import http from '@/libs/http';
   export default {
     data() {
+      const validateName = (rule, value, cb) => {
+        if (!value) {
+          cb(new Error('角色名不能为空'))
+        }else{
+          http.post({
+            vm: this,
+            url: "/manager/sys-role/valid",
+            data: { name: value },
+            success: res => {
+              res.data && cb() || cb(new Error('角色名已存在'))
+            }
+          })
+        }
+      }
+      const validateCode = (rule, value, cb) => {
+        if (!value) {
+          cb(new Error('角色编码不能为空'))
+        }else{
+          http.post({
+            vm: this,
+            url: "/manager/sys-role/valid",
+            data: { code: value },
+            success: res => {
+              res.data && cb() || cb(new Error('角色编码已存在'))
+            }
+          })
+        }
+      }
       return {
         sysRole: {},
         roleColumns: [
@@ -134,10 +162,14 @@
         },
         addRoleRules: {
           name: [
-            { required: true, message: '角色名称不能为空', trigger: 'blur' }
+            { required: true, message: '角色名称不能为空', trigger: 'blur' },
+            { type: 'string', min: 2, max: 20, message: '角色名要求2-20位之间', trigger: 'blur' },
+            { validator: validateName, trigger: 'blur' }
           ],
           code: [
-            { required: true, message: '角色编码不能为空', trigger: 'blur' }
+            { required: true, message: '角色编码不能为空', trigger: 'blur' },
+            { type: 'string', min: 8, max: 20, message: '角色编码要求8-20位之间', trigger: 'blur' },
+            { validator: validateCode, trigger: 'blur' }
           ],
           roleDesc: [
             { type: 'string', max: 60, message: '角色描述最多不超过60个字', trigger: 'blur' }
@@ -145,7 +177,16 @@
         },
         editRoleModal: false,
         editRoleData: {},
-        editRoleRules: {},
+        editRoleRules: {
+          name: [
+            { required: true, message: '角色名称不能为空', trigger: 'blur' },
+            { type: 'string', min: 2, max: 20, message: '角色名要求2-20位之间', trigger: 'blur' },
+            { validator: validateName, trigger: 'blur' }
+          ],
+          roleDesc: [
+            { type: 'string', max: 60, message: '角色描述最多不超过60个字', trigger: 'blur' }
+          ]
+        },
         authRoleModal: false,
         authRoleTree: [],
         currRoleId: '',
@@ -168,28 +209,29 @@
         this.addRoleModal = true
       },
       addRole() {
-        const { code, name, roleDesc } = this.addRoleData
-        if (!code || !name) {
-          this.$Message.error({
-            content: '标星内容不能为空！',
-            duration: 5
-          })
-          return
-        }
-        http.post({
-          vm: this,
-          url: `/manager/sys-role/add`,
-          data: this.addRoleData,
-          success: res => {
-            this.$Message.success('添加成功！');
-            this.addRoleModal = false
-            this.getRoleList()
-            this.addRoleData = { code: '', name: '', roleDesc: '' }
+        this.$refs['addRole'].validate(valid => {
+          if(valid){
+            const { code, name, roleDesc } = this.addRoleData
+            http.post({
+              vm: this,
+              url: `/manager/sys-role/add`,
+              data: this.addRoleData,
+              success: res => {
+                this.$Message.success('添加成功！')
+                this.addRoleModal = false
+                this.$refs['addRole'].resetFields()
+                this.getRoleList()
+                this.addRoleData = { code: '', name: '', roleDesc: '' }
+              }
+            })
+          }else {
+            this.$Message.error('请检查后再次提交！');
           }
         })
       },
       cancelAddRole() {
         this.addRoleData = { code: '', name: '', roleDesc: '' }
+        this.$refs['addRole'].resetFields()
         this.addRoleModal = false
       },
       openEditRole(params) {
@@ -198,28 +240,29 @@
         this.editRoleData = { name: row.name, roleDesc: row.roleDesc, version: row.version, id: row.id }
       },
       editRole() {
-        const { name } = this.editRoleData
-        if(!name){
-          this.$Message.error({
-            content: '标星内容不能为空，请检查后重新输入！',
-            duration: 5
-          })
-          return
-        }
-        http.post({
-          vm: this,
-          url: '/manager/sys-role/edit',
-          data: this.editRoleData,
-          success: res => {
-            this.$Message.success('编辑成功!');
-            this.editRoleModal = false
-            this.editRoleData = {}
-            this.getRoleList()
+        this.$refs['editRole'].validate(valid => {
+          if(valid){
+            const { name } = this.editRoleData
+            http.post({
+              vm: this,
+              url: '/manager/sys-role/edit',
+              data: this.editRoleData,
+              success: res => {
+                this.$Message.success('编辑成功!');
+                this.editRoleModal = false
+                this.$refs['editRole'].resetFields()
+                this.editRoleData = {}
+                this.getRoleList()
+              }
+            })
+          }else {
+            this.$Message.error('请检查后再次提交！');
           }
         })
       },
       cancelEdit(){
         this.editRoleModal = false
+        this.$refs['editRole'].resetFields()
         this.editRoleData = {}
       },
       openEditAuth(params) {
@@ -256,7 +299,6 @@
             })
           })
         })
-        console.log('%c resourceIds', 'color:red;', resourceIds.sort((a, b) => a - b));
         http.post({
           vm: this,
           url: '/manager/sys-role/auth',
