@@ -25,7 +25,7 @@
     </Form>
     <Card>
       <Table :columns="columns" :data="subscribeList" border></Table>
-      <Page :total="total" show-total @on-change="changePage" @on-page-size-change="changePageSize" :page-size="postData.pageSize"
+      <Page :total="total" show-total show-sizer @on-change="changePage" @on-page-size-change="changePageSize" :page-size="postData.pageSize"
         :page-index="postData.pageIndex" style="margin-top: 10px" />
     </Card>
     <Modal title="分配/变更顾问" v-model="subscribeAllotModal" @on-ok="saveSubscribeAllot">
@@ -536,11 +536,11 @@
       coursePackerChange() { },
       changePage(p) {
         this.postData.pageIndex = p
-        this.getSubscribeList(()=>{this.$Message.success('查询成功！')})
+        this.getSubscribeList()
       },
       changePageSize(s) {
         this.postData.pageSize = s
-        this.getSubscribeList(()=>{this.$Message.success('查询成功！')})
+        this.getSubscribeList()
       },
       subscribeExport(){
         const { mobilePhone, status } = this.postData

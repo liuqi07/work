@@ -12,12 +12,12 @@
           <Option v-for="item in secondList" :value="item.code" :key="item.code">{{item.name}}</Option>
         </Select>
       </FormItem>
-      <Button type="primary" v-hasPermission="'thirdAdd'" @click="thirdAdd" style="margin-left: 20px;">添加三级分类</Button>
-      <Button type="primary" @click="query" style="margin-left: 10px;">查询</Button>
+      <Button type="primary" @click="query" style="margin-left: 20px; margin-right: 10px;">查询</Button>
+      <Button type="primary" v-hasPermission="'thirdAdd'" @click="thirdAdd">添加三级分类</Button>
     </Form>
     <Card style="margin-top: 10px;">
       <Table :columns="columns" :data="thirdList"></Table>
-      <Page :total="total" show-total @on-change="changePage" :page-index="postData.pageIndex" style="margin-top: 10px" />
+      <Page :total="total" show-total @on-change="changePage" :page-index="postData.pageIndex" @on-page-size-change="changePageSize" show-sizer :page-size="postData.pageSize" style="margin-top: 10px" />
     </Card>
     <Modal title="添加三级分类" v-model="addModal">
       <Form :label-width="120">
@@ -36,7 +36,7 @@
           <Input v-model="addData.name" size="small" placeholder="请输入三级分类名称" />
         </FormItem>
         <FormItem label="级别：" style="width: 300px;" required>
-          <Button type="dashed" size="small" long @click="addLevel" icon="md-add">Add Level</Button>
+          <Button type="dashed" size="small" long @click="addLevel" icon="md-add">添加级别</Button>
         </FormItem>
         <FormItem v-for="(item, index) in levelList" :key="index"  required>
           <Row>
@@ -68,8 +68,8 @@
           <Input v-model="editData.name" size="small" placeholder="请输入三级分类名称" />
         </FormItem>
         <FormItem label="级别：" style="width: 500px;">
-          <Button type="dashed" size="small" @click="addLevel" icon="md-add" style="margin-right: 15px;">Add Level</Button>
-          <Button type="error" size="small" @click="removeLevel" icon="md-remove">Remove Level</Button>
+          <Button type="dashed" size="small" @click="addLevel" icon="md-add" style="margin-right: 15px;">添加级别</Button>
+          <Button type="error" size="small" @click="removeLevel" icon="md-remove">删除级别</Button>
         </FormItem>
         <FormItem v-for="(item, index) in levelList" :key="index">
           <Row>
@@ -278,7 +278,11 @@
       },
       changePage(pageIndex) {
         this.postData.pageIndex = pageIndex
-        this.getThirdList(() => { this.$Message.success('查询成功！') })
+        this.getThirdList()
+      },
+      changePageSize(s){
+        this.postData.pageSize = s
+        this.getThirdList()
       }
     },
     mounted() {

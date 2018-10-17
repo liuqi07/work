@@ -1,17 +1,17 @@
 <template>
     <div>
-      <Form :inline="inline" :model="postData" :label-width="100" :rules="rules">
-          <FormItem label="一级分类：" style="width: 250px;" :required="required" >
+      <Form :inline="inline" :model="postData" :label-width="90" :rules="rules">
+          <FormItem label="一级分类：" style="width: 220px;" :required="required" >
             <Select v-model="firstCode" @on-change="firstChange" clearable>
               <Option v-for="item in firstList" :value="item.code" :key="item.code">{{item.name}}</Option>
             </Select>
           </FormItem>
-          <FormItem label="二级分类：" style="width: 250px;" :required="required" >
+          <FormItem label="二级分类：" style="width: 220px;" :required="required" >
             <Select v-model="secondCode" @on-change="secondChange" clearable>
               <Option v-for="item in secondList" :value="item.code" :key="item.code">{{item.name}}</Option>
             </Select>
           </FormItem>
-          <FormItem label="三级分类：" style="width: 250px;" :required="required" >
+          <FormItem label="三级分类：" style="width: 220px;" :required="required" >
             <Select v-model="thirdCode" @on-change="thirdChange" clearable>
               <Option v-for="item in thirdList" :value="item.code" :key="item.code">{{item.name}}</Option>
             </Select>

@@ -14,7 +14,7 @@
       </Form>
       <Card>
         <Table :columns="columns" :data="arrangeLogList"></Table>
-        <Page :total="total" show-total @on-change="changePage" @on-page-size-change="changePageSize" :page-size="postData.pageSize"
+        <Page :total="total" show-total show-sizer @on-change="changePage" @on-page-size-change="changePageSize" :page-size="postData.pageSize"
           :page-index="postData.pageIndex" style="margin-top: 10px" />
       </Card>
     </div>
@@ -56,11 +56,11 @@
         },
         changePage(p) {
           this.postData.pageIndex = p
-          this.getArrangeLogList(()=>{this.$Message.success('查询成功！')})
+          this.getArrangeLogList()
         },
         changePageSize(s) {
           this.postData.pageSize = s
-          this.getArrangeLogList(()=>{this.$Message.success('查询成功！')})
+          this.getArrangeLogList()
         }
       },
       mounted () {

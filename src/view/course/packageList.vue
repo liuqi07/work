@@ -26,7 +26,7 @@
             @package_delete="packageDelete" :status="3"></lower-package>
         </TabPane>
       </Tabs>
-      <Page :total="total" show-total @on-change="changePage" @on-page-size-change="changePageSize" :page-size="postData.pageSize"
+      <Page :total="total" show-total show-sizer @on-change="changePage" @on-page-size-change="changePageSize" :page-size="postData.pageSize"
         :page-index="postData.pageIndex" style="margin-top: 10px" />
     </Card>
     <Modal title="添加套餐" v-model="addPackageModal">
@@ -401,14 +401,13 @@
       },
       changePage(pageIndex) {
         this.postData.pageIndex = pageIndex
-        this.getPackageList(undefined, 'change')
+        this.getPackageList()
       },
       changePageSize(pageSize) {
         this.postData.pageSize = pageSize
-        this.getPackageList(undefined, 'change')
+        this.getPackageList()
       },
       getFirstList(cb) {
-        console.log('%c ----------', 'color:red;');
         http.get({
           vm: this,
           url: '/manager/course-classification/getAll',

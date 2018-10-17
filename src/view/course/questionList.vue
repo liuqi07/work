@@ -42,7 +42,7 @@
     </Form>
     <Card>
       <Table :columns="columns" :data="questionList"></Table>
-      <Page :total="total" show-total @on-change="changePage" :page-size="postData.pageSize" :page-index="postData.pageIndex" style="margin-top: 10px"
+      <Page :total="total" show-total show-sizer @on-change="changePage" @on-page-size-change="changePageSize" :page-size="postData.pageSize" :page-index="postData.pageIndex" style="margin-top: 10px"
       />
     </Card>
 
@@ -433,6 +433,11 @@
       },
       changePage(p) {
         this.postData.pageIndex = p
+        this.getQuestionList()
+      },
+      changePageSize(s){
+        this.postData.pageSize = s
+        this.getQuestionList()
       },
       onFirstOpen(data) {
         if (data) {

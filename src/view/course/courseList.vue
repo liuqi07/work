@@ -25,33 +25,33 @@
             @course_delete="courseDelete" :status="3"></lower-course>
         </TabPane>
       </Tabs>
-      <Page :total="total" show-total @on-change="changePage" @on-page-size-change="changePageSize" :page-size="postData.pageSize"
+      <Page :total="total" show-total show-sizer @on-change="changePage" @on-page-size-change="changePageSize" :page-size="postData.pageSize"
         :page-index="postData.pageIndex" style="margin-top: 10px" />
     </Card>
     <Modal title="添加课程" v-model="addCourseModal">
       <Form :label-width="100" :model="addData" :rules="rules">
-        <FormItem prop="name" label="课程名称：" style="width: 300px;" required>
-          <Input v-model="addData.name" placeholder="请输入课程名称" />
-        </FormItem>
-        <FormItem prop="courseDesc" label="课程介绍：" style="width: 300px;" required>
-          <Input v-model="addData.courseDesc" placeholder="请输入课程介绍" />
-        </FormItem>
-        <!-- <three-level :required="true" @on_change="onThreeLevelChange" :threeLevelData="addData.threeLevelData"></three-level> -->
-        <FormItem label="一级分类：" style="width: 250px;" required>
+        <FormItem label="一级分类：" style="width: 300px;" required>
           <Select v-model="addData.firstCode" @on-change="firstChange" clearable>
             <Option v-for="item in addData.firstList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem label="二级分类：" style="width: 250px;" required>
+        <FormItem label="二级分类：" style="width: 300px;" required>
           <Select v-model="addData.secondCode" @on-change="secondChange" clearable>
             <Option v-for="item in addData.secondList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem label="三级分类：" style="width: 250px;" required>
+        <FormItem label="三级分类：" style="width: 300px;" required>
           <Select v-model="addData.thirdCode" @on-change="thirdChange" clearable>
             <Option v-for="item in addData.thirdList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
+        <FormItem prop="name" label="课程名称：" style="width: 300px;" required>
+          <Input v-model="addData.name" placeholder="请输入课程名称" />
+        </FormItem>
+        <FormItem prop="courseDesc" label="课程介绍：" style="width: 320px;" required>
+          <Input type="textarea" v-model="addData.courseDesc" placeholder="请输入课程介绍，不超过100字" />
+        </FormItem>
+        <!-- <three-level :required="true" @on_change="onThreeLevelChange" :threeLevelData="addData.threeLevelData"></three-level> -->
         <FormItem label="授课比例：" style="width: 300px;" required>
           <Select v-model="addData.oneToX" placeholder="请先选择三级分类" clearable>
             <Option v-for="item in addData.oneToXArr" :key="item" :value="item">{{item}}</Option>
@@ -76,7 +76,7 @@
             <Tag v-for="(item, index) in addData.oneToXArr" color="success" :key="index" :name="item" closable @on-close="closeOneToXTag">{{item}}</Tag>
           </FormItem> -->
         <FormItem label="级别：" style="width: 350px;" required>
-          <Button type="dashed" size="small" @click="addLevelHour" long icon="md-add" style="margin-right: 10px;">Add Level</Button>
+          <Button type="dashed" size="small" @click="addLevelHour" long icon="md-add" style="margin-right: 10px;">添加级别</Button>
         </FormItem>
         <FormItem v-for="(item, index) in addData.levelHour" :key="index" required>
           <Row>
@@ -87,7 +87,7 @@
             <InputNumber :min="1" size="small" v-model="item.hour" style="width: 50px;" />
             </Col>
             <Col :span="6">
-              <Button type="error" size="small" @click="removeLevelHour" >Remove Level {{index+1}}</Button>
+              <Button type="error" size="small" @click="removeLevelHour" >删除级别 {{index+1}}</Button>
             </Col>
           </Row>
         </FormItem>
@@ -221,7 +221,6 @@
         this.getCourseList()
       },
       coursePush({ id, version }) {
-        console.log('%c coursePush ------------> id, version', 'color:red;', id, version);
         this.$Modal.confirm({
           title: '上架',
           content: '确认要上架此商品吗？',
@@ -382,7 +381,15 @@
         this.batchList = selection
       },
       addLevelHour() {
-        const levelHour = this.addData.levelHour
+        const { levelHour, levelLen } = this.addData
+        console.log(levelHour, levelLen)
+        if(typeof levelLen === 'number' && levelHour.length >= levelLen){
+          this.$Message.error(`此课程不能超过${levelLen}级！`)
+          return
+        }else if(typeof levelLen !== 'number') {
+          this.$Message.error(`请先选择三级分类！`)
+          return
+        }
         const levelHourItem = { level: levelHour.length + 1, hour: 1 }
         levelHour.push(levelHourItem)
       },
@@ -396,15 +403,14 @@
       },
       changePage(pageIndex) {
         this.postData.pageIndex = pageIndex
-        this.getCourseList(undefined, 'change')
+        this.getCourseList()
       },
       changePageSize(pageSize) {
         this.postData.pageSize = pageSize
-        this.getCourseList(undefined, 'change')
+        this.getCourseList()
       },
 
       getFirstList(cb) {
-        console.log('%c ----------', 'color:red;');
         http.get({
           vm: this,
           url: '/manager/course-classification/getAll',
@@ -443,6 +449,7 @@
         this.addData.secondCode = null
         this.addData.thirdCode = null
         this.addData.oneToX = null
+        this.addData.levelLen = null
         if (val) {
           this.getSecondList()
         } else {
@@ -456,6 +463,7 @@
         this.addData.secondId = _secondId && _secondId.id || null
         this.addData.thirdCode = null
         this.addData.oneToX = null
+        this.addData.levelLen = null
         if (val) {
           this.getThirdList()
         } else {
@@ -465,12 +473,14 @@
       },
       thirdChange(val) {
         this.addData.oneToX = ''
+        this.addData.levelLen = null
         if (val) {
           const _thirdId = this.addData.thirdList.find(t => t.code === val)
           const thirdId = _thirdId && _thirdId.id || null
           const oneToXArr = _thirdId && _thirdId.oneToX && _thirdId.oneToX.split(',') || []
-          console.log('%c oneToXArr, oneToX', 'color:red;', oneToXArr, _thirdId.oneToX);
-          this.addData = Object.assign({}, this.addData, { thirdId, oneToXArr })
+          const levelLen = _thirdId && _thirdId.level || 0
+          console.log('%c oneToXArr, _thirdId', 'color:red;', oneToXArr, _thirdId);
+          this.addData = Object.assign({}, this.addData, { thirdId, oneToXArr, levelLen })
         } else {
           this.addData.oneToXArr = []
         }

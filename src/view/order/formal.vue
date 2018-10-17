@@ -42,7 +42,7 @@
     </Form>
     <Card>
       <Table :columns="columns" :data="formalList"></Table>
-      <Page :total="total" show-total @on-change="changePage" @on-page-size-change="changePageSize" :page-size="postData.pageSize"
+      <Page :total="total" show-total show-sizer @on-change="changePage" @on-page-size-change="changePageSize" :page-size="postData.pageSize"
         :page-index="postData.pageIndex" style="margin-top: 10px" />
     </Card>
     <Modal title="分配/变更顾问" v-model="formalAllotModal" @on-ok="saveFormalAllot">
@@ -427,11 +427,11 @@
 
       changePage(p) {
         this.postData.pageIndex = p
-        this.getFormalList(() => { this.$Message.success('查询成功！') })
+        this.getFormalList()
       },
       changePageSize(s) {
         this.postData.pageSize = s
-        this.getFormalList(() => { this.$Message.success('查询成功！') })
+        this.getFormalList()
       },
       onDateChange() {
         const dateList = this.formalArrangeData.dateList

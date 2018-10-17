@@ -1,13 +1,13 @@
 <template>
   <div>
     <Form :model="postData" :label-width="80" inline>
-      <FormItem label="课程顾问：" style="width: 220px;">
+      <FormItem label="课程顾问：" style="width: 210px;">
         <Input type="text" v-model="postData.realName" placeholder="请输入课程顾问姓名" />
       </FormItem>
       <FormItem label="身份证号：" style="width: 230px;">
         <Input v-model="postData.idNo" placeholder="请输入课程顾问身份证号" />
       </FormItem>
-      <FormItem label="顾问状态：" style="width: 220px;">
+      <FormItem label="顾问状态：" style="width: 200px;">
         <Select v-model="postData.status" clearable>
           <Option :value="1">正常</Option>
           <Option :value="0">停用</Option>
@@ -16,9 +16,10 @@
       <FormItem label="注册日期：" style="width: 220px;">
         <DatePicker type="date" placeholder="请选择注册时间" v-model="createDate"></DatePicker>
       </FormItem>
-      <Button type="primary" @click="search" style="margin-left: 20px;">搜索</Button>
+      <Button type="primary" @click="search" style="margin-left: 20px; margin-right: 10px;">搜索</Button>
+      <Button type="primary" @click="courseAdviserExport">导出</Button>
     </Form>
-    <Card>
+    <Card style="margin-top: 10px;">
       <Table :data="courseAdviserList" :columns="columns"></Table>
       <Page :total="total" show-total show-sizer @on-change="changePage" @on-page-size-change="changePageSize" :page-index="postData.pageIndex"
         :page-size="postData.pageSize" style="margin-top: 10px" />
@@ -138,6 +139,20 @@
           }
         })
       },
+      courseAdviserExport(){
+        this.createDate && (this.postData.createDate = formatDate('YYYY-MM-DD', this.createDate))
+        const { realName, status, idNo, createDate } = this.postData
+        const formData = { realName, status, idNo, createDate }
+        const paramsArr = []
+        for (let k in formData) {
+          if (formData[k] || formData[k]==0) {
+            paramsArr.push(k + '=' + formData[k])
+          }
+        }
+        const _params = paramsArr.join('&')
+        const params = _params && '?' + _params
+        window.open('http://www.zilongshu.com/manager/course-adviser/export' + params)
+      },
       openDetail({ code, realName, mobilePhone, idNo, sex, age, rate, email, id }) {
         this.detailModal = true
         this.updateDetailData = { code, realName, mobilePhone, idNo, sex, age, rate, email, id }
@@ -169,11 +184,11 @@
       },
       changePage(pageIndex) {
         this.postData.pageIndex = pageIndex
-        this.getCourseAdviserList(() => { this.$Message.success('查询成功！') })
+        this.getCourseAdviserList()
       },
       changePageSize(pageSize) {
         this.postData.pageSize = pageSize
-        this.getCourseAdviserList(() => { this.$Message.success('查询成功！') })
+        this.getCourseAdviserList()
       }
     },
     mounted() {

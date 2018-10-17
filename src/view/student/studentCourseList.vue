@@ -30,7 +30,7 @@
     </Form>
     <Card>
       <Table :columns="columns" :data="courseList"></Table>
-      <Page :total="total" show-total @on-change="changePage" @on-page-size-change="changePageSize" :page-size="postData.pageSize"
+      <Page :total="total" show-total show-sizer @on-change="changePage" @on-page-size-change="changePageSize" :page-size="postData.pageSize"
         :page-index="postData.pageIndex" style="margin-top: 10px" />
     </Card>
     <Modal v-model="detailModal" :width="600">
@@ -58,7 +58,8 @@
         <Button type="primary" @click="lookExamModal=false">关闭</Button>
       </div>
     </Modal>
-    <Modal title="上传课程回放" v-model="uploadModal">
+    <Modal :title="uploadTitle" v-model="uploadModal">
+      <Button @click="openVideo" v-if="uploadPlayBack" type="success" style="margin-right: 50px;">查看回放</Button>
       <input type="file" @change="handleFileChange">
       <div slot="footer" >
         <Button @click="cancel" style="margin-right: 10px;">取消</Button>
@@ -83,7 +84,7 @@
           { title: '三级分类', key: 'thirdName', align: 'center' },
           { title: '课程名称', key: 'courseName', align: 'center' },
           {
-            title: '上课时间', key: 'classBeginTime', align: 'center', render: (h, params) => {
+            title: '上课日期', key: 'classBeginTime', align: 'center', render: (h, params) => {
               return h('div', {}, params.row.classBeginTime.substr(0, 10))
             }
           },
@@ -104,7 +105,7 @@
             }
           },
           {
-            title: '时间段', key: 'classBeginTime', align: 'center', render: (h, params) => {
+            title: '上课时间', key: 'classBeginTime', align: 'center', render: (h, params) => {
               return h('div', {}, params.row.classBeginTime.substr(11, 5))
             }
           },
@@ -129,10 +130,11 @@
           },
           {
             title: '操作', key: 'actions', align: 'center', width: 200, render: (h, params) => {
+              const uploadPlayBack = params.row.uploadPlayBack
               return h('div', [
                 h('Button', {
                   props: {
-                    type: 'primary',
+                    type: uploadPlayBack ? 'success' : 'primary',
                     size: 'small',
                   },
                   style: {
@@ -141,13 +143,13 @@
                   },
                   on: {
                     click: () => {
-                      this.upload(params.row)
+                      this.upload({...params.row, uploadPlayBack})
                     }
                   },
                   directives: [
                     { name: 'hasPermission', value: "upload" }
                   ]
-                }, '上传课程回放'),
+                }, uploadPlayBack ? '查看课程回放' : '上传课程回放'),
                 h('Button', {
                   props: {
                     type: 'primary',
@@ -254,6 +256,8 @@
         file: null,
         uploadModal: false,
         tableId: null,
+        uploadTitle: '',
+        uploadPlayBack: null,
       }
     },
     methods: {
@@ -277,11 +281,11 @@
       },
       changePage(p) {
         this.postData.pageIndex = p
-        this.getCourseList(() => { this.$Message.success('查询成功！') })
+        this.getCourseList()
       },
       changePageSize(s) {
         this.postData.pageSize = s
-        this.getCourseList(() => { this.$Message.success('查询成功！') })
+        this.getCourseList()
       },
       lookComment({ courseLevel, labels = [], commentDesc }) {
         this.lookCommentData = { courseLevel, labels, commentDesc }
@@ -317,14 +321,15 @@
           }
         })
       },
-      upload({ tableId }) {
+      upload({ tableId, uploadPlayBack }) {
         this.file = null
         this.tableId = tableId
         this.uploadModal = true
+        this.uploadPlayBack = uploadPlayBack
+        this.uploadTitle = uploadPlayBack ? '查看课程回放' : '上传课程回放'
       },
       uploadFile() {
         if (this.file) {
-          console.log('%c file', 'color:red;', this.file);
           const formData = new FormData()
           formData.append('tableId', this.tableId)
           formData.append('file', this.file)
@@ -340,6 +345,17 @@
         } else {
           this.$Message.error('请先选择文件后点击上传！')
         }
+      },
+      openVideo(){
+        http.get({
+          vm: this,
+          url: '/manager/student/lookCourseBack',
+          data: { tableId: this.tableId },
+          success: res => {
+            window.open(res.data)
+            this.uploadModal = true
+          }
+        })
       },
       cancel(){
         this.file = null

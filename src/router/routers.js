@@ -139,7 +139,16 @@ export default [
           icon: "",
           title: "课程顾问管理"
         }
-      }
+      },      
+      {
+        path: "/adviserLog",
+        name: "adviserLog",
+        component: () => import("@/view/courseAdviser/adviserLog.vue"),
+        meta: {
+          icon: "",
+          title: "分配顾问"
+        }
+      },
     ]
   },
   {
@@ -294,15 +303,6 @@ export default [
       title: "日志管理"
     },
     children: [
-      {
-        path: "/adviserLog",
-        name: "adviserLog",
-        component: () => import("@/view/log/adviserLog.vue"),
-        meta: {
-          icon: "",
-          title: "分配顾问"
-        }
-      },
       {
         path: "/arrangeLog",
         name: "arrangeLog",

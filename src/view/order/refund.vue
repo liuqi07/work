@@ -30,7 +30,7 @@
     </Form>
     <Card>
       <Table :columns="columns" :data="refundList"></Table>
-      <Page :total="total" show-total @on-change="changePage" @on-page-size-change="changePageSize" :page-size="postData.pageSize"
+      <Page :total="total" show-total show-sizer @on-change="changePage" @on-page-size-change="changePageSize" :page-size="postData.pageSize"
         :page-index="postData.pageIndex" style="margin-top: 10px" />
     </Card>
   </div>
@@ -100,7 +100,7 @@
       },
       changePageSize(s) {
         this.postData.pageSize = s
-        thi.getRefundList()
+        this.getRefundList()
       },
     },
     mounted() {

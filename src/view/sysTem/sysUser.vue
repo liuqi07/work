@@ -18,26 +18,26 @@
         :page-size="postData.pageSize" style="margin-top: 10px" />
     </Card>
     <!-- 添加管理人员 -->
-    <Modal title="添加管理人员" v-model="addUserModal">
-      <Form :label-width="100" ref="addUser" :model="addUserData">
-        <FormItem label="角色名称：" required>
+    <Modal title="添加管理人员" v-model="addUserModal" >
+      <Form ref="addUserData" :model="addUserData" :label-width="100">
+        <FormItem prop="roleId" label="角色名称：">
           <Select v-model="addUserData.roleId" style="width: 300px;">
             <Option v-for="item in roleList" :value="item.id" :key="item.id" :label="item.name"></Option>
           </Select>
         </FormItem>
-        <FormItem label="类型：" required>
+        <FormItem prop="type" label="类型：">
           <RadioGroup v-model="addUserData.type">
             <Radio :label="1">系统管理</Radio>
             <Radio :label="2">课程顾问</Radio>
           </RadioGroup>
         </FormItem>
-        <FormItem label="登录名：" required>
+        <FormItem prop="userName" label="登录名：">
           <Input v-model="addUserData.userName" style="width:300px;" placeholder="请输入登录名"></Input>
         </FormItem>
-        <FormItem label="密码：" required>
+        <FormItem prop="password" label="密码：">
           <Input type="password" v-model="addUserData.password" style="width:300px;" placeholder="请设置6-20位，字母数字组合密码"></Input>
         </FormItem>
-        <FormItem label="姓名：" required>
+        <FormItem prop="realName" label="姓名：">
           <Input v-model="addUserData.realName" style="width:300px;" placeholder="请输入管理人员真实姓名"></Input>
         </FormItem>
         <FormItem label="邮箱：">
@@ -93,6 +93,14 @@ import { filterNull } from '@/libs/tools'
 import md5 from "md5";
 export default {
   data() {
+    const validateUserName = (rule, value, callback) => {
+      console.log(rule, value, callback)
+        if (value) {
+            callback(new Error('Please enter your password'));
+        } else {
+            callback();
+        }
+    };
     return {
       formInline: {
         user: "",
@@ -218,21 +226,19 @@ export default {
       addUserModal: false,
       addUserData: {
         type: 2,
-        roleId: "",
-        userName: "",
-        password: "",
-        realName: ""
       },
       addUserRules: {
         userName: [
-          { required: true, message: "请输入登录名", trigger: "blur" }
+          { validator: validateUserName, trigger: 'blur' },
+          { required: true, message: "请输入登录名", trigger: "blur" },
+          { type: 'string', min: 8, message: "登录名最少输入8位", trigger: "blur" },
         ],
         password: [{ required: true, message: "请输入密码", trigger: "blur" }],
         realName: [
           { required: true, message: "请输入真实姓名", trigger: "blur" }
         ],
         roleId: [
-          { required: true, message: "请选择一个角色", trigger: "change" }
+          { required: true, message: "请选择一个角色", pattern: /.+/, trigger: "change" }
         ]
       },
       editUserModal: false,
@@ -273,6 +279,13 @@ export default {
       // this.getRoleList();
     },
     addUser() {
+      // this.$refs['addUserData'].validate((valid) => {
+      //     if (valid) {
+      //         this.$Message.success('Success!');
+      //     } else {
+      //         this.$Message.error('Fail!');
+      //     }
+      // })
       const { type, roleId, userName, password, realName } = this.addUserData;
       if (!type || !roleId || !userName || !password || !realName) {
         this.$Message.error({
@@ -344,15 +357,11 @@ export default {
     },
     changePage(pageIndex) {
       this.postData.pageIndex = pageIndex;
-      this.getUserList(() => {
-        this.$Message.success("查询成功！");
-      });
+      this.getUserList();
     },
     changePageSize(pageSize) {
       this.postData.pageSize = pageSize;
-      this.getUserList(() => {
-        this.$Message.success("查询成功！");
-      });
+      this.getUserList();
     },
     openEditUser({
       id,

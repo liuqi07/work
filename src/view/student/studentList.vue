@@ -121,11 +121,11 @@
       },
       changePage(pageIndex) {
         this.postData.pageIndex = pageIndex
-        this.getStudentList(()=>{this.$Message.success('查询成功！')})
+        this.getStudentList()
       },
       changePageSize(pageSize) {
         this.postData.pageSize = pageSize
-        this.getStudentList(()=>{this.$Message.success('查询成功！')})
+        this.getStudentList()
       }
     },
     mounted(){

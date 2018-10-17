@@ -6,12 +6,12 @@
           <Option v-for="item in firstList" :value="item.code" :key="item.code">{{item.name}}</Option>
         </Select>
       </FormItem>
-      <Button type="primary" v-hasPermission="'secondAdd'" @click="secondAdd" style="margin-left: 20px; margin-right: 10px;">添加二级分类</Button>
-      <Button type="primary" @click="search">查询</Button>
+      <Button type="primary" @click="search" style="margin-left: 20px; margin-right: 10px;">查询</Button>
+      <Button type="primary" v-hasPermission="'secondAdd'" @click="secondAdd">添加二级分类</Button>
     </Form>
     <Card style="margin-top: 10px;">
       <Table :columns="columns" :data="secondList"></Table>
-      <Page :total="total" show-total @on-change="changePage" :page-index="postData.pageIndex" style="margin-top: 10px" />
+      <Page :total="total" show-total @on-change="changePage" :page-index="postData.pageIndex" @on-page-size-change="changePageSize" show-sizer :page-size="postData.pageSize" style="margin-top: 10px" />
     </Card>
     <Modal title="添加二级分类" v-model="addModal">
       <Form :label-width="120">
@@ -170,7 +170,11 @@
       },
       changePage(pageIndex) {
         this.postData.pageIndex = pageIndex
-        this.getSecondList(() => { this.$Message.success('查询成功！') })
+        this.getSecondList()
+      },
+      changePageSize(s){
+        this.postData.pageSize = s
+        this.getSecondList()
       }
     },
     mounted() {

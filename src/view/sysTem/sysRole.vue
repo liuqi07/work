@@ -7,7 +7,7 @@
     </Form>
     <Card>
       <Table :columns="roleColumns" :data="roleList"></Table>
-      <Page :total="total" show-total @on-change="changePage" :page-index="postData.pageIndex" :page-size="postData.pageSize" style="margin-top: 10px"
+      <Page :total="total" show-total @on-change="changePage" :page-index="postData.pageIndex" :page-size="postData.pageSize" @on-page-size-change="changePageSize" show-sizer style="margin-top: 10px"
       />
     </Card>
     <!-- 添加角色 -->
@@ -291,7 +291,11 @@
       },
       changePage(pageIndex) {
         this.postData.pageIndex = pageIndex
-        this.getRoleList(() => { this.$Message.success('查询成功！') })
+        this.getRoleList()
+      },
+      changePageSize(s) {
+        this.postData.pageSize = s
+        this.getRoleList()
       }
     },
     mounted() {

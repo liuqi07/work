@@ -363,7 +363,7 @@
           data: this.postData,
           success: res => {
             this.teacherList = res.data.list
-            this.total = res.total
+            this.total = res.data.total
             cb && cb()
           }
         })
@@ -481,11 +481,11 @@
       },
       changePage(pageIndex) {
         this.postData.pageIndex = pageIndex
-        this.getTeacherList(() => { this.$Message.success('查询成功！') })
+        this.getTeacherList()
       },
       changePageSize(pageSize) {
         this.postData.pageSize = pageSize
-        this.getTeacherList(() => { this.$Message.success('查询成功！') })
+        this.getTeacherList()
       },
 
       firstChange(val) {

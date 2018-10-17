@@ -11,7 +11,7 @@
     </Row>
     <Card>
       <Table :columns="columns" :data="materialList"></Table>
-      <Page :total="total" show-total @on-change="changePage" @on-page-size-change="changePageSize" :page-size="postData.pageSize"
+      <Page :total="total" show-total show-sizer @on-change="changePage" @on-page-size-change="changePageSize" :page-size="postData.pageSize"
         :page-index="postData.pageIndex" style="margin-top: 10px" />
     </Card>
     <Modal title="教材基本信息" v-model="addMaterialModal" @on-ok="addMaterial">
@@ -228,7 +228,6 @@
           this.addData.hour = null
           this.hourList = []
         }
-        console.log('%c this.addData.hour', 'color:red;', this.addData.hour);
       },
 
       getFirstList() {
@@ -315,11 +314,11 @@
       },
       changePage(p){
         this.postData.pageIndex = p
-        this.getMaterialList(()=>{this.$Message.success('查询成功！')})
+        this.getMaterialList()
       },
       changePageSize(s) {
         this.postData.pageSize = s
-        this.getMaterialList(()=>{this.$Message.success('查询成功！')})
+        this.getMaterialList()
       }
     },
     mounted() {
