@@ -113,7 +113,7 @@
   import UnPushPackage from './components/unPushPackage.vue';
   import PushPackage from './components/pushPackage.vue';
   import LowerPackage from './components/lowerPackage.vue';
-  import ThreeLevel from './components/threeLevel.vue';
+  // import ThreeLevel from './components/threeLevel.vue';
   export default {
     components: {
       // AllCourse,
@@ -126,7 +126,7 @@
       UnPushPackage,
       PushPackage,
       LowerPackage,
-      ThreeLevel,
+      // ThreeLevel,
     },
     data() {
       return {

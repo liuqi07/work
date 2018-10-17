@@ -168,6 +168,15 @@ export default [
           icon: "",
           title: "教师列表"
         }
+      },
+      {
+        path: "/teacherCourseTable",
+        name: "teacherCourseTable",
+        component: () => import("@/view/teacher/teacherCourseTable.vue"),
+        meta: {
+          icon: "",
+          title: "教师列表"
+        }
       }
     ]
   },
@@ -216,24 +225,41 @@ export default [
           title: "课程管理"
         }
       },
+      
+    ]
+  },
+  {
+    path: '/question',
+    name: "question",
+    component: Main,
+    meta: { icon: "", title: "题库管理" },
+    children: [
+      {
+        path: "/questionList",
+        name: "questionList",
+        component: () => import("@/view/question/questionList.vue"),
+        meta: {
+          icon: "",
+          title: "题库列表"
+        }
+      }
+    ]
+  },
+  {
+    path: '/coursePackage',
+    name: "coursePackage",
+    component: Main,
+    meta: { icon: "", title: "课时套餐" },
+    children: [
       {
         path: "/packageList",
         name: "packageList",
-        component: () => import("@/view/course/packageList.vue"),
+        component: () => import("@/view/coursePackage/packageList.vue"),
         meta: {
           icon: "",
           title: "套餐管理"
         }
       },
-      {
-        path: "/questionList",
-        name: "questionList",
-        component: () => import("@/view/course/questionList.vue"),
-        meta: {
-          icon: "",
-          title: "题库管理"
-        }
-      }
     ]
   },
   {
@@ -313,12 +339,12 @@ export default [
         }
       },
       {
-        path: "/manager",
-        name: "manager",
-        component: () => import("@/view/log/manager.vue"),
+        path: "/moneyLog",
+        name: "moneyLog",
+        component: () => import("@/view/log/moneyLog.vue"),
         meta: {
           icon: "",
-          title: "后台日志"
+          title: "日常操作日志"
         }
       },
       {
