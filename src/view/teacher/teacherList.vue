@@ -77,22 +77,22 @@
     </Modal>
     <Modal title="收费标准" v-model="feeListModal" :width="900">
       <Form :label-width="90" inline>
-        <FormItem label="一级分类：" style="width: 200px;" required>
+        <FormItem label="一级分类：" style="width: 200px;">
           <Select v-model="feeListData.firstCode" @on-change="firstChange" clearable>
             <Option v-for="item in firstList2" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem label="二级分类：" style="width: 200px;" required>
+        <FormItem label="二级分类：" style="width: 200px;">
           <Select v-model="feeListData.secondCode" @on-change="secondChange" clearable>
             <Option v-for="item in secondList2" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem label="三级分类：" style="width: 200px;" required>
+        <FormItem label="三级分类：" style="width: 200px;">
           <Select v-model="feeListData.thirdCode" @on-change="thirdChange" clearable>
             <Option v-for="item in thirdList2" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem label="课程名称：" style="width: 200px;" required>
+        <FormItem label="课程名称：" style="width: 200px;">
           <Select v-model="feeListData.courseId" @on-change="courseChange" clearable>
             <Option v-for="item in courseList2" :value="item.id" :key="item.id">{{item.name}}</Option>
           </Select>
@@ -104,32 +104,32 @@
       <Page :total="total2" show-total @on-change="changePage2" :page-index="postData.pageIndex" :page-size="postData.pageSize"
         style="margin-top: 10px" />
     </Modal>
-    <Modal v-model="feeModal" title="收费标准" @on-ok="saveFee" @on-cancel="cancelFee">
-      <Form :label-width="90" inline>
-        <FormItem label="一级分类：" style="width: 200px;" required>
+    <Modal v-model="feeModal" title="收费标准" :closable="false" :mask-closable="false">
+      <Form :label-width="90" inline ref="feeListData" :model="feeListData" :rules="feeListRules" >
+        <FormItem prop="firstCode" label="一级分类：" style="width: 200px;" >
           <Select v-model="feeListData.firstCode" @on-change="firstChange" clearable>
             <Option v-for="item in firstList2" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem label="二级分类：" style="width: 200px;" required>
+        <FormItem prop="secondCode" label="二级分类：" style="width: 200px;" >
           <Select v-model="feeListData.secondCode" @on-change="secondChange" clearable>
             <Option v-for="item in secondList2" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem label="三级分类：" style="width: 200px;" required>
+        <FormItem prop="thirdCode" label="三级分类：" style="width: 200px;" >
           <Select v-model="feeListData.thirdCode" @on-change="thirdChange" clearable>
             <Option v-for="item in thirdList2" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem label="课程名称：" style="width: 200px;" required>
+        <FormItem prop="courseId" label="课程名称：" style="width: 200px;" >
           <Select v-model="feeListData.courseId" @on-change="courseChange" clearable>
             <Option v-for="item in courseList2" :value="item.id" :key="item.id">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem label="授课学生数：" style="width: 250px;" :label-width="100" required>
+        <FormItem prop="oneToX" label="授课学生数：" style="width: 250px;" :label-width="100" >
           <Input v-model="feeListData.oneToX" placeholder="请先选择三级分类" disabled/>
         </FormItem>
-        <FormItem label="收费标准：" style="width: 300px;" required>
+        <FormItem prop="fee" label="收费标准：" style="width: 300px;" >
           <Row>
             <Col :span="10">
             <Row>
@@ -139,12 +139,16 @@
             </Col>
             <Col :span="14">
             <Row>每课时
-              <InputNumber :min="1" size="small" v-model="feeListData.fee" style="width: 50px;" /> 美元
+              <InputNumber :min="0" size="small" v-model="feeListData.fee" style="width: 50px;" /> 美元
             </Row>
             </Col>
           </Row>
         </FormItem>
       </Form>
+      <div slot=footer>
+        <Button @click="cancelFee" >取消</Button>
+        <Button type="primary" @click="saveFee" >确定</Button>
+      </div>
     </Modal>
   </div>
 </template>
@@ -154,6 +158,10 @@
   import { formatDate } from '@/libs/tools';
   export default {
     data() {
+      const validateCourseId = (rule, val, cb) => {
+        console.log(val)
+        cb()
+      }
       return {
         postData: {
           pageIndex: 1,
@@ -311,6 +319,29 @@
           { title: '三级分类', key: 'thirdName', align: 'center' }
         ],
         feeList: [],
+        feeListRules: {
+          firstCode: [
+            { required: true, message: '请选择一级分类', trigger: 'change' }
+          ],
+          secondCode: [
+            { required: true, message: '请选择二级分类', trigger: 'change' }
+          ],
+          thirdCode: [
+            { required: true, message: '请选择三级分类', trigger: 'change' }
+          ],
+          courseId: [
+            { required: true, type: 'number', message: '请选择课程', trigger: 'change' },
+            // { validator: validateCourseId, trigger: 'change' }
+          ],
+          oneToX: [
+            // { required: true, type: 'number', message: '请输入授课学生数', trigger: 'blur' }
+            { validator: validateCourseId, trigger: 'change' }
+          ],
+          fee: [
+            { required: true, type: 'number', message: '请输入收费标准', trigger: 'blur' },
+            { required: true, type: 'number', message: '请输入收费标准', trigger: 'change' }
+          ]
+        },
         feeModal: false,
         teacherId2: '',
       }
@@ -324,25 +355,33 @@
         this.feeListData = { teacherId: this.teacherId2, fee: 1 }
       },
       saveFee() {
-        http.post({
-          vm: this,
-          url: '/manager/teacher/saveTeacherFee',
-          data: this.feeListData,
-          success: res => {
-            this.$Message.success('新增成功')
-            this.feeListModal = false
+        this.$refs['feeListData'].validate(valid => {
+          if(valid){
+            http.post({
+              vm: this,
+              url: '/manager/teacher/saveTeacherFee',
+              data: this.feeListData,
+              success: res => {
+                this.$Message.success('新增成功')
+                this.feeListModal = false
+              }
+            })
+            this.secondList2 = []
+            this.thirdList2 = []
+            this.courseList2 = []
+            this.feeListData = { pageIndex: 1, pageSize: 10 }
+            this.feeModal = false
+            this.$refs['feeListData'].resetFields()
           }
         })
-        this.secondList2 = []
-        this.thirdList2 = []
-        this.courseList2 = []
-        this.feeListData = { pageIndex: 1, pageSize: 10 }
       },
       cancelFee() {
         this.secondList2 = []
         this.thirdList2 = []
         this.courseList2 = []
         this.feeListData = { pageIndex: 1, pageSize: 10 }
+        this.feeModal = false
+        this.$refs['feeListData'].resetFields()
       },
       addOneToXFee() {
         this.feeListData.oneToXFeeList.push({})
@@ -535,9 +574,15 @@
         }
       },
       courseChange(val) {
-        this.feeListData.courseId = val
-        const _courseId = this.courseList2.find(item => item.id === val)
-        this.feeListData = Object.assign({}, this.feeListData, { oneToX: _courseId && _courseId.oneToX }) //.oneToX = _courseId && _courseId.oneToX || null
+        this.feeListData.courseId = null
+        if(val){
+          // this.feeListData = Object.assign({}, this.feeListData, {courseId: val})
+          this.feeListData.courseId = val
+          const _courseId = this.courseList2.find(item => item.id === val)
+          this.feeListData = Object.assign({}, this.feeListData, { oneToX: _courseId && _courseId.oneToX }) //.oneToX = _courseId && _courseId.oneToX || null
+        }else{
+          this.feeListData = Object.assign({}, this.feeListData, {courseId: null, fee: null, oneToX: null})
+        }
       },
       _getFirstList() {
         http.get({

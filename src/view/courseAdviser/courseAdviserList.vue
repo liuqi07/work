@@ -24,8 +24,8 @@
       <Page :total="total" show-total show-sizer @on-change="changePage" @on-page-size-change="changePageSize" :page-index="postData.pageIndex"
         :page-size="postData.pageSize" style="margin-top: 10px" />
     </Card>
-    <Modal v-model="detailModal" title="完善资料">
-      <Form :model="updateDetailData" :label-width="100">
+    <Modal v-model="detailModal" title="完善资料" :closable="false" :mask-closable="false">
+      <Form ref="updateDetailRef" :model="updateDetailData" :rules="updateDetailRules" :label-width="100">
         <FormItem label="课程顾问编号：" style="width: 300px;">
           <Input v-model="updateDetailData.code" disabled />
         </FormItem>
@@ -35,23 +35,22 @@
         <FormItem label="手机号码：" style="width: 300px;">
           <Input v-model="updateDetailData.mobilePhone" disabled />
         </FormItem>
-        <FormItem label="身份证号：" style="width: 300px;" required>
+        <FormItem prop="idNo" label="身份证号：" style="width: 300px;">
           <Input v-model="updateDetailData.idNo" />
         </FormItem>
-        <FormItem label="性别：" style="width: 300px;" required>
+        <FormItem prop="sex" label="性别：" style="width: 300px;" >
           <RadioGroup v-model="updateDetailData.sex">
             <Radio :label="1">男</Radio>
             <Radio :label="2">女</Radio>
           </RadioGroup>
         </FormItem>
-        <FormItem label="年龄" style="width: 300px;" required>
-          <Input v-model="updateDetailData.age" />
+        <FormItem prop="age" label="年龄：" style="width: 300px;" >
+          <Input v-model="updateDetailData.age" placeholder="请输入年龄" ></Input>
         </FormItem>
-        <FormItem label="提成比例：" style="width: 320px;" required>
-          <Row>
-            <Input v-model="updateDetailData.rate" style="width: 200px;" /> %</Row>
+        <FormItem prop="rate" label="提成比例：" style="width: 320px;" >
+          <Row><Input v-model="updateDetailData.rate" style="width: 200px;" /> %</Row>
         </FormItem>
-        <FormItem label="邮箱：" style="width: 300px;">
+        <FormItem prop="email" label="邮箱：" style="width: 300px;">
           <Input v-model="updateDetailData.email" />
         </FormItem>
       </Form>
@@ -68,6 +67,51 @@
   import { formatDate } from '@/libs/tools';
   export default {
     data() {
+      const validateIdNo = (rule, value, cb) => {
+        if(!value){
+          cb(new Error('身份找号不能为空'))
+        }else{
+          http.get({
+            vm: this,
+            url: '/manager/course-adviser/valid	',
+            data: { idNo: value, id: this.updateDetailData.id },
+            success: res => {
+              if(!res.data){
+                 cb(new Error('身份证号已存在'))
+              }else{
+                this.updateDetailData.age = new Date().getFullYear() - value.slice(6, 10)
+                cb()
+              }
+            },
+            error: err => {
+              cb(new Error('出错了！'))
+            }
+          })
+        }
+      }
+      const validateAge = (rule, value, cb) => {
+        console.log(rule, value)
+        if(!value){
+          cb(new Error('请输入年龄'))
+        }else{
+          if(!/^(?:[1-9][0-9]?|1[01][0-9]|100)$/.test(value)){
+            cb(new Error('请输入正确的年龄'))
+          }else{
+            cb()
+          }
+        }
+      }
+      const validateRate = (rule, value, cb) => {
+        if(!value){
+          cb(new Error('请输入提成比例'))
+        }else{
+          // if(!/^(?:[1-9][0-9]?|1[01][0-9]|100)$/.test(value)){
+          //   cb(new Error('请输入正确的年龄'))
+          // }else{
+            cb()
+          // }
+        }
+      }
       return {
         postData: {
           pageIndex: 1,
@@ -117,7 +161,26 @@
         ],
         courseAdviserList: [],
         detailModal: false,
-        updateDetailData: {}
+        updateDetailData: {},
+        updateDetailRules: {
+          idNo: [
+            { required: true, message: '身份证号不能为空', trigger: 'blur' },
+            { type: 'string', message: '请输入有效的身份证号', pattern: /^(^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$)|(^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])((\d{4})|\d{3}[Xx])$)$/, trigger: 'blur' },
+            { validator: validateIdNo, trigger: 'blur' }
+          ],
+          age: [
+            { required: true, type: 'number', message: '请填写年龄', trigger: 'blur' },
+            // { type: 'string', message: '请输入正确的年龄', pattern: /^(?:[1-9][0-9]?|1[01][0-9]|100)$/ , trigger: 'blur' },
+            // { validator: validateAge, trigger: 'blur' }
+          ],
+          rate: [
+            { required: true, type: 'number',message: '请填写提成比例', trigger: 'blur' },
+            // { validator: validateRate, trigger: 'blur' }
+          ],
+          email: [
+            { type: 'email', message: '请输入正确的邮箱', trigger: 'blur' }
+          ]
+        },
       }
     },
     methods: {
@@ -153,34 +216,35 @@
         const params = _params && '?' + _params
         window.open('http://www.zilongshu.com/manager/course-adviser/export' + params)
       },
-      openDetail({ code, realName, mobilePhone, idNo, sex, age, rate, email, id }) {
+      openDetail(row) {
         this.detailModal = true
-        this.updateDetailData = { code, realName, mobilePhone, idNo, sex, age, rate, email, id }
+        this.updateDetailData = { code: row.code, realName: row.realName, mobilePhone: row.mobilePhone, idNo: row.idNo, sex: row.sex, age: row.age, rate: row.rate, email: row.email, id: row.id }
       },
       updateDetail() {
-        const { idNo, sex, age, rate } = this.updateDetailData
-        if (!idNo || !sex || !age || !rate) {
-          this.$Message.error({
-            content: '标星内容不能为空！',
-            duration: 5
-          })
-          return
-        }
-        http.post({
-          vm: this,
-          url: '/manager/course-adviser/edit',
-          data: this.updateDetailData,
-          success: res => {
-            this.$Message.success('更新成功！')
-            this.detailModal = false
-            this.updateDetailData = {}
-            this.getCourseAdviserList()
+        this.$refs['updateDetailRef'].validate(valid => {
+          console.log(this.updateDetailData)
+          if(valid){
+            http.post({
+              vm: this,
+              url: '/manager/course-adviser/edit',
+              data: this.updateDetailData,
+              success: res => {
+                this.$Message.success('更新成功！')
+                this.detailModal = false
+                this.updateDetailData = {}
+                this.$refs['updateDetailRef'].resetFields()
+                this.getCourseAdviserList()
+              }
+            })
+          }else{
+            this.$Message.error('error')
           }
         })
       },
       cancelUpdateDetail() {
         this.detailModal = false
         this.updateDetailData = {}
+        this.$refs['updateDetailRef'].resetFields()
       },
       changePage(pageIndex) {
         this.postData.pageIndex = pageIndex
