@@ -57,7 +57,7 @@
     </Modal>
     <!-- 编辑管理人员 -->
     <Modal title="编辑管理人员" v-model="editUserModal">
-      <Form :label-width="80" ref="editUserData" :model="editUserData" :rules="editUserRules">
+      <Form :label-width="80" ref="editUser" :model="editUserData" :rules="editUserRules">
         <FormItem prop="roleId" label="角色：" >
           <Select v-model="editUserData.roleId" style="width: 300px;">
             <Option v-for="item in roleList" :value="item.id" :key="item.id" :label="item.name"></Option>
@@ -97,10 +97,12 @@ export default {
       if (!value) {
         cb(new Error('登录名不能为空'))
       }else{
+        let data = { userName: value }
+        this.editUserModal && (data.id = this.editUserData.id)
         http.post({
           vm: this,
           url: "/manager/sys-user/valid",
-          data: { userName: value },
+          data,
           success: res => {
             res.data && cb() || cb(new Error('登录名已存在'))
           }
@@ -108,14 +110,15 @@ export default {
       }
     }
     const validateMobilePhone = (rule, value, cb) => {
-      console.log(rule, value)
+      let data = { mobilePhone: value }
+      this.editUserModal && (data.id = this.editUserData.id)
       if(!value){
         cb()
       }else{
         http.post({
           vm: this,
           url: "/manager/sys-user/valid",
-          data: { mobilePhone: value },
+          data,
           success: res => {
             res.data && cb() || cb(new Error('手机号已存在'))
           }
@@ -123,13 +126,15 @@ export default {
       }
     }
     const validateEmail = (rule, value, cb) => {
+      let data = { email: value }
+      this.editUserModal && (data.id = this.editUserData.id)
       if(!value){
         cb()
       }else{
         http.post({
           vm: this,
           url: "/manager/sys-user/valid",
-          data: { email: value },
+          data,
           success: res => {
             res.data && cb() || cb(new Error('邮箱已存在'))
           }

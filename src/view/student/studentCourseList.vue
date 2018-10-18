@@ -60,7 +60,7 @@
     </Modal>
     <Modal :title="uploadTitle" v-model="uploadModal">
       <Button @click="openVideo" v-if="uploadPlayBack" type="success" style="margin-right: 50px;">查看回放</Button>
-      <input type="file" @change="handleFileChange">
+      <input type="file" accept=".mp4,.MPEG4" @change="handleFileChange">
       <div slot="footer" >
         <Button @click="cancel" style="margin-right: 10px;">取消</Button>
         <Button @click="uploadFile" type="primary" >确定</Button>
@@ -339,6 +339,7 @@
             data: formData,
             success: res => {
               this.$Message.success('上传成功！')
+              this.getCourseList()
               this.uploadModal = false
             }
           })

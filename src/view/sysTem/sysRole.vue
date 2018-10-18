@@ -56,13 +56,15 @@
   export default {
     data() {
       const validateName = (rule, value, cb) => {
+        let data = { name: value }
+        this.editRoleModal && (data.id = this.editRoleData.id)
         if (!value) {
           cb(new Error('角色名不能为空'))
         }else{
           http.post({
             vm: this,
             url: "/manager/sys-role/valid",
-            data: { name: value },
+            data,
             success: res => {
               res.data && cb() || cb(new Error('角色名已存在'))
             }
@@ -70,13 +72,15 @@
         }
       }
       const validateCode = (rule, value, cb) => {
+        let data = { code: value }
+        this.editRoleModal && (data.id = this.editRoleData.id)
         if (!value) {
-          cb(new Error('角色编码不能为空'))
+          cb()
         }else{
           http.post({
             vm: this,
             url: "/manager/sys-role/valid",
-            data: { code: value },
+            data,
             success: res => {
               res.data && cb() || cb(new Error('角色编码已存在'))
             }
@@ -307,7 +311,7 @@
             resourceIds: resourceIds.sort((a, b) => a - b)
           },
           success: res => {
-            this.$Message.success(res.msg)
+            this.$Message.success('授权成功！')
           }
         })
       },
@@ -323,7 +327,7 @@
               url: '/manager/sys-role/delete',
               data: { id: row.id, version: row.version, status: 2 },
               success: res => {
-                this.$Message.success(res.msg)
+                this.$Message.success('删除成功！')
                 this.$Modal.remove()
                 this.getRoleList()
               }

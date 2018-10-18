@@ -175,7 +175,6 @@
             content: '标星内容不能为空！',
             duration: 5
           })
-          console.log('%c ----> ', 'color:red;', name, courseDesc, firstId, secondId, thirdId, classType, oneToX, levelHourJsonStr, file, platform);
           return
         }
         const addData = { id, name, courseDesc, firstId, secondId, thirdId, classType, oneToX, levelHourJsonStr, file, platform }
@@ -275,8 +274,9 @@
             this.getThirdList(() => {
               const _thirdCode = this.addData.thirdList.find(s => s.id === thirdId)
               const thirdCode = _thirdCode && _thirdCode.code || ''
+              const levelLen = _thirdCode && _thirdCode.level || 0
               const oneToXArr = (_thirdCode && _thirdCode.oneToX && _thirdCode.oneToX.split(',') || []).map(i => parseInt(i))
-              this.addData = Object.assign({}, this.addData, { thirdCode, thirdId, oneToXArr, oneToX })
+              this.addData = Object.assign({}, this.addData, { thirdCode, thirdId, oneToXArr, oneToX, levelLen })
               // console.log('%c firstList, secondList, thirdList', 'color:red;', this.addData.firstList, this.addData.secondList, this.addData.thirdList, oneToXArr, oneToX);
               this.getCourseDetail(id, ()=>{
                 this.addData = Object.assign({}, courseData, this.addData)
