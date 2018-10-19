@@ -1,9 +1,7 @@
 <template>
   <div>
     <Form ref="sysRole" :model="sysRole" inline :label-width="120">
-      <FormItem label="可进行以下操作">
-        <Button v-hasPermission="'addSysRole'" type="primary" @click="addSysRole()">添加角色</Button>
-      </FormItem>
+      <Button v-hasPermission="'addSysRole'" type="primary" style="margin-left: 20px; margin-bottom: 5px" @click="addSysRole">添加角色</Button>
     </Form>
     <Card>
       <Table :columns="roleColumns" :data="roleList"></Table>
@@ -14,13 +12,13 @@
     <Modal title="添加角色" v-model="addRoleModal">
       <Form :label-width="100" ref="addRole" :model="addRoleData" :rules="addRoleRules">
         <FormItem prop="name" label="角色名称：" >
-          <Input v-model="addRoleData.name" style="width:300px;" placeholder="请输入角色名称"></Input>
+          <Input :value="addRoleData.name" style="width:300px;" placeholder="请输入角色名称"></Input>
         </FormItem>
         <FormItem prop="code" label="角色编码：" >
-          <Input v-model="addRoleData.code" style="width:300px;" placeholder="请输入角色编码"></Input>
+          <Input :value="addRoleData.code" style="width:300px;" placeholder="请输入角色编码"></Input>
         </FormItem>
         <FormItem prop="roleDesc" label="角色描述：" >
-          <Input type="textarea" v-model="addRoleData.roleDesc" style="width:300px;" placeholder="最多可输入60个字"></Input>
+          <Input type="textarea" :value="addRoleData.roleDesc" style="width:300px;" placeholder="最多可输入60个字"></Input>
         </FormItem>
       </Form>
       <div slot="footer">
@@ -32,10 +30,10 @@
     <Modal title="编辑角色" v-model="editRoleModal">
       <Form :label-width="80" ref="editRole" :model="editRoleData" :rules="editRoleRules">
         <FormItem prop="name" label="角色名称">
-          <Input v-model="editRoleData.name" style="width:300px;" placeholder="请输入角色名称"></Input>
+          <Input :value="editRoleData.name" style="width:300px;" placeholder="请输入角色名称"></Input>
         </FormItem>
         <FormItem prop="roleDesc" label="角色描述">
-          <Input type="textarea" v-model="editRoleData.roleDesc" style="width:300px;" placeholder="最多可输入60个字"></Input>
+          <Input type="textarea" :value="editRoleData.roleDesc" style="width:300px;" placeholder="最多可输入60个字"></Input>
         </FormItem>
       </Form>
       <div slot="footer">

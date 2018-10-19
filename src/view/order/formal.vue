@@ -142,7 +142,10 @@
           { title: '订单编号', key: 'orderNo', algin: 'center' },
           { title: '课程名称', key: 'name', algin: 'center' },
           { title: '学员姓名', key: 'studentRealName', algin: 'center' },
-          { title: '手机号码', key: 'studentMobilePhone', algin: 'center' },
+          { title: '手机号码', key: 'studentMobilePhone', algin: 'center', render: (h, params) => {
+            const studentMobilePhone = params.row.studentMobilePhone
+            return h('div', studentMobilePhone && studentMobilePhone.replace(studentMobilePhone.substr(3, 4), '****') || '')
+          }  },
           { title: '订单状态', key: 'statusStr', algin: 'center' },
           { title: '课程总价', key: 'allPrice', algin: 'center' },
           { title: '优惠总价', key: 'discountAllPrice', algin: 'center' },

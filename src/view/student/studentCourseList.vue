@@ -79,7 +79,10 @@
         columns: [
           { title: '学员编号', key: 'studentCode', align: 'center' },
           { title: '学员姓名', key: 'studentRealName', align: 'center' },
-          { title: '手机号码', key: 'studentMobilePhone', align: 'center' },
+          { title: '手机号码', key: 'studentMobilePhone', align: 'center', render: (h, params) => {
+            const studentMobilePhone = params.row.studentMobilePhone
+            return h('div', studentMobilePhone && studentMobilePhone.replace(studentMobilePhone.substr(3, 4), '****') || '')
+          }  },
           { title: '二级分类', key: 'secondName', align: 'center' },
           { title: '三级分类', key: 'thirdName', align: 'center' },
           { title: '课程名称', key: 'courseName', align: 'center' },

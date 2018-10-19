@@ -104,12 +104,10 @@
       const validateRate = (rule, value, cb) => {
         if(!value){
           cb(new Error('请输入提成比例'))
+        }else if(typeof Number(value) !== 'number'){
+          cb(new Error('请输入数字'))
         }else{
-          // if(!/^(?:[1-9][0-9]?|1[01][0-9]|100)$/.test(value)){
-          //   cb(new Error('请输入正确的年龄'))
-          // }else{
-            cb()
-          // }
+          cb()
         }
       }
       return {
@@ -120,28 +118,34 @@
         total: 0,
         createDate: '',
         columns: [
-          { title: '课程顾问编号', key: 'code', },
-          { title: '课程顾问', key: 'realName', },
-          { title: '手机号码', key: 'mobilePhone', },
-          { title: '邮箱', key: 'email', },
+          { title: '课程顾问编号', key: 'code', align: 'center', },
+          { title: '课程顾问', key: 'realName', align: 'center', },
+          { title: '手机号码', key: 'mobilePhone', align: 'center', render: (h, params) => {
+            const mobilePhone = params.row.mobilePhone
+            return h('div', mobilePhone && mobilePhone.replace(mobilePhone.substr(3, 4), '****') || '')
+          } },
+          { title: '邮箱', key: 'email', align: 'center', },
           {
-            title: '性别', key: 'sex', render: (h, params) => {
+            title: '性别', key: 'sex', align: 'center', render: (h, params) => {
               const sex = params.row.sex
               return h('div', {}, sex === 1 ? '男' : (sex === 2 ? '女' : '未知'))
             }
           },
-          { title: '年龄', key: 'age', },
-          { title: '身份证号', key: 'idNo', },
-          { title: '提成比例(%)', key: 'rate', },
+          { title: '年龄', key: 'age', align: 'center', },
+          { title: '身份证号', key: 'idNo', align: 'center', render: (h, params) => {
+            const idNo = params.row.idNo
+            return h('div', idNo && idNo.replace(idNo.substr(7, 8), '********') || '')
+          } },
+          { title: '提成比例(%)', key: 'rate', align: 'center', },
           {
-            title: '顾问状态', key: 'status', render: (h, params) => {
+            title: '顾问状态', key: 'status', align: 'center', render: (h, params) => {
               const status = params.row.status
               return h('div', {}, status === 1 ? '正常' : '停用')
             }
           },
-          { title: '注册时间', key: 'createTime', },
+          { title: '注册时间', key: 'createTime', align: 'center', },
           {
-            title: '操作', key: 'actions', render: (h, params) => {
+            title: '操作', key: 'actions', align: 'center', render: (h, params) => {
               return h('Button', {
                 props: {
                   type: 'primary',
@@ -174,8 +178,8 @@
             // { validator: validateAge, trigger: 'blur' }
           ],
           rate: [
-            { required: true, type: 'number',message: '请填写提成比例', trigger: 'blur' },
-            // { validator: validateRate, trigger: 'blur' }
+            { required: true, message: '请填写提成比例', trigger: 'blur' },
+            { validator: validateRate, trigger: 'blur' }
           ],
           email: [
             { type: 'email', message: '请输入正确的邮箱', trigger: 'blur' }
