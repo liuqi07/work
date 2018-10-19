@@ -28,57 +28,53 @@
       <Page :total="total" show-total show-sizer @on-change="changePage" @on-page-size-change="changePageSize" :page-size="postData.pageSize"
         :page-index="postData.pageIndex" style="margin-top: 10px" />
     </Card>
-    <Modal title="添加课程" v-model="addCourseModal">
-      <Form :label-width="100" :model="addData" :rules="rules">
-        <FormItem label="一级分类：" style="width: 300px;" required>
+    <Modal title="添加课程" v-model="addCourseModal" :closable="false" :mask-closable="false">
+      <Form :label-width="100" :model="addData" :rules="addRules" ref="addData">
+        <FormItem prop="firstCode" label="一级分类：" style="width: 300px;" >
           <Select v-model="addData.firstCode" @on-change="firstChange" clearable>
             <Option v-for="item in addData.firstList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem label="二级分类：" style="width: 300px;" required>
+        <FormItem prop="secondCode" label="二级分类：" style="width: 300px;" >
           <Select v-model="addData.secondCode" @on-change="secondChange" clearable>
             <Option v-for="item in addData.secondList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem label="三级分类：" style="width: 300px;" required>
+        <FormItem prop="thirdCode" label="三级分类：" style="width: 300px;" >
           <Select v-model="addData.thirdCode" @on-change="thirdChange" clearable>
             <Option v-for="item in addData.thirdList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem prop="name" label="课程名称：" style="width: 300px;" required>
+        <FormItem prop="name" label="课程名称：" style="width: 300px;" >
           <Input v-model="addData.name" placeholder="请输入课程名称" />
         </FormItem>
-        <FormItem prop="courseDesc" label="课程介绍：" style="width: 320px;" required>
+        <FormItem prop="courseDesc" label="课程介绍：" style="width: 320px;" >
           <Input type="textarea" v-model="addData.courseDesc" placeholder="请输入课程介绍，不超过100字" />
         </FormItem>
-        <!-- <three-level :required="true" @on_change="onThreeLevelChange" :threeLevelData="addData.threeLevelData"></three-level> -->
-        <FormItem label="授课比例：" style="width: 300px;" required>
+        <!-- <three-level :="true" @on_change="onThreeLevelChange" :threeLevelData="addData.threeLevelData"></three-level> -->
+        <FormItem prop="oneToX" label="授课比例：" style="width: 300px;" >
           <Select v-model="addData.oneToX" placeholder="请先选择三级分类" clearable>
-            <Option v-for="item in addData.oneToXArr" :key="item" :value="item">{{item}}</Option>
+            <Option v-for="item in addData.oneToXArr" :key="item" :value="parseInt(item)">{{item}}</Option>
           </Select>
         </FormItem>
-        <FormItem label="平台：" style="width: 300px;" required>
+        <FormItem prop="platform" label="平台：" style="width: 300px;" >
           <Select v-model="addData.platform">
             <Option :value="1">百度云</Option>
             <Option :value="2">Zoom</Option>
           </Select>
         </FormItem>
-        <FormItem prop="classType" label="课程类型：" style="width: 300px;" required>
+        <FormItem prop="classType" label="课程类型：" style="width: 300px;" >
           <RadioGroup v-model="addData.classType">
             <Radio :label="1">公开课</Radio>
             <Radio :label="2">试听课</Radio>
             <Radio :label="3">正式课</Radio>
           </RadioGroup>
         </FormItem>
-        <!-- <FormItem label="授课比例xxxx：" required>
-            <Button type="dashed" @click="addOneToX" size="small" style="margin-right: 10px;">增加</Button>
-            <InputNumber v-model="addData.x" size="small" :min="1" style="width: 50px; margin-right: 10px;" />
-            <Tag v-for="(item, index) in addData.oneToXArr" color="success" :key="index" :name="item" closable @on-close="closeOneToXTag">{{item}}</Tag>
-          </FormItem> -->
-        <FormItem label="级别：" style="width: 350px;" required>
-          <Button type="dashed" size="small" @click="addLevelHour" long icon="md-add" style="margin-right: 10px;">添加级别</Button>
+        <FormItem label="级别：" style="width: 350px;" required >
+          <Button type="dashed" size="small" @click="addLevelHour" icon="md-add" style="margin-right: 10px;">添加级别</Button>
+          <Button type="error" size="small" @click="removeLevelHour" icon="md-remove" >删除级别</Button>
         </FormItem>
-        <FormItem v-for="(item, index) in addData.levelHour" :key="index" required>
+        <FormItem prop="levelHour" v-for="(item, index) in addData.levelHour" :key="index" >
           <Row>
             <Col :span="6"> 等级
             <InputNumber :min="1" size="small" v-model="item.level" disabled style="width: 50px;" />
@@ -86,12 +82,9 @@
             <Col :span="6"> 课时
             <InputNumber :min="1" size="small" v-model="item.hour" style="width: 50px;" />
             </Col>
-            <Col :span="6">
-              <Button type="error" size="small" @click="removeLevelHour" >删除级别 {{index+1}}</Button>
-            </Col>
           </Row>
         </FormItem>
-        <FormItem label="上传图片：" :required="fileIsRequire" >
+        <FormItem prop="file" label="上传图片：" :required="fileIsRequire" >
           <input type="file" @change="handleFileChange">
         </FormItem>
       </Form>
@@ -123,18 +116,50 @@
       ThreeLevel,
     },
     data() {
+      const validateFile = (rule, value, cb) => {
+        if(!value && this.addOrEdit){
+          cb(new Error('请选择需要上传的文件'))
+        }else{
+          cb()
+        }
+      }
       return {
         postData: { pageIndex: 1, pageSize: 10 },
         courseList: [],
         total: 0,
         addCourseModal: false,
         addData: { oneToXArr: [], levelHour: [], firstList: [], secondList: [], thirdList: [] },
-        rules: {
+        addRules: {
+          firstCode: [
+            { required: true, message: '一级分类不能为空', trigger: 'change' }
+          ],
+          secondCode: [
+            { required: true, message: '二级分类不能为空', trigger: 'change' }
+          ],
+          thirdCode: [
+            { required: true, message: '三级分类不能为空', trigger: 'change' }
+          ],
           name: [
             { required: true, message: '课程名称不能为空', trigger: 'blur' }
           ],
           courseDesc: [
-            { required: true, message: '课程介绍不能为空', trigger: 'blur' }
+            { required: true, message: '课程介绍不能为空', trigger: 'blur' },
+            { type: 'string', max: 100, message: '课程介绍不能超过100字', trigger: 'blur' }
+          ],
+          oneToX: [
+            { required: true, type: 'number', message: '授课比例不能为空', trigger: 'change' }
+          ],
+          platform: [
+            { required: true, type: 'number', message: '平台不能为空', trigger: 'change' }
+          ],
+          classType: [
+            { required: true, type: 'number', message: '课程类型不能为空', trigger: 'change' }
+          ],
+          levelHour: [
+            { required: true, type: 'array', min: 1, message: '级别不能为空', trigger: 'change' }
+          ],
+          file: [
+            { validator: validateFile, trigger: 'change' }
           ]
         },
         batchList: [],
@@ -166,39 +191,45 @@
         this.getFirstList()
       },
       addCourse() {
-        const url = this.courseEditUrl || '/manager/course/add'
-        const { levelHour } = this.addData
-        levelHour.length > 0 && (this.addData.levelHourJsonStr = JSON.stringify(levelHour))
-        const { id, name, courseDesc, firstId, secondId, thirdId, classType, oneToX, levelHourJsonStr, file, platform } = this.addData
-        if (!(name && courseDesc && firstId && secondId && thirdId && classType && oneToX && levelHourJsonStr && (this.fileIsRequire ? file : true) && platform)) {
-          this.$Message.error({
-            content: '标星内容不能为空！',
-            duration: 5
-          })
-          return
-        }
-        const addData = { id, name, courseDesc, firstId, secondId, thirdId, classType, oneToX, levelHourJsonStr, file, platform }
-        if(!id){ delete addData.id }
-        const formData = new FormData()
-        for (let k in addData) {
-          formData.append(k, addData[k])
-        }
-        const msg = this.addOrEdit ? '添加成功' : '编辑成功'
-        http._postwithupload({
-          vm: this,
-          url,
-          data: formData,
-          success: res => {
-            this.$Message.success(msg)
-            this.addData = { oneToXArr: [], levelHour: [], firstList: [], secondList: [], thirdList: [] }
-            this.addCourseModal = false
-            this.getCourseList()
+        // if (!(name && courseDesc && firstId && secondId && thirdId && classType && oneToX && levelHourJsonStr && (this.fileIsRequire ? file : true) && platform)) {
+        //   this.$Message.error({
+        //     content: '标星内容不能为空！',
+        //     duration: 5
+        //   })
+        //   return
+        // }
+        this.$refs['addData'].validate(valid => {
+          const url = this.courseEditUrl || '/manager/course/add'
+          const { levelHour } = this.addData
+          levelHour.length > 0 && (this.addData.levelHourJsonStr = JSON.stringify(levelHour))
+          const { id, name, courseDesc, firstId, secondId, thirdId, classType, oneToX, levelHourJsonStr, file, platform } = this.addData
+          if(valid){
+            const addData = { id, name, courseDesc, firstId, secondId, thirdId, classType, oneToX, levelHourJsonStr, file, platform }
+            if(!id){ delete addData.id }
+            const formData = new FormData()
+            for (let k in addData) {
+              formData.append(k, addData[k])
+            }
+            const msg = this.addOrEdit ? '添加成功' : '编辑成功'
+            http._postwithupload({
+              vm: this,
+              url,
+              data: formData,
+              success: res => {
+                this.$Message.success(msg)
+                this.addData = { oneToXArr: [], levelHour: [], firstList: [], secondList: [], thirdList: [] }
+                this.addCourseModal = false
+                this.$refs['addData'].resetFields()
+                this.getCourseList()
+              }
+            })
           }
         })
       },
       cancelAddCourse() {
         this.addCourseModal = false
         this.addData = { oneToXArr: [], levelHour: [], firstList: [], secondList: [], thirdList: [] }
+        this.$refs['addData'].resetFields()
       },
       handleTabs(name) {
         let status = null;
@@ -261,7 +292,6 @@
       courseEdit(courseData) {
         this.fileIsRequire = false
         this.addOrEdit = false
-        console.log('%c courseData', 'color:red;', courseData);
         const { firstId, secondId, thirdId, oneToX, id, platform } = courseData
         this.getFirstList(() => {
           const _firstCode = this.addData.firstList.find(f => f.id === firstId)
@@ -395,11 +425,13 @@
       },
       removeLevelHour(e) {
         const levelHour = this.addData.levelHour
-        const index = e.target.innerText.substr(13) - 1
-        levelHour.splice(index, 1)
+        // const index = e.target.innerText.substr(13) - 1
+        levelHour.pop()
       },
       handleFileChange(e) {
         this.addData.file = e.target.files[0]
+        this.addData.file1 = 'isUpload'
+        console.log( '-----------------', this.addData.file)
       },
       changePage(pageIndex) {
         this.postData.pageIndex = pageIndex

@@ -1,13 +1,13 @@
 <template>
   <div>
-    <Form :label-width="100" inline>
-      <FormItem label="一级分类" style="width: 300px;">
+    <Form :label-width="90" inline>
+      <FormItem label="一级分类" style="width: 220px;">
         <Select v-model="secondPostData.parentCode" @on-change="firstListChange" @on-open-change="firstListOpenChange" @on-clear="clearFirstList"
           clearable>
           <Option v-for="item in firstList" :value="item.code" :key="item.code">{{item.name}}</Option>
         </Select>
       </FormItem>
-      <FormItem label="二级分类" style="width: 300px;">
+      <FormItem label="二级分类" style="width: 220px;">
         <Select v-model="postData.parentCode" @on-open-change="secondListOpenChange" clearable>
           <Option v-for="item in secondList" :value="item.code" :key="item.code">{{item.name}}</Option>
         </Select>
@@ -62,7 +62,7 @@
         <Button @click="add" type="primary" >确定</Button>
       </div>
     </Modal>
-    <Modal title="编辑" v-model="editModal" @on-ok="edit">
+    <Modal title="编辑" v-model="editModal" @on-ok="edit" :closable="false" :mask-closable="false">
       <Form :label-width="100">
         <FormItem label="三级分类名称：" style="width: 300px;">
           <Input v-model="editData.name" size="small" placeholder="请输入三级分类名称" />
@@ -235,7 +235,6 @@
 
 
       thirdEdit(row) {
-        console.log('%c row', 'color:red;', row);
         this.editModal = true
         this.oneToXArr = row.oneToX.split(',') || []
         this.levelList = row.levelQuestions || []
@@ -276,8 +275,8 @@
         this.secondList = []
         delete this.postData.parentCode
       },
-      changePage(pageIndex) {
-        this.postData.pageIndex = pageIndex
+      changePage(p) {
+        this.postData.pageIndex = p
         this.getThirdList()
       },
       changePageSize(s){

@@ -1,22 +1,22 @@
 <template>
   <div>
     <Form inline v-model="postData" :label-width="80" style="margin-bottom: 15px;">
-        <FormItem label="一级分类" style="width: 220px;">
+        <FormItem label="一级分类" style="width: 200px;">
           <Select v-model="firstCode" @on-change="firstChange" clearable>
             <Option v-for="item in firstList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem label="二级分类" style="width: 220px;">
+        <FormItem label="二级分类" style="width: 200px;">
           <Select v-model="secondCode" @on-change="secondChange" clearable>
             <Option v-for="item in secondList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem label="三级分类" style="width: 220px;">
+        <FormItem label="三级分类" style="width: 200px;">
           <Select v-model="thirdCode" clearable>
             <Option v-for="item in thirdList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem label="课程名称" style="width: 220px;">
+        <FormItem label="课程名称" style="width: 200px;">
           <Input v-model="postData.name" placeholder="请输入课程名称" />
         </FormItem>
           <Button type="primary" @click="handleSearch" style="margin: 0 10px 0 20px;">搜索</Button>

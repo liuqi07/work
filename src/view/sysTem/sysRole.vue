@@ -210,6 +210,7 @@
         })
       },
       addSysRole() {
+        this.$refs['addRole'].resetFields()
         this.addRoleModal = true
       },
       addRole() {
@@ -228,8 +229,6 @@
                 this.addRoleData = { code: '', name: '', roleDesc: '' }
               }
             })
-          }else {
-            this.$Message.error('请检查后再次提交！');
           }
         })
       },
@@ -239,6 +238,7 @@
         this.addRoleModal = false
       },
       openEditRole(params) {
+        this.$refs['editRole'].resetFields()
         this.editRoleModal = true
         const row = params.row
         this.editRoleData = { name: row.name, roleDesc: row.roleDesc, version: row.version, id: row.id }
@@ -259,8 +259,6 @@
                 this.getRoleList()
               }
             })
-          }else {
-            this.$Message.error('请检查后再次提交！');
           }
         })
       },

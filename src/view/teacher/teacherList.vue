@@ -371,6 +371,7 @@
             this.courseList2 = []
             this.feeListData = { pageIndex: 1, pageSize: 10 }
             this.feeModal = false
+            // this.getFeeList()
             this.$refs['feeListData'].resetFields()
           }
         })

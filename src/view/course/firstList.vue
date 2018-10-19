@@ -6,12 +6,16 @@
       <Table :columns="columns" :data="firstList"></Table>
       <Page :total="total" show-total @on-change="changePage" :page-index="postData.pageIndex" @on-page-size-change="changePageSize" show-sizer :page-size="postData.pageSize" style="margin-top: 10px" />
     </Card>
-    <Modal :title="title" v-model="modal" @on-ok="save">
+    <Modal :title="title" v-model="modal" :closable="false" :mask-closable="false">
       <Form :label-width="120">
         <FormItem label="一级分类名称：" style="width: 300px;" required>
           <Input v-model="levelName" placeholder="请输入一级分类名称" />
         </FormItem>
       </Form>
+      <div slot="footer">
+        <Button @click="cancel">取消</Button>
+        <Button @click="save" type="primary">确定</Button>
+      </div>
     </Modal>
   </div>
 </template>
@@ -91,6 +95,10 @@
         })
       },
       save() {
+        if(!this.levelName){
+          this.$Message.error('一级分类名称不能为空！')
+          return
+        }
         const type = this.type
         let url = ''
         let msg = ''
@@ -114,8 +122,15 @@
             this.version = ''
             this.id = null
             this.levelName = ''
+            this.modal = false
           }
         })
+      },
+      cancel(){
+        this.levelName = ''
+        this.id = null
+        this.version = ''
+        this.modal = false
       },
       changePage(pageIndex) {
         this.postData.pageIndex = pageIndex

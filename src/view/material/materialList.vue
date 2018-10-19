@@ -14,45 +14,49 @@
       <Page :total="total" show-total show-sizer @on-change="changePage" @on-page-size-change="changePageSize" :page-size="postData.pageSize"
         :page-index="postData.pageIndex" style="margin-top: 10px" />
     </Card>
-    <Modal title="教材基本信息" v-model="addMaterialModal" @on-ok="addMaterial">
-      <Form :model="addData" :label-width="100">
-        <FormItem label="教材名称：" style="width: 300px;" required>
-          <Input type="textarea" v-model="addData.name" placeholder="可输入最多60个中文字符以内的商品名称" />
-        </FormItem>
-        <FormItem label="一级分类：" style="width: 300px;" required>
+    <Modal title="教材基本信息" v-model="addMaterialModal">
+      <Form :model="addData" :rules="addRules" ref="addData" :label-width="100" >
+        <FormItem prop="firstCode" label="一级分类：" style="width: 300px;">
           <Select v-model="addData.firstCode" @on-change="firstChange" clearable>
             <Option v-for="item in firstList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem label="二级分类：" style="width: 300px;" required>
+        <FormItem prop="secondCode" label="二级分类：" style="width: 300px;">
           <Select v-model="addData.secondCode" @on-change="secondChange" clearable>
             <Option v-for="item in secondList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem label="三级分类：" style="width: 300px;" required>
+        <FormItem prop="thirdCode" label="三级分类：" style="width: 300px;">
           <Select v-model="addData.thirdCode" @on-change="thirdChange" clearable>
             <Option v-for="item in thirdList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem label="课程名称：" style="width: 300px;" required>
+        <FormItem prop="name" label="教材名称：" style="width: 300px;">
+          <Input type="textarea" v-model="addData.name" placeholder="可输入最多60个中文字符以内的商品名称" />
+        </FormItem>
+        <FormItem prop="id" label="课程名称：" style="width: 300px;">
           <Select v-model="addData.id" @on-change="courseChange" clearable>
             <Option v-for="item in courseList" :value="item.id" :key="item.id">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem label="适用等级：" style="width: 300px;" required>
+        <FormItem prop="level" label="适用等级：" style="width: 300px;">
           <Select v-model="addData.level" @on-change="levelChange" clearable>
             <Option v-for="item in LevelList" :value="item.level" :key="item.level">{{item.level}}</Option>
           </Select>
         </FormItem>
-        <FormItem label="课时：" style="width: 300px;" required>
+        <FormItem prop="hour" label="课时：" style="width: 300px;">
           <Select v-model="addData.hour" clearable>
             <Option v-for="item in hourList" :value="item.hour" :key="item.hour">{{item.hour}}</Option>
           </Select>
         </FormItem>
-        <FormItem label="上传图片：" required>
+        <FormItem label="上传图片：">
           <input type="file" @change="handleFileChange">
         </FormItem>
       </Form>
+      <div slot="footer">
+        <Button @click="cancel">取消</Button>
+        <Button type="primary" @click="addMaterial">确定</Button>
+      </div>
     </Modal>
   </div>
 </template>
@@ -109,6 +113,29 @@
         thirdId: null,
         hour: null,
         addData: {},
+        addRules: {
+          firstCode: [
+            { required: true, message: '一级分类不能为空', trigger: 'change' }
+          ],
+          secondCode: [
+            { required: true, message: '二级分类不能为空', trigger: 'change' }
+          ],
+          thirdCode: [
+            { required: true, message: '三级分类不能为空', trigger: 'change' }
+          ],
+          name: [
+            { required: true, message: '教材名称不能为空', trigger: 'change' }
+          ],
+          id: [
+            { required: true, type: 'number', message: '请选择课程名称', trigger: 'change' }
+          ],
+          level: [
+            { required: true, type: 'number', message: '适用等级不能为空', trigger: 'change' }
+          ],
+          hour: [
+            { required: true, type: 'number', message: '课时不能为空', trigger: 'change' }
+          ]
+        },
         firstList: [],
         secondList: [],
         thirdList: [],
@@ -120,22 +147,36 @@
     methods: {
       openAdd() {
         this.addMaterialModal = true
+        this.addData = {}
+        this.$refs['addData'].resetFields()
         this.getFirstList()
       },
       addMaterial() {
-
-        const formData = new FormData()
-        for (let k in this.addData) {
-          k !== 'id' && formData.append(k, this.addData[k])
-        }
-        http._postwithupload({
-          vm: this,
-          url: '/manager/materials/upload',
-          data: formData,
-          success: res => {
-            this.$Message.success('添加成功！')
+        this.$refs['addData'].validate(valid => {
+          if(valid){
+            const formData = new FormData()
+            for (let k in this.addData) {
+              k !== 'id' && formData.append(k, this.addData[k])
+            }
+            http._postwithupload({
+              vm: this,
+              url: '/manager/materials/upload',
+              data: formData,
+              success: res => {
+                this.$Message.success('添加成功！')
+                this.$refs['addData'].resetFields()
+                this.addMaterialModal = false
+                this.addData = {}
+                this.getMaterialList()
+              }
+            })
           }
         })
+      },
+      cancel () {
+        this.addData = {}
+        this.addMaterialModal = false
+        this.$refs['addData'].resetFields()
       },
       query() {
         this.getMaterialList(()=>{

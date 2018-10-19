@@ -142,32 +142,6 @@ export default {
       }
     }
     return {
-      formInline: {
-        user: "",
-        password: ""
-      },
-      ruleInline: {
-        user: [
-          {
-            required: true,
-            message: "Please fill in the user name",
-            trigger: "blur"
-          }
-        ],
-        password: [
-          {
-            required: true,
-            message: "Please fill in the password.",
-            trigger: "blur"
-          },
-          {
-            type: "string",
-            min: 6,
-            message: "The password length cannot be less than 6 bits",
-            trigger: "blur"
-          }
-        ]
-      },
       postData: {
         pageIndex: 1,
         pageSize: 10
@@ -347,6 +321,7 @@ export default {
     },
     openAddModal() {
       this.addUserModal = true;
+      this.$refs['addUser'].resetFields()
       // this.getRoleList();
     },
     addUser() {
@@ -369,8 +344,6 @@ export default {
               this.addUserData.password = "";
             }
           });
-        } else {
-            this.$Message.error('请检查后再次提交！');
         }
       })
     },
@@ -410,6 +383,7 @@ export default {
       this.getUserList();
     },
     openEditUser({ id, roleId, userName, realName, version, email, mobilePhone, seatPhone }) {
+      this.$refs['editUser'].resetFields()
       this.editUserModal = true;
       this.editUserData = { id, roleId, userName, realName, version, email, mobilePhone, seatPhone }
     },
@@ -429,8 +403,6 @@ export default {
               this.getUserList();
             }
           });
-        }else{
-          this.$Message.error('请检查后再次提交！');
         }
       })
     },

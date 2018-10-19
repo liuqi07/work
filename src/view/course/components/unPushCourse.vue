@@ -20,22 +20,7 @@
           { title: '总课时', key: 'allClassHour', align: 'center' },
           // { title: '课程总价', key: '', align: 'center' },
           { title: '课程状态', key: 'status', align: 'center', render: (h, params) => {
-            let statusDesc = ''
-            switch(params.row.status){
-              case 1:
-              statusDesc = '已上架'
-              break;
-              case 2:
-              statusDesc = '未上架'
-              break;
-              case 3:
-              statusDesc = '已下架'
-              break;
-              case 4:
-              statusDesc = '已删除'
-              break;
-            }
-            return h('div', {}, statusDesc)
+            return h('div', {}, '未上架')
           } },
           // { title: '已售出', key: '', align: 'center' },
           { title: '管理', key: 'actions', align: 'center', width: 200, render: (h, params) => {
