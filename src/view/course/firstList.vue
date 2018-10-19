@@ -6,7 +6,7 @@
       <Table :columns="columns" :data="firstList"></Table>
       <Page :total="total" show-total @on-change="changePage" :page-index="postData.pageIndex" @on-page-size-change="changePageSize" show-sizer :page-size="postData.pageSize" style="margin-top: 10px" />
     </Card>
-    <Modal :title="title" v-model="modal" :closable="false" :mask-closable="false">
+    <Modal :title="title" v-model="modal" >
       <Form :label-width="120">
         <FormItem label="一级分类名称：" style="width: 300px;" required>
           <Input v-model="levelName" placeholder="请输入一级分类名称" />

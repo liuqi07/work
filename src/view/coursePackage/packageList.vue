@@ -200,6 +200,7 @@
         })
       },
       openAddPackage() {
+        this.$refs['addPackage'].resetFields()
         this.addPackageModal = true
         this.uploadIsShow = true
         this.addData = { oneToXArr: [], firstList: [], secondList: [], thirdList: [], isDiscount: 0, weekClassHour: 0, weekCount: 0, unitPrice: 0, discountUnitPrice: 0 }
@@ -212,21 +213,6 @@
         const addOrEdit = this.addOrEdit
         const { id, name, coursePackageDesc, firstId, secondId, thirdId, weekClassHour, weekCount, unitPrice, isDiscount, oneToX, discountUnitPrice, version } = this.addData
 
-        // if(!name || !firstId || !secondId || !thirdId || !weekClassHour || !weekCount || !unitPrice || !oneToX ) {
-        //   this.$Message.error({
-        //     content: '标星内容不能为空！',
-        //     duration: 6
-        //   })
-        //   console.log('%c addPackage', 'color:red;', name, firstId, secondId, thirdId, weekClassHour, weekCount, unitPrice, isDiscount, oneToX );
-        //   return
-        // }
-        // else if(isDiscount === 1 && !discountUnitPrice){
-        //   this.$Message.error({
-        //     content: '优惠金额不能为空！',
-        //     duration: 6
-        //   })
-        //   return
-        // }
         this.$refs['addPackage'].validate(valid => {
           if(valid) {
             const addData = { id, name, coursePackageDesc, firstId, secondId, thirdId, weekClassHour, weekCount, unitPrice, isDiscount, oneToX, discountUnitPrice, version }
@@ -234,10 +220,6 @@
               delete addData.id
               delete addData.version
             }
-            // const formData = new FormData()
-            // for (let k in addData) {
-            //   formData.append(k, addData[k])
-            // }
             const msg = addOrEdit ? '添加成功！' : '编辑成功！'
             http.post({
               vm: this,

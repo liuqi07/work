@@ -13,7 +13,7 @@
       <Table :columns="columns" :data="secondList"></Table>
       <Page :total="total" show-total @on-change="changePage" :page-index="postData.pageIndex" @on-page-size-change="changePageSize" show-sizer :page-size="postData.pageSize" style="margin-top: 10px" />
     </Card>
-    <Modal title="添加二级分类" v-model="addModal" :closable="false" :mask-closable="false">
+    <Modal title="添加二级分类" v-model="addModal" >
       <Form :label-width="120" :model="addData" :rules="addRules" ref="addData" >
         <FormItem prop="parentCode" label="一级分类名称：" style="width: 300px;">
           <Select v-model="addData.parentCode">

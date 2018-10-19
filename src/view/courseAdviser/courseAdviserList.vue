@@ -218,6 +218,7 @@
       },
       openDetail(row) {
         this.detailModal = true
+        this.$refs['updateDetailRef'].resetFields()
         this.updateDetailData = { code: row.code, realName: row.realName, mobilePhone: row.mobilePhone, idNo: row.idNo, sex: row.sex, age: row.age, rate: row.rate, email: row.email, id: row.id }
       },
       updateDetail() {

@@ -28,7 +28,7 @@
       <Page :total="total" show-total show-sizer @on-change="changePage" @on-page-size-change="changePageSize" :page-size="postData.pageSize"
         :page-index="postData.pageIndex" style="margin-top: 10px" />
     </Card>
-    <Modal title="添加课程" v-model="addCourseModal" :closable="false" :mask-closable="false">
+    <Modal title="添加课程" v-model="addCourseModal" >
       <Form :label-width="100" :model="addData" :rules="addRules" ref="addData">
         <FormItem prop="firstCode" label="一级分类：" style="width: 300px;" >
           <Select v-model="addData.firstCode" @on-change="firstChange" clearable>
@@ -188,6 +188,7 @@
         this.addOrEdit = true
         this.addData = { oneToXArr: [], levelHour: [], firstList: [], secondList: [], thirdList: [] }
         this.courseEditUrl = ''
+        this.$refs['addData'].resetFields()
         this.getFirstList()
       },
       addCourse() {
@@ -283,6 +284,7 @@
       },
       // 编辑课程
       courseEdit(courseData) {
+        this.$refs['addData'].resetFields()
         this.fileIsRequire = false
         this.addOrEdit = false
         const { firstId, secondId, thirdId, oneToX, id, platform } = courseData

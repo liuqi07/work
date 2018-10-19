@@ -104,7 +104,7 @@
       <Page :total="total2" show-total @on-change="changePage2" :page-index="postData.pageIndex" :page-size="postData.pageSize"
         style="margin-top: 10px" />
     </Modal>
-    <Modal v-model="feeModal" title="收费标准" :closable="false" :mask-closable="false">
+    <Modal v-model="feeModal" title="收费标准">
       <Form :label-width="90" inline ref="feeListData" :model="feeListData" :rules="feeListRules" >
         <FormItem prop="firstCode" label="一级分类：" style="width: 200px;" >
           <Select v-model="feeListData.firstCode" @on-change="firstChange" clearable>
@@ -349,6 +349,7 @@
     methods: {
       addFee() {
         this.feeModal = true
+        this.$refs['feeListData'].resetFields()
         this.secondList2 = []
         this.thirdList2 = []
         this.courseList2 = []
@@ -364,6 +365,7 @@
               success: res => {
                 this.$Message.success('新增成功')
                 this.feeListModal = false
+                this.$refs['feeListData'].resetFields()
               }
             })
             this.secondList2 = []
@@ -372,7 +374,6 @@
             this.feeListData = { pageIndex: 1, pageSize: 10 }
             this.feeModal = false
             // this.getFeeList()
-            this.$refs['feeListData'].resetFields()
           }
         })
       },
@@ -465,7 +466,6 @@
               })
             })
             this.weekTime = weekTime
-            // 此处注释待有数据返回时需放开
             this.certificateUrls = res.data.certificateUrls
             this.selfDesc = res.data.selfDesc
           }
