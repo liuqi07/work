@@ -1,10 +1,10 @@
 <template>
   <div>
     <Form :label-width="80" inline :model="postData">
-      <FormItem label="手机号：" style="width: 220px;">
+      <FormItem label="手机号：" style="width: 200px;">
         <Input v-model="postData.mobilePhone" placeholder="请输入手机号" />
       </FormItem>
-      <FormItem label="订单状态：" style="width: 220px;">
+      <FormItem label="订单状态：" style="width: 200px;">
         <Select v-model="postData.status" clearable>
           <Option :value="1">预约中</Option>
           <Option :value="2">排课中</Option>
@@ -28,7 +28,7 @@
       <Page :total="total" show-total show-sizer @on-change="changePage" @on-page-size-change="changePageSize" :page-size="postData.pageSize"
         :page-index="postData.pageIndex" style="margin-top: 10px" />
     </Card>
-    <Modal title="分配/变更顾问" v-model="subscribeAllotModal" @on-ok="saveSubscribeAllot">
+    <Modal title="分配/变更顾问" v-model="subscribeAllotModal">
       <Form :label-width="80">
         <FormItem label="选择顾问">
           <Select v-model="addSubscribeAllotData.adviserId" style="width: 300px;">
@@ -36,6 +36,10 @@
           </Select>
         </FormItem>
       </Form>
+      <div slot="footer">
+        <Button @click="cancel">取消</Button>
+        <Button type="primary" @click="saveSubscribeAllot">确定</Button>
+      </div>
     </Modal>
     <Modal title="排课" v-model="subscribeArrangeModal" @on-ok="saveSubscribeArrange">
       <Form :label-width="80">
@@ -62,38 +66,38 @@
       </Form>
     </Modal>
     <Modal title="转单" v-model="subscribeChangeOrderModal" >
-      <Form :label-width="120" :model="subscribeChangeOrderData">
-        <FormItem label="预约单号：" :label-width="100" style="width: 210px;" required>
+      <Form :label-width="120" :model="subscribeChangeOrderData" :rules="subscribeChangeOrderRules" ref="subscribeChangeOrder">
+        <FormItem prop="orderNo" label="预约单号：" :label-width="100" style="width: 210px;">
           <Input :value="subscribeChangeOrderData.orderNo" disabled />
         </FormItem>
         <Row>
           <Col :span="10">
-          <FormItem label="学员姓名：" :label-width="100" style="width: 210px;" required>
+          <FormItem prop="studentName" label="学员姓名：" :label-width="100" style="width: 210px;">
             <Input :value="subscribeChangeOrderData.studentName" />
           </FormItem>
           </Col>
           <Col :span="10">
-          <FormItem label="手机电话：" :label-width="100" style="width: 210px;" required>
+          <FormItem prop="studentMobilePhone" label="手机电话：" :label-width="100" style="width: 210px;">
             <Input :value="subscribeChangeOrderData.studentMobilePhone" />
           </FormItem>
           </Col>
         </Row>
-        <FormItem label="课程一级分类：" style="width: 300px;" required>
+        <FormItem prop="firstCode" label="课程一级分类：" style="width: 300px;">
           <Select v-model="subscribeChangeOrderData.firstCode" @on-change="firstChange">
             <Option v-for="item in firstList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem label="课程二级分类：" style="width: 300px;" required>
+        <FormItem prop="secondCode" label="课程二级分类：" style="width: 300px;">
           <Select v-model="subscribeChangeOrderData.secondCode" @on-change="secondChange">
             <Option v-for="item in secondList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem label="课程三级分类：" style="width: 300px;" required>
+        <FormItem prop="thirdCode" label="课程三级分类：" style="width: 300px;">
           <Select v-model="subscribeChangeOrderData.thirdCode" @on-change="thirdChange">
             <Option v-for="item in thirdList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem>
+        <FormItem prop="coursePackerId" label="套餐名称：" style="width: 300px;">
           <Select v-model="subscribeChangeOrderData.coursePackerId" @on-change="coursePackerChange">
             <Option v-for="item in coursePackerList" :value="item.id" :key="item.code">{{item.name}}</Option>
           </Select>
@@ -279,6 +283,29 @@
           coursePackerId: null,
           orderId: null
         },
+        subscribeChangeOrderRules: {
+          orderNo: [
+            { required: true, message: '', trigger: 'blur' }
+          ],
+          studentName: [
+            { required: true, message: '学院姓名不能为空', trigger: 'blur' }
+          ],
+          studentMobilePhone: [
+            { required: true, message: '学院手机号不能为空', trigger: 'blur' }
+          ],
+          firstCode: [
+            { required: true, message: '一级分类不能为空', trigger: 'change' }
+          ],
+          secondCode: [
+            { required: true, message: '二级分类不能为空', trigger: 'change' }
+          ],
+          thirdCode: [
+            { required: true, message: '三级分类不能为空', trigger: 'change' }
+          ],
+          coursePackerId: [
+            { required: true, type: 'number', message: '套餐名称不能为空', trigger: 'change'}
+          ]
+        },
         firstList: [],
         secondList: [],
         thirdList: [],
@@ -318,9 +345,20 @@
       // 查询可用教师
       getTeacherList() {
         const { orderId, dateList } = this.subscribeArrangeData
-        this.subscribeArrangeData.dateTimes = dateList.map(d => {
-          return formatDate('YYYY-MM-DD', d.date) + ' ' + d.time
+        
+        const dateTimes = dateList.map(d => {
+          if(d.date && d.time){
+            return formatDate('YYYY-MM-DD', d.date) + ' ' + d.time
+          }
         })
+        if(!dateTimes[0]){
+          this.$Message.error('请完整填写第一组预约时间')
+          return 
+        }else if(!dateTimes[1]){
+          this.$Message.error('请完整填写第二组预约时间')
+          return 
+        }
+        this.subscribeArrangeData.dateTimes = dateTimes
         http.get({
           vm: this,
           url: '/manager/teacher/queryTeacherByTimes',
@@ -430,25 +468,21 @@
         // this.subscribeChangeOrderData
       },
       handleSubmit() {
-        const data = this.subscribeChangeOrderData
-        const errFlag = Object.keys(data).filter(item => !data[item])
-        if (errFlag.length === 0) {
-          http.post({
-            vm: this,
-            url: '/manager/order-formal/orderCreateBySubscribe',
-            data: { orderId: data.orderId, coursePackerId: data.coursePackerId },
-            success: res => {
-              this.$Message.success('转单成功！')
-              this.subscribeChangeOrderModal = false
-              this.getSubscribeList()
-            }
-          })
-        } else {
-          this.$Message.error({
-            content: '请检查标星内容不能为空！',
-            duration: 5
-          })
-        }
+        this.$refs['subscribeChangeOrder'].validate(valid => {
+          if(valid){
+            http.post({
+              vm: this,
+              url: '/manager/order-formal/orderCreateBySubscribe',
+              data: this.subscribeChangeOrderData,
+              success: res => {
+                this.$Message.success('转单成功！')
+                this.subscribeChangeOrderModal = false
+                this.$refs['subscribeChangeOrder'].resetFields()
+                this.getSubscribeList()
+              }
+            })
+          }
+        })
       },
       onDateChange(date) {
         const dateList = this.subscribeArrangeData.dateList
@@ -458,6 +492,8 @@
       },
       cancel() {
         this.subscribeChangeOrderModal = false
+        this.subscribeAllotModal = false
+        this.$refs['subscribeChangeOrder'].resetFields()
         this.subscribeChangeOrderData = {
           studentName: null,
           studentMobilePhone: null,

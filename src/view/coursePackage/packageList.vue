@@ -30,54 +30,53 @@
         :page-index="postData.pageIndex" style="margin-top: 10px" />
     </Card>
     <Modal title="添加套餐" v-model="addPackageModal">
-      <Form :label-width="100" :model="addData" :rules="rules">
-        <FormItem prop="name" label="套餐名称：" style="width: 300px;" required>
+      <Form :label-width="100" :model="addData" :rules="addRules" ref="addPackage">
+        <FormItem prop="firstCode" label="一级分类：" style="width: 250px;" >
+          <Select v-model="addData.firstCode" @on-change="firstChange" clearable>
+            <Option v-for="item in addData.firstList" :value="item.code" :key="item.code">{{item.name}}</Option>
+          </Select>
+        </FormItem>
+        <FormItem prop="secondCode" label="二级分类：" style="width: 250px;" >
+          <Select v-model="addData.secondCode" @on-change="secondChange" clearable>
+            <Option v-for="item in addData.secondList" :value="item.code" :key="item.code">{{item.name}}</Option>
+          </Select>
+        </FormItem>
+        <FormItem prop="thirdCode" label="三级分类：" style="width: 250px;" >
+          <Select v-model="addData.thirdCode" @on-change="thirdChange" clearable>
+            <Option v-for="item in addData.thirdList" :value="item.code" :key="item.code">{{item.name}}</Option>
+          </Select>
+        </FormItem>
+        <FormItem prop="name" label="套餐名称：" style="width: 300px;" >
           <Input v-model="addData.name" placeholder="请输入套餐名称" />
         </FormItem>
         <FormItem label="套餐描述：" style="width: 300px;">
           <Input v-model="addData.coursePackageDesc" placeholder="请输入套餐描述" />
         </FormItem>
-        <!-- <three-level :required="true" @on_change="onThreeLevelChange" :threeLevelData="addData.threeLevelData"></three-level> -->
-        <FormItem label="一级分类：" style="width: 250px;" required>
-          <Select v-model="addData.firstCode" @on-change="firstChange" clearable>
-            <Option v-for="item in addData.firstList" :value="item.code" :key="item.code">{{item.name}}</Option>
-          </Select>
-        </FormItem>
-        <FormItem label="二级分类：" style="width: 250px;" required>
-          <Select v-model="addData.secondCode" @on-change="secondChange" clearable>
-            <Option v-for="item in addData.secondList" :value="item.code" :key="item.code">{{item.name}}</Option>
-          </Select>
-        </FormItem>
-        <FormItem label="三级分类：" style="width: 250px;" required>
-          <Select v-model="addData.thirdCode" @on-change="thirdChange" clearable>
-            <Option v-for="item in addData.thirdList" :value="item.code" :key="item.code">{{item.name}}</Option>
-          </Select>
-        </FormItem>
-        <FormItem label="授课比例：" style="width: 300px;" required>
+        <FormItem prop="oneToX" label="授课比例：" style="width: 300px;" >
           <Select v-model="addData.oneToX" placeholder="请先选择三级分类" clearable>
             <Option v-for="item in addData.oneToXArr" :key="item" :value="item">{{item}}</Option>
           </Select>
         </FormItem>
         <Row>
           <Col :span="10">
-            <FormItem label="周数：" style="width: 300px;" required>
+            <FormItem prop="weekCount" label="周数：" style="width: 300px;" >
               <InputNumber v-model="addData.weekCount" :min="1" placeholder="请输入周数" />
             </FormItem>
           </Col>
           <Col :span="10">
-            <FormItem label="每周课时数：" style="width: 300px;" required>
+            <FormItem prop="weekClassHour" label="每周课时数：" style="width: 300px;" >
               <InputNumber v-model="addData.weekClassHour" :min="1" placeholder="请输入每周课时数" />
             </FormItem>
           </Col>
         </Row>
         <Row>
           <Col :span="10">
-            <FormItem label="课时单价：" style="width: 300px;" required>
+            <FormItem prop="unitPrice" label="课时单价：" style="width: 300px;" >
               <InputNumber v-model="addData.unitPrice" :min="1" placeholder="请输入课时单价" />
             </FormItem>
           </Col>
           <Col :span="10">
-            <FormItem label="是否优惠:" style="width: 300px;" required>
+            <FormItem prop="isDiscount" label="是否优惠:" style="width: 300px;" >
               <RadioGroup v-model="addData.isDiscount" @on-change="onRadioChange">
                 <Radio :label="1">是</Radio>
                 <Radio :label="0">否</Radio>
@@ -85,12 +84,9 @@
             </FormItem>
           </Col>
         </Row>
-        <FormItem label="优惠课时单价：" style="width: 300px;" :label-width="110" :required="discountUnitPriceRequire">
+        <FormItem prop="discountUnitPrice" label="优惠课时单价：" style="width: 300px;" :label-width="110" :required="discountUnitPriceRequire">
           <InputNumber v-model="addData.discountUnitPrice" :min="0" placeholder="请输入优惠课时单价" :disabled="!discountUnitPriceRequire" />
         </FormItem>
-        <!-- <FormItem label="上传图片：" required v-if="uploadIsShow">
-          <input type="file" @change="handleFileChange">
-        </FormItem> -->
       </Form>
       <div slot="footer">
         <Button @click="cancelAddPackage" style="margin-right: 10px;" >取消</Button>
@@ -129,19 +125,57 @@
       // ThreeLevel,
     },
     data() {
+      const validateDiscountUnitPrice = (rule, value, cb) => {
+        console.log(value)
+        if(!value && this.discountUnitPriceRequire){
+          cb(new Error('优惠金额不能为空'))
+        }else if(typeof Number(value) !== 'number') {
+          cb(new Error('请输入正确的金额'))
+        }else{
+          cb()
+        }
+      }
       return {
         postData: { pageIndex: 1, pageSize: 10 },
         packageList: [],
         total: 0,
         addPackageModal: false,
-        addData: { oneToXArr: [], levelHour: [], firstList: [], secondList: [], thirdList: [], isDiscount: 0, weekClassHour: 0, weekCount: 0, unitPrice: 0, discountUnitPrice: 0 },
+        addData: { oneToXArr: [], firstList: [], secondList: [], thirdList: [], isDiscount: 0, weekClassHour: 0, weekCount: 0, unitPrice: 0, discountUnitPrice: 0 },
         // addData: { oneToXArr: [] },
-        rules: {
+        addRules: {
+          firstCode: [
+            { required: true, message: '一级分类不能为空', trigger: 'change' }
+          ],
+          secondCode: [
+            { required: true, message: '二级分类不能为空', trigger: 'change' }
+          ],
+          thirdCode: [
+            { required: true, message: '三级分类不能为空', trigger: 'change' }
+          ],
           name: [
             { required: true, message: '套餐名称不能为空', trigger: 'blur' }
           ],
-          coursePackageDesc: [
-            { required: true, message: '套餐介绍不能为空', trigger: 'blur' }
+          oneToX: [
+            { required: true, type: 'number', message: '授课比例不能为空', trigger: 'change' }
+          ],
+          weekCount: [
+            { required: true, type: 'number', min: 1, message: '周数不能为0或空', trigger: 'blur' },
+            { required: true, type: 'number', min: 1, message: '周数不能为0或空', trigger: 'change' }
+          ],
+          weekClassHour: [
+            { required: true, type: 'number', min: 1, message: '每周课时数不能为0或空', trigger: 'blur' },
+            { required: true, type: 'number', min: 1, message: '每周课时数不能为0或空', trigger: 'change' }
+          ],
+          unitPrice: [
+            { required: true, type: 'number', min: 1, message: '课时单价不能为0或空', trigger: 'blur' },
+            { required: true, type: 'number', min: 1, message: '课时单价不能为0或空', trigger: 'change' }
+          ],
+          isDiscount: [
+            { required: true, type: 'number', trigger: 'change' }
+          ],
+          discountUnitPrice: [
+            { validator: validateDiscountUnitPrice, trigger: 'blur'},
+            { validator: validateDiscountUnitPrice, trigger: 'change'},
           ]
         },
         batchList: [],
@@ -168,7 +202,7 @@
       openAddPackage() {
         this.addPackageModal = true
         this.uploadIsShow = true
-        this.addData = { oneToXArr: [], levelHour: [], firstList: [], secondList: [], thirdList: [], isDiscount: 0, weekClassHour: 0, weekCount: 0, unitPrice: 0, discountUnitPrice: 0 }
+        this.addData = { oneToXArr: [], firstList: [], secondList: [], thirdList: [], isDiscount: 0, weekClassHour: 0, weekCount: 0, unitPrice: 0, discountUnitPrice: 0 }
         this.packageUrl = '/manager/course-package/add'
         this.addOrEdit = true
         this.getFirstList()
@@ -176,50 +210,55 @@
       addPackage() {
         const url = this.packageUrl
         const addOrEdit = this.addOrEdit
-        const { levelHour, id, name, coursePackageDesc, firstId, secondId, thirdId, weekClassHour, weekCount, unitPrice, isDiscount, oneToX, discountUnitPrice, version } = this.addData
+        const { id, name, coursePackageDesc, firstId, secondId, thirdId, weekClassHour, weekCount, unitPrice, isDiscount, oneToX, discountUnitPrice, version } = this.addData
 
-        levelHour.length > 0 && (this.addData.levelHourJsonStr = JSON.stringify(levelHour))
-        if(!name || !firstId || !secondId || !thirdId || !weekClassHour || !weekCount || !unitPrice || !oneToX ) {
-          this.$Message.error({
-            content: '标星内容不能为空！',
-            duration: 6
-          })
-          console.log('%c addPackage', 'color:red;', name, firstId, secondId, thirdId, weekClassHour, weekCount, unitPrice, isDiscount, oneToX );
-          return
-        }
-        else if(isDiscount === 1 && !discountUnitPrice){
-          this.$Message.error({
-            content: '优惠金额不能为空！',
-            duration: 6
-          })
-          return
-        }
-        const addData = { id, name, coursePackageDesc, firstId, secondId, thirdId, weekClassHour, weekCount, unitPrice, isDiscount, oneToX, discountUnitPrice, version }
-        if(addOrEdit){
-          delete addData.id
-          delete addData.version
-        }
-        // const formData = new FormData()
-        // for (let k in addData) {
-        //   formData.append(k, addData[k])
+        // if(!name || !firstId || !secondId || !thirdId || !weekClassHour || !weekCount || !unitPrice || !oneToX ) {
+        //   this.$Message.error({
+        //     content: '标星内容不能为空！',
+        //     duration: 6
+        //   })
+        //   console.log('%c addPackage', 'color:red;', name, firstId, secondId, thirdId, weekClassHour, weekCount, unitPrice, isDiscount, oneToX );
+        //   return
         // }
-        const msg = addOrEdit ? '添加成功！' : '编辑成功！'
-        http.post({
-          vm: this,
-          url,
-          data: addData,
-          success: res => {
-            this.$Message.success(msg)
-            this.addData = { oneToXArr: [], levelHour: [], firstList: [], secondList: [], thirdList: [], isDiscount: 0, weekClassHour: 0, weekCount: 0, unitPrice: 0, discountUnitPrice: 0 }
-            this.discountUnitPriceRequire = false
-            this.addPackageModal = false
-            this.getPackageList()
+        // else if(isDiscount === 1 && !discountUnitPrice){
+        //   this.$Message.error({
+        //     content: '优惠金额不能为空！',
+        //     duration: 6
+        //   })
+        //   return
+        // }
+        this.$refs['addPackage'].validate(valid => {
+          if(valid) {
+            const addData = { id, name, coursePackageDesc, firstId, secondId, thirdId, weekClassHour, weekCount, unitPrice, isDiscount, oneToX, discountUnitPrice, version }
+            if(addOrEdit){
+              delete addData.id
+              delete addData.version
+            }
+            // const formData = new FormData()
+            // for (let k in addData) {
+            //   formData.append(k, addData[k])
+            // }
+            const msg = addOrEdit ? '添加成功！' : '编辑成功！'
+            http.post({
+              vm: this,
+              url,
+              data: addData,
+              success: res => {
+                this.$Message.success(msg)
+                this.addData = { oneToXArr: [], firstList: [], secondList: [], thirdList: [], isDiscount: 0, weekClassHour: 0, weekCount: 0, unitPrice: 0, discountUnitPrice: 0 }
+                this.discountUnitPriceRequire = false
+                this.addPackageModal = false
+                this.$refs['addPackage'].resetFields()
+                this.getPackageList()
+              }
+            })
           }
         })
       },
       cancelAddPackage () {
         this.addPackageModal = false
-        this.addData = { oneToXArr: [], levelHour: [], firstList: [], secondList: [], thirdList: [], isDiscount: 0, weekClassHour: 0, weekCount: 0, unitPrice: 0, discountUnitPrice: 0 }
+        this.addData = { oneToXArr: [],firstList: [], secondList: [], thirdList: [], isDiscount: 0, weekClassHour: 0, weekCount: 0, unitPrice: 0, discountUnitPrice: 0 }
+        this.$refs['addPackage'].resetFields()
         this.packageUrl = ''
       },
       handleTabs(name) {
@@ -390,11 +429,6 @@
       },
       onSelectAllCancel(selection) {
         this.batchList = selection
-      },
-      addLevelHour() {
-        const levelHour = this.addData.levelHour
-        const levelHourItem = { level: levelHour.length + 1, hour: 1 }
-        levelHour.push(levelHourItem)
       },
       handleFileChange(e) {
         this.addData.file = e.target.files[0]

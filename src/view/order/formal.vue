@@ -45,7 +45,7 @@
       <Page :total="total" show-total show-sizer @on-change="changePage" @on-page-size-change="changePageSize" :page-size="postData.pageSize"
         :page-index="postData.pageIndex" style="margin-top: 10px" />
     </Card>
-    <Modal title="分配/变更顾问" v-model="formalAllotModal" @on-ok="saveFormalAllot">
+    <Modal title="分配/变更顾问" v-model="formalAllotModal">
       <Form :label-width="80">
         <FormItem label="选择顾问" style="width: 300px;">
           <Select v-model="formalAllotData.adviserId">
@@ -53,6 +53,10 @@
           </Select>
         </FormItem>
       </Form>
+      <div slot="footer">
+        <Button @click="cancel">取消</Button>
+        <Button type="primary" @click="saveFormalAllot">确定</Button>
+      </div>
     </Modal>
     <Modal title="排课" v-model="formalArrangeModal">
       <Form :label-width="100">
@@ -81,8 +85,8 @@
         </FormItem>
       </Form>
       <div slot="footer">
-        <Button type="error" @click="cancelFormalArrange">取消</Button>
-        <Button type="primary" @click="saveFormalArrange">提交</Button>
+        <Button @click="cancelFormalArrange">取消</Button>
+        <Button type="primary" @click="saveFormalArrange">确定</Button>
       </div>
     </Modal>
     <Modal title="退款" v-model="formalRefundModal" :width="600">
@@ -298,9 +302,18 @@
       },
       getTeacherList() {
         const { orderId, dateList } = this.formalArrangeData
-        this.formalArrangeData.datesStr = dateList.map(d => {
-          return formatDate('YYYY-MM-DD', d.date) + ' ' + d.time
+        const datesStr = dateList.map(d => {
+          if(d.date && d.time){
+            return formatDate('YYYY-MM-DD', d.date) + ' ' + d.time
+          }
         })
+        for(let i = 0; i<datesStr.length; i++){
+          if(!datesStr[i]){
+            this.$Message.error(`请完整填写第 ${i+1} 组日期`)
+            return
+          }
+        }
+        this.formalArrangeData.datesStr = datesStr
         http.get({
           vm: this,
           url: '/manager/teacher/queryTeacherByTimes',
@@ -341,9 +354,14 @@
           data: this.formalAllotData,
           success: res => {
             this.$Message.success('分配顾问成功！')
+            this.formalAllotModal = false
             this.formalAllotData = {}
           }
         })
+      },
+      cancel () {
+        this.formalAllotModal = false
+        this.formalAllotData = {}
       },
       // 变更顾问
       formalChange({ orderId, version }) {
@@ -376,7 +394,6 @@
       saveFormalArrange() {
         const { url, orderId, datesStr, teacherId, courseId = -1 } = this.formalArrangeData
         if (!url || !orderId || !datesStr || !teacherId || !courseId) {
-          console.log('%c formalArrangeData', 'color:red;', this.formalArrangeData);
           this.$Message.error({
             content: '标星内容不能为空，请填写后重新提交！',
             duration: 5

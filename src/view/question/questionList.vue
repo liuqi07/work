@@ -47,45 +47,45 @@
     </Card>
 
     <Modal title="添加" v-model="addModal">
-      <Form :label-width="90">
-        <FormItem label="问题：" style="width: 300px;" required>
+      <Form :label-width="90" ref="postData" :model="postData" :rules="postRules">
+        <FormItem prop="question" label="问题：" style="width: 300px;" >
           <Input v-model="postData.question" placeholder="请输入问题" />
         </FormItem>
-        <FormItem label="答案：" style="width: 300px;" required>
+        <FormItem prop="answer" label="答案：" style="width: 300px;" >
           <Input v-model="postData.answer" placeholder="请输入答案" />
         </FormItem>
-        <FormItem label="题型：" style="width: 300px;" required>
+        <FormItem prop="type" label="题型：" style="width: 300px;" >
           <RadioGroup v-model="postData.type" @on-change="changeType">
             <Radio :label="1">选择题</Radio>
             <Radio :label="2">填空题</Radio>
           </RadioGroup>
         </FormItem>
-        <FormItem label="答题时间：" style="width: 300px;" required>
+        <FormItem prop="time" label="答题时间：" style="width: 300px;" >
           <Row>
             <InputNumber v-model="postData.time" placeholder="请输入答题时间，精确到秒" /> 秒
           </Row>
         </FormItem>
-        <FormItem label="一级分类：" style="width: 220px;" required>
+        <FormItem prop="firstCode" label="一级分类：" style="width: 220px;" >
           <Select v-model="postData.firstCode" @on-change="firstChange" @on-open-change="onFirstOpen" clearable>
             <Option v-for="item in firstList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem label="二级分类：" style="width: 220px;" required>
+        <FormItem prop="secondCode" label="二级分类：" style="width: 220px;" >
           <Select v-model="postData.secondCode" @on-change="secondChange" clearable>
             <Option v-for="item in secondList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem label="三级分类：" style="width: 220px;" required>
+        <FormItem prop="thirdCode" label="三级分类：" style="width: 220px;" >
           <Select v-model="postData.thirdCode" @on-change="thirdChange" clearable>
             <Option v-for="item in thirdList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem label="级别：" style="width: 220px;" required>
+        <FormItem prop="level" label="级别：" style="width: 220px;" >
           <Select v-model="postData.level" clearable>
             <Option v-for="item in levelList" :value="item" :key="item">{{item}}</Option>
           </Select>
         </FormItem>
-        <FormItem label="选项：" style="width: 400px;" v-if="isSelect" required>
+        <FormItem prop="options" label="选项：" style="width: 400px;" v-if="isSelect" >
           <Row v-for="(item, index) in postData.options" style="margin-bottom: 5px;" :key="index">
             <Col :span="4" style="margin-right: 10px;">
             <Input :value="item.code" disabled />
@@ -161,8 +161,52 @@
   import { formatDate } from '@/libs/tools';
   export default {
     data() {
+      const validateOptions = (rule, options=[], cb) => {
+        console.log(options)
+        const arr = []
+        for(let i=0; i<options.length; i++){
+          if(!options[i].desc){
+            arr.push(i+1)
+          }
+        }
+        if(arr.length>0){
+          cb(new Error(`第${arr.join('、')}道选项不能为空`))
+        }else{
+          cb()
+        }
+      }
       return {
         postData: { pageIndex: 1, pageSize: 10 },
+        postRules: {
+          question: [
+            { required: true, message: '题目不能为空', trigger: 'blur' },
+          ],
+          answer: [
+            { required: true, message: '答案不能为空', trigger: 'blur' },
+          ],
+          type: [
+            { required: true, type: 'number', message: '请选择题型', trigger: 'change' }
+          ],
+          time: [
+            { required: true, type: 'number', message: '答题时间不能为空', trigger: 'blur'},
+            { required: true, type: 'number', message: '答题时间不能为空', trigger: 'change'}
+          ],
+          firstCode: [
+            { required: true, message: '一级分类不能为空', trigger: 'change'}
+          ],
+          secondCode: [
+            { required: true, message: '二级分类不能为空', trigger: 'change'}
+          ],
+          thirdCode: [
+            { required: true, message: '三级分类不能为空', trigger: 'change'}
+          ],
+          level: [
+            { required: true, type: 'number', message: '级别不能为空', trigger: 'change'}
+          ],
+          options: [
+            { validator: validateOptions, trigger: 'blur' }
+          ]
+        },
         columns: [
           { title: '问题', key: 'question', align: 'center' },
           { title: '答案', key: 'answer', align: 'center' },
@@ -252,29 +296,36 @@
       openAdd() {
         this.addModal = true
         this.addOrEdit = true
+        this.$refs['postData'].resetFields()
         this.questionUrl = '/manager/course-question/add'
         this.postData = { type: 2, time: 0 }
       },
       saveQuestion() {
-        const options = this.postData.options
-        this.postData.options = JSON.stringify(options)
-        const msg = this.addOrEdit ? '添加成功！' : '编辑成功！'
-        const url = this.questionUrl
-        http.post({
-          vm: this,
-          url,
-          data: this.postData,
-          success: res => {
-            this.$Message.success(msg)
-            this.postData = { pageIndex: 1, pageSize: 10 }
-            this.getQuestionList()
-            this.addModal = false
+        this.$refs['postData'].validate(valid => {
+          if(valid){
+            const options = this.postData.options
+            this.postData.options = JSON.stringify(options)
+            const msg = this.addOrEdit ? '添加成功！' : '编辑成功！'
+            const url = this.questionUrl
+            http.post({
+              vm: this,
+              url,
+              data: this.postData,
+              success: res => {
+                this.$Message.success(msg)
+                this.postData = { pageIndex: 1, pageSize: 10 }
+                this.$refs['postData'].resetFields()
+                this.getQuestionList()
+                this.addModal = false
+              }
+            })
           }
         })
       },
       cancel() {
         this.addModal = false
         this.importModal = false
+        this.$refs['postData'].resetFields()
         this.postData = { pageIndex: 1, pageSize: 10 }
         this.isSelect = false
       },
@@ -454,7 +505,6 @@
             { code: 'D', desc: '', order: 4 }
           ]
           this.postData.options = options// = Object.assign({}, this.postData, { options })
-          console.log('%c 111', 'color:red;', 11);
         } else {
           this.isSelect = false
           delete this.postData.options

@@ -129,7 +129,7 @@
         packageEdit (row) {
           this.$emit('package_edit', row)
         },
-        packageDetele (row) {
+        packageDelete (row) {
           this.$emit('package_delete', row)
         }
     }
