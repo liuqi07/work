@@ -124,7 +124,8 @@
             { required: true, message: '三级分类不能为空', trigger: 'change' }
           ],
           name: [
-            { required: true, message: '教材名称不能为空', trigger: 'change' }
+            { required: true, message: '教材名称不能为空', trigger: 'blur' },
+            { type: 'string', max: 60, message: '字数限制在60以内', trigger: 'blur' }
           ],
           id: [
             { required: true, type: 'number', message: '请选择课程名称', trigger: 'change' }

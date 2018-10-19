@@ -123,6 +123,22 @@
           cb()
         }
       }
+      const validateName = (rule, name, cb) => {
+        if(!name){
+          cb(new Error('课程名称不能为空'))
+        }else{
+          let data = { name }
+          !this.addOrEdit && (data.id = this.addData.id)
+          http.post({
+            vm: this,
+            url: "/manager/course/valid",
+            data,
+            success: res => {
+              res.data && cb() || cb(new Error('课程名称已存在'))
+            }
+          })
+        }
+      }
       return {
         postData: { pageIndex: 1, pageSize: 10 },
         courseList: [],
@@ -140,7 +156,8 @@
             { required: true, message: '三级分类不能为空', trigger: 'change' }
           ],
           name: [
-            { required: true, message: '课程名称不能为空', trigger: 'blur' }
+            { required: true, message: '课程名称不能为空', trigger: 'blur' },
+            { validator: validateName, trigger: 'blur' }
           ],
           courseDesc: [
             { required: true, message: '课程介绍不能为空', trigger: 'blur' },
@@ -407,7 +424,6 @@
       },
       addLevelHour() {
         const { levelHour, levelLen } = this.addData
-        console.log(levelHour, levelLen)
         if(typeof levelLen === 'number' && levelHour.length >= levelLen){
           this.$Message.error(`此课程不能超过${levelLen}级！`)
           return

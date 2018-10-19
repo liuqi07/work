@@ -46,8 +46,7 @@
         refundDate: '',
         total: 0,
         columns: [
-          { title: '退货单编号', key: '', align: 'center' },
-          { title: '订单编号', key: 'orderNo', align: 'center' },
+          { title: '退货订单编号', key: 'orderNo', align: 'center' },
           { title: '课程名称', key: 'name', align: 'center' },
           { title: '学员姓名', key: 'studentRealName', align: 'center' },
           { title: '手机号码', key: 'studentMobilePhone', align: 'center', render: (h, params) => {

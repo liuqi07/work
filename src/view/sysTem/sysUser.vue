@@ -59,24 +59,24 @@
     <Modal title="编辑管理人员" v-model="editUserModal">
       <Form :label-width="80" ref="editUser" :model="editUserData" :rules="editUserRules">
         <FormItem prop="roleId" label="角色：" >
-          <Select :value="editUserData.roleId" style="width: 300px;">
+          <Select v-model="editUserData.roleId" style="width: 300px;">
             <Option v-for="item in roleList" :value="item.id" :key="item.id" :label="item.name"></Option>
           </Select>
         </FormItem>
         <FormItem prop="userName" label="登录名：" >
-          <Input :value="editUserData.userName" style="width:300px;" placeholder="请输入登录名"></Input>
+          <Input v-model="editUserData.userName" style="width:300px;" placeholder="请输入登录名"></Input>
         </FormItem>
         <FormItem prop="realName" label="姓名：" >
-          <Input :value="editUserData.realName" style="width:300px;" placeholder="请输入管理人员真实姓名"></Input>
+          <Input v-model="editUserData.realName" style="width:300px;" placeholder="请输入管理人员真实姓名"></Input>
         </FormItem>
         <FormItem prop="email" label="邮箱：">
-          <Input :value="editUserData.email" style="width:300px;" placeholder="请输入邮箱"></Input>
+          <Input v-model="editUserData.email" style="width:300px;" placeholder="请输入邮箱"></Input>
         </FormItem>
         <FormItem prop="mobilePhone" label="手机：">
-          <Input :value="editUserData.mobilePhone" style="width:300px;" placeholder="请输入管理人员手机号码"></Input>
+          <Input v-model="editUserData.mobilePhone" style="width:300px;" placeholder="请输入管理人员手机号码"></Input>
         </FormItem>
         <FormItem label="座机：">
-          <Input :value="editUserData.seatPhone" style="width:300px;" placeholder="请输入管理人员座机号码"></Input>
+          <Input v-model="editUserData.seatPhone" style="width:300px;" placeholder="请输入管理人员座机号码"></Input>
         </FormItem>
       </Form>
       <div slot="footer">
@@ -148,7 +148,6 @@ export default {
       },
       roleList: [],
       userColumns: [
-        { type: "index", title: "序号" },
         { title: "登录名", key: "userName", align: "center" },
         { title: "姓名", key: "realName", align: "center" },
         { title: "手机", key: "mobilePhone", align: "center", render: (h, params) => {

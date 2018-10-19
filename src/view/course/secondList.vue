@@ -47,6 +47,22 @@
 import http from "@/libs/http"
 export default {
   data() {
+    const validateName = (rule, name, cb) => {
+      if(!name){
+        cb(new Error('二级分类名称不能为空'))
+      }else{
+        let data = { name }
+        this.editModal && (data.id = this.editData.id)
+        http.post({
+          vm: this,
+          url: "/manager/course-classification/valid",
+          data,
+          success: res => {
+            res.data && cb() || cb(new Error('二级分类名已存在'))
+          }
+        })
+      }
+    }
     return {
       postData: {
         pageIndex: 1,
@@ -55,7 +71,6 @@ export default {
       firstList: [],
       total: 0,
       columns: [
-        { title: "序号", type: "index" },
         { title: "一级分类名称", key: "firstName", align: "center" },
         { title: "二级分类名称", key: "name", align: "center" },
         { title: "操作时间", key: "updateTime", align: "center" },
@@ -95,13 +110,15 @@ export default {
           { required: true, message: "一级分类不能为空", trigger: "change" }
         ],
         name: [
-          { required: true, message: "二级分类名称不能为空", trigger: "blur" }
+          { required: true, message: "二级分类名称不能为空", trigger: "blur" },
+          { validator: validateName, trigger: 'blur' }
         ]
       },
       editData: {},
       editRules: {
         name: [
-          { required: true, message: "二级分类名称不能为空", trigger: "blur" }
+          { required: true, message: "二级分类名称不能为空", trigger: "blur" },
+          { validator: validateName, trigger: 'blur' }
         ]
       }
     }

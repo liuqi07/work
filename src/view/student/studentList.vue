@@ -113,7 +113,7 @@
               success: res => {
                 this.$Modal.remove()
                 this.getStudentList()
-                this.$Message.success(res.msg)
+                this.$Message.success(`${action}成功！`)
               }
             })
           }

@@ -12,13 +12,13 @@
     <Modal title="添加角色" v-model="addRoleModal">
       <Form :label-width="100" ref="addRole" :model="addRoleData" :rules="addRoleRules">
         <FormItem prop="name" label="角色名称：" >
-          <Input :value="addRoleData.name" style="width:300px;" placeholder="请输入角色名称"></Input>
+          <Input v-model="addRoleData.name" style="width:300px;" placeholder="请输入角色名称"></Input>
         </FormItem>
         <FormItem prop="code" label="角色编码：" >
-          <Input :value="addRoleData.code" style="width:300px;" placeholder="请输入角色编码"></Input>
+          <Input v-model="addRoleData.code" style="width:300px;" placeholder="请输入角色编码"></Input>
         </FormItem>
         <FormItem prop="roleDesc" label="角色描述：" >
-          <Input type="textarea" :value="addRoleData.roleDesc" style="width:300px;" placeholder="最多可输入60个字"></Input>
+          <Input type="textarea" v-model="addRoleData.roleDesc" style="width:300px;" placeholder="最多可输入60个字"></Input>
         </FormItem>
       </Form>
       <div slot="footer">
@@ -30,10 +30,10 @@
     <Modal title="编辑角色" v-model="editRoleModal">
       <Form :label-width="80" ref="editRole" :model="editRoleData" :rules="editRoleRules">
         <FormItem prop="name" label="角色名称">
-          <Input :value="editRoleData.name" style="width:300px;" placeholder="请输入角色名称"></Input>
+          <Input v-model="editRoleData.name" style="width:300px;" placeholder="请输入角色名称"></Input>
         </FormItem>
         <FormItem prop="roleDesc" label="角色描述">
-          <Input type="textarea" :value="editRoleData.roleDesc" style="width:300px;" placeholder="最多可输入60个字"></Input>
+          <Input type="textarea" v-model="editRoleData.roleDesc" style="width:300px;" placeholder="最多可输入60个字"></Input>
         </FormItem>
       </Form>
       <div slot="footer">
@@ -88,12 +88,11 @@
       return {
         sysRole: {},
         roleColumns: [
-          { type: 'index', title: '序号' },
-          { title: '角色名称', key: 'name' },
-          { title: '角色描述', key: 'roleDesc' },
-          { title: '状态', key: 'status', render: (h, params) => h('div', {}, params.row.status === 1 ? '使用中' : '停用') },
+          { title: '角色名称', key: 'name', align: 'center', },
+          { title: '角色描述', key: 'roleDesc', align: 'center', },
+          { title: '状态', key: 'status', align: 'center', render: (h, params) => h('div', {}, params.row.status === 1 ? '使用中' : '停用') },
           {
-            title: '管理', key: 'manager', width: 200, render: (h, params) => {
+            title: '管理', key: 'manager', align: 'center', width: 200, render: (h, params) => {
               return h('div', [
                 h('Button', {
                   props: {

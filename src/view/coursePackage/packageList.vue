@@ -135,6 +135,22 @@
           cb()
         }
       }
+      const validateName = (rule, name, cb) => {
+        if(!name){
+          cb(new Error('套餐名称不能为空'))
+        }else{
+          let data = { name }
+          !this.addOrEdit && (data.id = this.addData.id)
+          http.post({
+            vm: this,
+            url: "/manager/course-package/valid",
+            data,
+            success: res => {
+              res.data && cb() || cb(new Error('套餐名称已存在'))
+            }
+          })
+        }
+      }
       return {
         postData: { pageIndex: 1, pageSize: 10 },
         packageList: [],
@@ -153,7 +169,9 @@
             { required: true, message: '三级分类不能为空', trigger: 'change' }
           ],
           name: [
-            { required: true, message: '套餐名称不能为空', trigger: 'blur' }
+            { required: true, message: '套餐名称不能为空', trigger: 'blur' },
+            { type: 'string', max: 50, message: '套餐名称不能超过50字', trigger: 'blur' },
+            { validator: validateName, trigger: 'blur' }
           ],
           oneToX: [
             { required: true, type: 'number', message: '授课比例不能为空', trigger: 'change' }

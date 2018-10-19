@@ -27,7 +27,6 @@
         return {
           postData: { pageIndex: 1, pageSize: 10 },
           columns: [
-            { title: 'Id', key: 'id', align: 'center' },
             { title: '订单类型', key: 'classType', align: 'center', render: (h, params) => {
               return h('div', {}, params.row.type===2?'预约订单':'正式订单')
             } },

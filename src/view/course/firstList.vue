@@ -7,9 +7,9 @@
       <Page :total="total" show-total @on-change="changePage" :page-index="postData.pageIndex" @on-page-size-change="changePageSize" show-sizer :page-size="postData.pageSize" style="margin-top: 10px" />
     </Card>
     <Modal :title="title" v-model="modal" >
-      <Form :label-width="120">
-        <FormItem label="一级分类名称：" style="width: 300px;" required>
-          <Input v-model="levelName" placeholder="请输入一级分类名称" />
+      <Form :label-width="120" ref="add" :model="addData" :rules="addRules" >
+        <FormItem prop="levelName" label="一级分类名称：" style="width: 300px;" >
+          <Input v-model="addData.levelName" placeholder="请输入一级分类名称" />
         </FormItem>
       </Form>
       <div slot="footer">
@@ -24,6 +24,22 @@
   import http from '@/libs/http';
   export default {
     data() {
+      const validateName = (rule, name, cb) => {
+        if(!name){
+          cb(new Error('一级分类名称不能为空'))
+        }else{
+          let data = { name }
+          this.type==='edit' && (data.id = this.addData.id)
+          http.post({
+            vm: this,
+            url: "/manager/course-classification/valid",
+            data,
+            success: res => {
+              res.data && cb() || cb(new Error('一级分类名已存在'))
+            }
+          })
+        }
+      }
       return {
         postData: {
           pageIndex: 1,
@@ -32,7 +48,6 @@
         total: 0,
         title: '',
         columns: [
-          { title: '序号', type: 'index' },
           { title: '一级分类名称', key: 'name', align: 'center' },
           { title: '操作时间', key: 'updateTime', align: 'center' },
           { title: '操作人', key: 'operateName', align: 'center' },
@@ -59,10 +74,14 @@
         ],
         firstList: [],
         modal: false,
-        levelName: '',
+        addData: {},
+        addRules: {
+          levelName: [
+            { required: true, message: '一级分类名称不能为空', trigger: 'blur' },
+            { validator: validateName, trigger: 'blur' }
+          ]
+        },
         type: '',
-        version: '',
-        id: null,
       }
     },
     methods: {
@@ -71,16 +90,15 @@
       },
       firstAdd() {
         this.modal = true
+        this.addData = {}
         this.title = '添加一级分类'
         this.type = 'add'
       },
-      firstEdit(row) {
+      firstEdit({ id, version, name }) {
         this.modal = true
         this.title = '编辑'
         this.type = 'edit'
-        this.levelName = row.name
-        this.id = row.id
-        this.version = row.version
+        this.addData = { id, version, name }
       },
       getFirstList(cb) {
         http.get({
@@ -95,41 +113,36 @@
         })
       },
       save() {
-        if(!this.levelName){
-          this.$Message.error('一级分类名称不能为空！')
-          return
-        }
-        const type = this.type
-        let url = ''
-        let msg = ''
-        let data = {}
-        if (type === 'add') {
-          url = '/manager/course-classification/first/add'
-          data = { name: this.levelName }
-          msg = '添加成功'
-        } else {
-          url = '/manager/course-classification/first/edit'
-          data = { name: this.levelName, id: this.id, version: this.version }
-          msg = '更新成功'
-        }
-        http.post({
-          vm: this,
-          url,
-          data,
-          success: res => {
-            this.$Message.success(msg)
-            this.getFirstList()
-            this.version = ''
-            this.id = null
-            this.levelName = ''
-            this.modal = false
+        this.$refs['add'].validate(valid => {
+          if(valid){
+            const type = this.type
+            let url = ''
+            let msg = ''
+            if (type === 'add') {
+              url = '/manager/course-classification/first/add'
+              msg = '添加成功'
+            } else {
+              url = '/manager/course-classification/first/edit'
+              msg = '更新成功'
+            }
+            http.post({
+              vm: this,
+              url,
+              data: this.addData,
+              success: res => {
+                this.$Message.success(msg)
+                this.getFirstList()
+                this.$refs['add'].resetFields()
+                this.addData = {}
+                this.modal = false
+              }
+            })
           }
         })
       },
       cancel(){
-        this.levelName = ''
-        this.id = null
-        this.version = ''
+        this.addData = {}
+        this.$refs['add'].resetFields()
         this.modal = false
       },
       changePage(pageIndex) {
