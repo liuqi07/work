@@ -46,6 +46,7 @@
         this.getAdviserLogList(() => { this.$Message.success('查询成功！') })
       },
       getAdviserLogList(cb) {
+        !this.postData.orderNo && delete this.postData.orderNo
         http.get({
           vm: this,
           url: '/manager/log/listLogAdviser',

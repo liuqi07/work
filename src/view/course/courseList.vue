@@ -191,13 +191,6 @@
         this.getFirstList()
       },
       addCourse() {
-        // if (!(name && courseDesc && firstId && secondId && thirdId && classType && oneToX && levelHourJsonStr && (this.fileIsRequire ? file : true) && platform)) {
-        //   this.$Message.error({
-        //     content: '标星内容不能为空！',
-        //     duration: 5
-        //   })
-        //   return
-        // }
         this.$refs['addData'].validate(valid => {
           const url = this.courseEditUrl || '/manager/course/add'
           const { levelHour } = this.addData

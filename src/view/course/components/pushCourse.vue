@@ -33,9 +33,6 @@
                     type: 'error',
                     size: 'small',
                   },
-                  style: {
-                    marginRight: '5px'
-                  },
                   on: {
                     click: () => {
                       this.courseLower(params.row)
@@ -44,38 +41,7 @@
                   directives: [
                     { name: 'hasPermission', value: "courseLower" }
                   ]
-                }, '下架'),
-                h('Button', {
-                  props: {
-                    type: 'primary',
-                    size: 'small'
-                  },
-                  style: {
-                    marginRight: '5px'
-                  },
-                  on: {
-                    click: () => {
-                      this.courseEdit(params.row)
-                    }
-                  },
-                  directives: [
-                    { name: 'hasPermission', value: "courseEdit" }
-                  ]
-                }, '课程编辑'),
-                h('Button', {
-                  props: {
-                    type: 'primary',
-                    size: 'small'
-                  },
-                  on: {
-                    click: () => {
-                      this.courseDetele(params.row)
-                    }
-                  },
-                  directives: [
-                    { name: 'hasPermission', value: "courseDetele" }
-                  ]
-                }, '删除')
+                }, '下架')
               ])
             }
           }

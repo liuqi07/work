@@ -86,7 +86,7 @@
           </Select>
         </FormItem>
         <FormItem prop="options" label="选项：" style="width: 400px;" v-if="isSelect" >
-          <Row v-for="(item, index) in postData.options" style="margin-bottom: 5px;" :key="index">
+          <Row v-for="(item, index) in postData.options" style="margin-bottom: 5px;" :key="item.code">
             <Col :span="4" style="margin-right: 10px;">
             <Input :value="item.code" disabled />
             </Col>

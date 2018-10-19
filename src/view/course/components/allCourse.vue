@@ -68,7 +68,7 @@
                   },
                   style: {
                     marginRight: '5px',
-                    display: params.row.status===2 ? 'inline-bloc' : 'none'
+                    display: params.row.status===2 ? 'inline-block' : 'none'
                   },
                   on: {
                     click: () => {
@@ -86,7 +86,8 @@
                     disabled: params.row.status===4 ? true : false
                   },
                   style: {
-                    marginRight: '5px'
+                    marginRight: '5px',
+                    display: params.row.status===2 ? 'none' : 'inline-block'
                   },
                   on: {
                     click: () => {
@@ -102,6 +103,9 @@
                     type: 'primary',
                     size: 'small',
                     disabled: params.row.status===4 ? true : false
+                  },
+                  style: {
+                    display: params.row.status===2 ? 'none' : 'inline-block'
                   },
                   on: {
                     click: () => {
