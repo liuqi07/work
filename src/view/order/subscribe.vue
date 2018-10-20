@@ -165,6 +165,7 @@
           {
             title: '操作', key: 'actions', width: 160, render: (h, params) => {
               const status = params.row.status
+              const sysUserName = params.row.sysUserName
               return h('div', [
                 h('Button', {
                   props: {
@@ -411,6 +412,7 @@
           data: this.addSubscribeAllotData,
           success: res => {
             this.$Message.success('分配顾问成功！')
+            this.subscribeAllotModal = false
             this.addSubscribeAllotData = {}
           }
         })

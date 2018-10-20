@@ -53,7 +53,7 @@
         </FormItem>
         <!-- <three-level :="true" @on_change="onThreeLevelChange" :threeLevelData="addData.threeLevelData"></three-level> -->
         <FormItem prop="oneToX" label="授课比例：" style="width: 300px;" >
-          <Select v-model="addData.oneToX" placeholder="请先选择三级分类" clearable>
+          <Select v-model="addData.oneToX" placeholder="请选择" clearable>
             <Option v-for="item in addData.oneToXArr" :key="item" :value="parseInt(item)">{{item}}</Option>
           </Select>
         </FormItem>
@@ -84,7 +84,7 @@
             </Col>
           </Row>
         </FormItem>
-        <FormItem prop="file" label="上传图片：" :required="fileIsRequire" >
+        <FormItem prop="file" label="上传图片：" :required="fileIsRequire" v-if="fileReload">
           <input type="file" @change="handleFileChange">
         </FormItem>
       </Form>
@@ -139,6 +139,20 @@
           })
         }
       }
+      const validateLevelHour = (rule, levelHour, cb) => {
+        console.log(levelHour)
+        if(!levelHour || levelHour.length<=0){
+          cb(new Error('级别不能为空'))
+        }else{
+          for(let i=0; i<levelHour.length; i++){
+            if(!levelHour[i].hour){
+              cb(new Error(`第${i+1}项级别输入有误`))
+              return
+            }
+          }
+          cb()
+        }
+      }
       return {
         postData: { pageIndex: 1, pageSize: 10 },
         courseList: [],
@@ -173,7 +187,8 @@
             { required: true, type: 'number', message: '课程类型不能为空', trigger: 'change' }
           ],
           levelHour: [
-            { required: true, type: 'array', min: 1, message: '级别不能为空', trigger: 'change' }
+            // { required: true, type: 'array', min: 1, message: '级别不能为空', trigger: 'change' },
+            { validator: validateLevelHour, trigger: 'change' }
           ],
           file: [
             { validator: validateFile, trigger: 'change' }
@@ -183,6 +198,7 @@
         courseEditUrl: '',
         fileIsRequire: false,
         addOrEdit: true,
+        fileReload: true,
       }
     },
     methods: {
@@ -203,6 +219,10 @@
         this.fileIsRequire = true
         this.addCourseModal = true
         this.addOrEdit = true
+        this.fileReload = false
+        setTimeout(() => {
+          this.fileReload = true
+        }, 0);
         this.addData = { oneToXArr: [], levelHour: [], firstList: [], secondList: [], thirdList: [] }
         this.courseEditUrl = ''
         this.$refs['addData'].resetFields()
@@ -210,11 +230,15 @@
       },
       addCourse() {
         this.$refs['addData'].validate(valid => {
-          const url = this.courseEditUrl || '/manager/course/add'
-          const { levelHour } = this.addData
-          levelHour.length > 0 && (this.addData.levelHourJsonStr = JSON.stringify(levelHour))
-          const { id, name, courseDesc, firstId, secondId, thirdId, classType, oneToX, levelHourJsonStr, file, platform } = this.addData
           if(valid){
+            const { levelHour=[] } = this.addData
+            if(levelHour.length<=0){
+              this.$Message.error('级别不能为空')
+              return
+            }
+            const url = this.courseEditUrl || '/manager/course/add'
+            levelHour.length > 0 && (this.addData.levelHourJsonStr = JSON.stringify(levelHour))
+            const { id, name, courseDesc, firstId, secondId, thirdId, classType, oneToX, levelHourJsonStr, file, platform } = this.addData
             const addData = { id, name, courseDesc, firstId, secondId, thirdId, classType, oneToX, levelHourJsonStr, file, platform }
             if(!id){ delete addData.id }
             const formData = new FormData()

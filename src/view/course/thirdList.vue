@@ -181,6 +181,10 @@
     methods: {
       thirdAdd() {
         this.addModal = true
+        this.secondPostData = {}
+        this.addData = {}
+        this.levelList = []
+        this.x = null
         this.$refs['addData'].resetFields()
       },
       query() {
