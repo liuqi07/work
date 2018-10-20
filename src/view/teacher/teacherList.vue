@@ -321,7 +321,15 @@
           { title: '课程名称', key: 'courseName', align: 'center' },
           { title: '一级分类', key: 'firstName', align: 'center' },
           { title: '二级分类', key: 'secondName', align: 'center' },
-          { title: '三级分类', key: 'thirdName', align: 'center' }
+          { title: '三级分类', key: 'thirdName', align: 'center' },
+          { title: '学生数', key: 'oneToXFee', align: 'center', render: (h, params) => {
+            const oneToXFee = JSON.parse(params.row.oneToXFee)
+            return h('div', oneToXFee.x)
+          } },
+          { title: '课时费', key: 'oneToXFee', align: 'center', render: (h, params) => {
+            const oneToXFee = JSON.parse(params.row.oneToXFee)
+            return h('div', oneToXFee.fee)
+          } },
         ],
         feeList: [],
         feeListRules: {
