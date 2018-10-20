@@ -49,7 +49,7 @@
         <FormItem prop="name" label="套餐名称：" style="width: 300px;" >
           <Input v-model="addData.name" placeholder="请输入套餐名称" />
         </FormItem>
-        <FormItem label="套餐描述：" style="width: 300px;">
+        <FormItem prop="coursePackageDesc" label="套餐描述：" style="width: 300px;">
           <Input v-model="addData.coursePackageDesc" placeholder="请输入套餐描述" />
         </FormItem>
         <FormItem prop="oneToX" label="授课比例：" style="width: 300px;" >
@@ -193,6 +193,9 @@
           discountUnitPrice: [
             { validator: validateDiscountUnitPrice, trigger: 'blur'},
             { validator: validateDiscountUnitPrice, trigger: 'change'},
+          ],
+          coursePackageDesc: [
+            { type: 'string', max: 200, message: '字数不能超过200字', trigger: 'blur' }
           ]
         },
         batchList: [],

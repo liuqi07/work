@@ -80,6 +80,7 @@
         columns: [
           { title: '教材编码', key: 'code', algin: 'center' },
           { title: '教材名称', key: 'name', algin: 'center' },
+          { title: '课程名称', key: 'courseName', algin: 'center' },
           {
             title: '适用等级', key: 'level', algin: 'center', render: (h, params) => {
               return h('div', {}, "Level " + params.row.level)

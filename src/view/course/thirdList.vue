@@ -35,8 +35,9 @@
         <FormItem prop="name" label="三级分类名称：" style="width: 300px;">
           <Input v-model="addData.name" size="small" placeholder="请输入三级分类名称" />
         </FormItem>
-        <FormItem label="级别：" style="width: 300px;" required>
-          <Button type="dashed" size="small" long @click="addLevel" icon="md-add">添加级别</Button>
+        <FormItem label="级别：" style="width: 500px;" >
+          <Button type="dashed" size="small" @click="addLevel" icon="md-add" style="margin-right: 15px;">添加级别</Button>
+          <Button type="error" size="small" @click="removeLevel" icon="md-remove">删除级别</Button>
         </FormItem>
         <FormItem v-for="(item, index) in levelList" :key="index"  required>
           <Row>

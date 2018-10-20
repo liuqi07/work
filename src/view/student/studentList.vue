@@ -46,7 +46,6 @@
             const mobilePhone = params.row.mobilePhone
             return h('div', mobilePhone && mobilePhone.replace(mobilePhone.substr(3, 4), '****') || '')
           } },
-          { title: '邮箱', key: 'email', align: 'center' },
           { title: '性别', key: 'sex', align: 'center', render: (h, params) => {
             const sex = params.row.sex
             return h('div', {}, sex === 1 ? '男' : (sex === 2 ? '女' : '未知'))
