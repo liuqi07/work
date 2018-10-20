@@ -50,7 +50,7 @@
           <Input v-model="addData.name" placeholder="请输入套餐名称" />
         </FormItem>
         <FormItem prop="coursePackageDesc" label="套餐描述：" style="width: 300px;">
-          <Input v-model="addData.coursePackageDesc" placeholder="请输入套餐描述" />
+          <Input v-model="addData.coursePackageDesc" placeholder="请输入套餐描述，不超过200字" />
         </FormItem>
         <FormItem prop="oneToX" label="授课比例：" style="width: 300px;" >
           <Select v-model="addData.oneToX" placeholder="请先选择三级分类" clearable>

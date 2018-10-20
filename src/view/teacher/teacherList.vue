@@ -335,13 +335,12 @@
             { required: true, message: '请选择三级分类', trigger: 'change' }
           ],
           courseId: [
-            { required: true, type: 'number', message: '请选择课程', trigger: 'change' },
-            // { validator: validateCourseId, trigger: 'change' }
+            { required: true, type: 'number', message: '请选择课程', trigger: 'change' }
           ],
-          oneToX: [
-            // { required: true, type: 'number', message: '请输入授课学生数', trigger: 'blur' }
-            { validator: validateCourseId, trigger: 'change' }
-          ],
+          // oneToX: [
+          //   // { required: true, type: 'number', message: '请输入授课学生数', trigger: 'blur' }
+          //   { validator: validateCourseId, trigger: 'change' }
+          // ],
           fee: [
             { required: true, type: 'number', message: '请输入收费标准', trigger: 'blur' },
             { required: true, type: 'number', message: '请输入收费标准', trigger: 'change' }
