@@ -63,7 +63,7 @@
       </div>
     </Modal>
     <Modal title="编辑" v-model="editModal" >
-      <Form :label-width="100" ref="editData" :model="editData" :rules="editRules">
+      <Form :label-width="110" ref="editData" :model="editData" :rules="editRules">
         <FormItem prop="name" label="三级分类名称：" style="width: 300px;">
           <Input v-model="editData.name" size="small" placeholder="请输入三级分类名称" />
         </FormItem>
@@ -84,7 +84,7 @@
             </Col>
           </Row>
         </FormItem>
-        <FormItem label="1:x">
+        <FormItem label="授课比例：">
           <Button type="dashed" @click="addOneToX" size="small" style="margin-right: 10px;">增加</Button>
           <InputNumber v-model="x" :min="1" size="small" style="width: 50px; margin-right: 10px;" />
           <Tag v-for="(item, index) in oneToXArr" color="success" :key="index" :name="item" closable @on-close="closeOneToXTag">{{item}}</Tag>
@@ -241,6 +241,8 @@
             this.$refs['addData'].resetFields()
             this.getThirdList()
             this.addData = {}
+            this.levelList = []
+            this.oneToXArr = []
           }
         })
       },
@@ -248,6 +250,8 @@
         this.addModal = false
         this.editModal = false
         this.addData = {}
+        this.levelList = []
+        this.oneToXArr = []
         this.$refs['addData'].resetFields()
         this.$refs['editData'].resetFields()
       },
@@ -289,6 +293,9 @@
           success: res => {
             this.$Message.success('更新成功！')
             this.$refs['editData'].resetFields()
+            this.levelList = []
+            this.oneToXArr = []
+            this.addData = {}
             this.editModal = false
             this.getThirdList()
           }

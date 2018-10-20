@@ -54,7 +54,7 @@
         </FormItem>
         <FormItem prop="oneToX" label="授课比例：" style="width: 300px;" >
           <Select v-model="addData.oneToX" placeholder="请先选择三级分类" clearable>
-            <Option v-for="item in addData.oneToXArr" :key="item" :value="item">{{item}}</Option>
+            <Option v-for="item in addData.oneToXArr" :key="item" :value="parseInt(item)">{{item}}</Option>
           </Select>
         </FormItem>
         <Row>

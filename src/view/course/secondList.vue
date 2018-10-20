@@ -176,6 +176,7 @@ export default {
             success: res => {
               this.$Message.success("更新成功！")
               this.editData = {}
+              this.editModal = false
               this.$refs['editData'].resetFields()
               this.getSecondList()
             }

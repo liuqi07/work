@@ -103,6 +103,7 @@ export default {
       return new Promise((resolve, reject) => {
         getUserInfo().then(res => {
           if (res.data.code === 1) {
+            console.log('store ---> user.js ----> getUserInfo : res.data.code === 1', res.data)
             const data = res.data;
             const routers = [...defaultRouters, ...formatRouter(data.data)];
             // commit('setAvator', data.avator)
@@ -112,12 +113,14 @@ export default {
             commit("setAccessRoutes", routers);
             resolve(data);
           } else if (res.data.code === 2) {
+            console.log('store ---> user.js ----> getUserInfo : res.data.code === 2')
             alert(res.data.msg);
           } else if (res.data.code === 3) {
+            console.log('store ---> user.js ----> getUserInfo : res.data.code === 3')
             logout().then(res => {
               commit("setToken", "");
               commit("setAccess", []);
-              resolve();
+              resolve({code: 3});
             });
           }
         });

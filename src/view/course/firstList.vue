@@ -8,8 +8,8 @@
     </Card>
     <Modal :title="title" v-model="modal" >
       <Form :label-width="120" ref="add" :model="addData" :rules="addRules" >
-        <FormItem prop="levelName" label="一级分类名称：" style="width: 300px;" >
-          <Input v-model="addData.levelName" placeholder="请输入一级分类名称" />
+        <FormItem prop="name" label="一级分类名称：" style="width: 300px;" >
+          <Input v-model="addData.name" placeholder="请输入一级分类名称" />
         </FormItem>
       </Form>
       <div slot="footer">
@@ -76,7 +76,7 @@
         modal: false,
         addData: {},
         addRules: {
-          levelName: [
+          name: [
             { required: true, message: '一级分类名称不能为空', trigger: 'blur' },
             { validator: validateName, trigger: 'blur' }
           ]

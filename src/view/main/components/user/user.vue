@@ -34,15 +34,15 @@
       </div>
     </Modal>
     <Modal title="修改密码" v-model="updateModal">
-      <Form :label-width="100">
-        <FormItem label="原密码：" style="width: 300px;" required>
-          <Input type="password" placeholder="请输入原密码" v-model="oldPassword" />
+      <Form :label-width="120" ref="update" :model="postData" :rules="postRules">
+        <FormItem prop="oldPassword" label="原密码：" style="width: 400px;">
+          <Input type="password" placeholder="请输入原密码" v-model="postData.oldPassword" />
         </FormItem>
-      </Form>
-      <Form :label-width="100">
-        <FormItem label="新密码：" style="width: 300px;" required>
-          <Input type="password" placeholder="6-20位字符，字母数字组合" v-model="newPassword" />
-          <Input type="password" placeholder="重复输入新密码" v-model="newPasswordAgain" style="margin-top: 10px;" />
+        <FormItem prop="newPassword" label="新密码：" style="width: 400px;">
+          <Input type="password" placeholder="6-20位字符，字母数字组合" v-model="postData.newPassword" />
+        </FormItem>
+        <FormItem prop="newPasswordAgain" label="再次输入新密码：" style="width: 400px;">
+          <Input type="password" placeholder="请再次输入新密码" v-model="postData.newPasswordAgain" />
         </FormItem>
       </Form>
       <div slot="footer">
@@ -67,6 +67,27 @@
       },
     },
     data() {
+      const validateOldPwd = (rule, password, cb) => {
+        if(!password){
+          cb(new Error('密码不能为空'))
+        }else{
+          // 后台校验，待实现
+          cb()
+        }
+      }
+      const validateNewPwdAgain = (rule, newPasswordAgain, cb) => {
+        if(!newPasswordAgain){
+          cb(new Error('新密码不能为空'))
+        }else{
+          if(!this.postData.newPassword){
+            cb(new Error('请先输入新密码'))
+          }else if(this.postData.newPasswordAgain !== this.postData.newPassword){
+            cb(new Error('两次密码输入不一致，请检查后输入'))
+          }else{
+            cb()
+          }
+        }
+      }
       return {
         mine: false,
         userInfo: {},
@@ -75,44 +96,62 @@
         oldPassword: '',
         newPassword: '',
         newPasswordAgain: '',
+        postData: {},
+        postRules: {
+          oldPassword: [
+            { required: true, message: '密码不能为空', trigger: 'blur' },
+            { validator: validateOldPwd, trigger: 'blur' }
+          ],
+          newPassword: [
+            { required: true, message: '新密码不能为空', trigger: 'blur' },
+            { type: 'string', message: '请输入6-20位之间，字母和数字组合！', pattern: /^(?![0-9]*$)[a-zA-Z0-9]{6,20}$/, trigger: 'blur' }
+          ],
+          newPasswordAgain: [
+            { required: true, message: '请再次输入新密码', trigger: 'blur' },
+            { validator: validateNewPwdAgain, trigger: 'blur' }
+          ]
+        },
       }
     },
     methods: {
       updatePwd() {
-        if (!this.oldPassword || !this.newPassword || !this.newPasswordAgain) {
-          this.$Message.error('标星内容不能为空！')
-        }
-        else if (this.newPassword && this.newPassword !== this.newPasswordAgain) {
-          this.$Message.error('新旧密码不一致，请检查后重新尝试')
-        }
-        else if (!/^(?![0-9]*$)[a-zA-Z0-9]{6,20}$/.test(this.newPassword)) {
-          this.$Message.error('密码输入不符合要求，请输入6-20位之间，字母和数字组合！')
-        } else {
-          this.updatePassword = {
-            oldPassword: md5(this.oldPassword),
-            newPassword: md5(this.newPassword)
-          }
-          http.post({
-            vm: this,
-            url: '/manager/sys-user/modifyPassword',
-            data: this.updatePassword,
-            success: res => {
-              this.$Message.success('密码修改成功！')
+        // if (!this.oldPassword || !this.newPassword || !this.newPasswordAgain) {
+        //   this.$Message.error('标星内容不能为空！')
+        // }
+        // else if (this.newPassword && this.newPassword !== this.newPasswordAgain) {
+        //   this.$Message.error('新旧密码不一致，请检查后重新尝试')
+        // }
+        // else if (!/^(?![0-9]*$)[a-zA-Z0-9]{6,20}$/.test(this.newPassword)) {
+        //   this.$Message.error('密码输入不符合要求，请输入6-20位之间，字母和数字组合！')
+        // } else {
+          
+        // }
+        this.$refs['update'].validate(valid => {
+          if(valid) {
+            this.updatePassword = {
+              oldPassword: md5(this.postData.oldPassword),
+              newPassword: md5(this.postData.newPassword)
             }
-          })
-          this.oldPassword = ''
-          this.newPassword = ''
-          this.newPasswordAgain = ''
-          this.updatePassword = {}
-          this.updateModal = false
-        }
+            http.post({
+              vm: this,
+              url: '/manager/sys-user/modifyPassword',
+              data: this.updatePassword,
+              success: res => {
+                this.$Message.success('密码修改成功！')
+              }
+            })
+            this.postData = {}
+            this.updatePassword = {}
+            this.updateModal = false
+            this.$refs['update'].resetFields()
+          }
+        })
       },
       cancel() {
         this.updateModal = false
-        this.oldPassword = ''
-        this.newPassword = ''
-        this.newPasswordAgain = ''
+        this.postData = {}
         this.updatePassword = {}
+        this.$refs['update'].resetFields()
       },
       ...mapActions([
         'handleLogOut'

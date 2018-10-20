@@ -79,7 +79,7 @@
               if(!res.data){
                  cb(new Error('身份证号已存在'))
               }else{
-                this.updateDetailData.age = new Date().getFullYear() - value.slice(6, 10)
+                this.updateDetailData.age = (new Date().getFullYear() - value.slice(6, 10)).toString()
                 cb()
               }
             },
@@ -136,7 +136,7 @@
             const idNo = params.row.idNo
             return h('div', idNo && idNo.replace(idNo.substr(7, 8), '********') || '')
           } },
-          { title: '提成比例(%)', key: 'rate', align: 'center', },
+          { title: '提成比例(%)', key: 'rate', align: 'center' },
           {
             title: '顾问状态', key: 'status', align: 'center', render: (h, params) => {
               const status = params.row.status
@@ -173,8 +173,8 @@
             { validator: validateIdNo, trigger: 'blur' }
           ],
           age: [
-            { required: true, type: 'number', message: '请填写年龄', trigger: 'blur' },
-            // { type: 'string', message: '请输入正确的年龄', pattern: /^(?:[1-9][0-9]?|1[01][0-9]|100)$/ , trigger: 'blur' },
+            { required: true, message: '请填写年龄', trigger: 'blur' },
+            { type: 'string', message: '请输入正确的年龄', pattern: /^(?:[1-9][0-9]?|1[01][0-9]|100)$/ , trigger: 'blur' },
             // { validator: validateAge, trigger: 'blur' }
           ],
           rate: [
@@ -220,10 +220,10 @@
         const params = _params && '?' + _params
         window.open('http://www.zilongshu.com/manager/course-adviser/export' + params)
       },
-      openDetail(row) {
+      openDetail({ code, realName, mobilePhone, idNo, sex, age, rate, email, id}) {
         this.detailModal = true
         this.$refs['updateDetailRef'].resetFields()
-        this.updateDetailData = { code: row.code, realName: row.realName, mobilePhone: row.mobilePhone, idNo: row.idNo, sex: row.sex, age: row.age, rate: row.rate, email: row.email, id: row.id }
+        this.updateDetailData = { code, realName, mobilePhone, idNo, sex, age, rate: rate.toString(), email, id }
       },
       updateDetail() {
         this.$refs['updateDetailRef'].validate(valid => {
@@ -241,8 +241,6 @@
                 this.getCourseAdviserList()
               }
             })
-          }else{
-            this.$Message.error('error')
           }
         })
       },

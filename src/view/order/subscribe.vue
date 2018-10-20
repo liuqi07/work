@@ -24,7 +24,7 @@
       <Button type="primary" @click="subscribeExport" v-hasPermission="'subscribeExport'">导出</Button>
     </Form>
     <Card>
-      <Table :columns="columns" :data="subscribeList" border></Table>
+      <Table :columns="columns" :data="subscribeList"></Table>
       <Page :total="total" show-total show-sizer @on-change="changePage" @on-page-size-change="changePageSize" :page-size="postData.pageSize"
         :page-index="postData.pageIndex" style="margin-top: 10px" />
     </Card>

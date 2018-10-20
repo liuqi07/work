@@ -304,11 +304,11 @@
         this.$refs['addData'].resetFields()
         this.fileIsRequire = false
         this.addOrEdit = false
-        const { firstId, secondId, thirdId, oneToX, id, platform } = courseData
+        const { firstId, secondId, thirdId, oneToX, id, platform, name, courseDesc, classType } = courseData
         this.getFirstList(() => {
           const _firstCode = this.addData.firstList.find(f => f.id === firstId)
           const firstCode = _firstCode && _firstCode.code || ''
-          this.addData = Object.assign({}, this.addData, { firstCode, firstId, platform })
+          this.addData = Object.assign({}, this.addData, { firstCode, firstId, platform, name, courseDesc, classType })
           this.getSecondList(() => {
             const _secondCode = this.addData.secondList.find(s => s.id === secondId)
             const secondCode = _secondCode && _secondCode.code || ''
@@ -319,7 +319,6 @@
               const levelLen = _thirdCode && _thirdCode.level || 0
               const oneToXArr = (_thirdCode && _thirdCode.oneToX && _thirdCode.oneToX.split(',') || []).map(i => parseInt(i))
               this.addData = Object.assign({}, this.addData, { thirdCode, thirdId, oneToXArr, oneToX, levelLen })
-              // console.log('%c firstList, secondList, thirdList', 'color:red;', this.addData.firstList, this.addData.secondList, this.addData.thirdList, oneToXArr, oneToX);
               this.getCourseDetail(id, ()=>{
                 this.addData = Object.assign({}, courseData, this.addData)
               })
