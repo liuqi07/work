@@ -49,7 +49,7 @@
             <Option v-for="item in hourList" :value="item.hour" :key="item.hour">{{item.hour}}</Option>
           </Select>
         </FormItem>
-        <FormItem prop="file" label="上传图片：">
+        <FormItem prop="file" label="上传图片：" v-if="fileReload">
           <input type="file" @change="handleFileChange">
         </FormItem>
       </Form>
@@ -70,9 +70,10 @@
     },
     data() {
       const validateFile = (rule, file, cb) => {
-        console.log(file)
         if(!file){
           cb(new Error('请添加文件'))
+        }else{
+          cb()
         }
       }
       return {
@@ -144,9 +145,10 @@
           ],
           file: [
             { required: true, type: 'object', message: '请添加文件', trigger: 'change' },
-            { validator: validateFile, trigger: 'change' }
+            // { validator: validateFile, trigger: 'change' }
           ]
         },
+        fileReload: false,
         firstList: [],
         secondList: [],
         thirdList: [],
@@ -158,6 +160,11 @@
     methods: {
       openAdd() {
         this.addMaterialModal = true
+        
+        this.fileReload = false
+        setTimeout(() => {
+          this.fileReload = true
+        }, 0);
         this.addData = {}
         this.$refs['addData'].resetFields()
         this.getFirstList()

@@ -180,12 +180,16 @@
             }
           },
           { title: '国籍', key: 'nationality', align: 'center' },
-          { title: '所获学位', key: 'degree', align: 'center' },
+          { title: '所获学位', key: 'degree', align: 'center', render: (h, params) => {
+            const degree = params.row.degree
+            const degreeStr = degree === 1 ? '学士' : ( degree === 2 ? '硕士' : '博士')
+            return h('div', degreeStr)
+          } },
           { title: '年龄', key: 'age', align: 'center' },
           {
             title: '教师状态', key: 'status', align: 'center', render: (h, params) => {
               const status = params.row.status
-              return h('div', {}, status === 1 ? '已审核' : '未审核')
+              return h('div', {}, status === 1 ? '未审核' : '已审核')
             }
           },
           { title: 'zoom code', align: 'center', key: 'zoomCode' },
