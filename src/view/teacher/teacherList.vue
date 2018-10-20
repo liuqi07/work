@@ -390,7 +390,7 @@
         this.feeListData.oneToXFeeList.push({})
       },
       search() {
-        this.createDate && (this.postData.createDate = formatDate('YYYY-MM-DD', this.createDate))
+        this.postData.createDate = this.createDate ? formatDate('YYYY-MM-DD', this.createDate) : null
         this.getTeacherList(() => {
           this.$Message.success('查询成功！')
         })

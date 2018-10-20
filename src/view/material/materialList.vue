@@ -49,7 +49,7 @@
             <Option v-for="item in hourList" :value="item.hour" :key="item.hour">{{item.hour}}</Option>
           </Select>
         </FormItem>
-        <FormItem label="上传图片：">
+        <FormItem prop="file" label="上传图片：">
           <input type="file" @change="handleFileChange">
         </FormItem>
       </Form>
@@ -69,6 +69,12 @@
       ThreeLevel,
     },
     data() {
+      const validateFile = (rule, file, cb) => {
+        console.log(file)
+        if(!file){
+          cb(new Error('请添加文件'))
+        }
+      }
       return {
         columns: [
           { title: '教材编码', key: 'code', algin: 'center' },
@@ -135,6 +141,10 @@
           ],
           hour: [
             { required: true, type: 'number', message: '课时不能为空', trigger: 'change' }
+          ],
+          file: [
+            { required: true, type: 'object', message: '请添加文件', trigger: 'change' },
+            { validator: validateFile, trigger: 'change' }
           ]
         },
         firstList: [],
@@ -329,7 +339,8 @@
         }
       },
       handleFileChange(e) {
-        this.addData.file = e.target.files[0]
+        e.target.files[0] ? (this.addData.file = e.target.files[0]) : (delete this.addData.file)
+        
       },
       masterialAudit({ id, status, version }) {
         const content = status === 1 ? '无效' : '有效'
