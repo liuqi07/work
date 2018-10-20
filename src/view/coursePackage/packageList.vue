@@ -126,7 +126,6 @@
     },
     data() {
       const validateDiscountUnitPrice = (rule, value, cb) => {
-        console.log(value)
         if(!value && this.discountUnitPriceRequire){
           cb(new Error('优惠金额不能为空'))
         }else if(typeof Number(value) !== 'number') {
@@ -321,7 +320,7 @@
       packageEdit(packageData) {
         this.uploadIsShow = false
         this.addOrEdit = false
-	      // console.log('%c packageData', 'color:red;', packageData)
+	      // ('%c packageData', 'color:red;', packageData)
         const { id, firstId, secondId, thirdId, oneToX, isDiscount=0, weekClassHour=0, weekCount=0, unitPrice=0, discountUnitPrice=0, version } = packageData
         this.discountUnitPriceRequire = isDiscount===1 ? true : false
         this.getFirstList(() => {
@@ -337,7 +336,6 @@
               const thirdCode = _thirdCode && _thirdCode.code || ''
               const oneToXArr = (_thirdCode && _thirdCode.oneToX && _thirdCode.oneToX.split(',') || []).map(i=>parseInt(i))
               this.addData = Object.assign({}, this.addData, { thirdCode, oneToXArr, oneToX, thirdId })
-              // console.log('%c firstList, secondList, thirdList', 'color:red;', this.addData.firstList, this.addData.secondList, this.addData.thirdList, oneToXArr, oneToX);
             })
           })
         })
@@ -506,7 +504,6 @@
           const _thirdId = this.addData.thirdList.find(t => t.code === val)
           const thirdId = _thirdId && _thirdId.id || null
           const oneToXArr = _thirdId && _thirdId.oneToX && _thirdId.oneToX.split(',') || []
-          console.log('%c oneToXArr, oneToX', 'color:red;', oneToXArr, _thirdId.oneToX);
           this.addData = Object.assign({}, this.addData, { thirdId, oneToXArr })
         } else {
           this.addData.oneToXArr = []

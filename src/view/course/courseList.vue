@@ -441,7 +441,6 @@
       handleFileChange(e) {
         this.addData.file = e.target.files[0]
         this.addData.file1 = 'isUpload'
-        console.log( '-----------------', this.addData.file)
       },
       changePage(pageIndex) {
         this.postData.pageIndex = pageIndex
@@ -521,7 +520,6 @@
           const thirdId = _thirdId && _thirdId.id || null
           const oneToXArr = _thirdId && _thirdId.oneToX && _thirdId.oneToX.split(',') || []
           const levelLen = _thirdId && _thirdId.level || 0
-          console.log('%c oneToXArr, _thirdId', 'color:red;', oneToXArr, _thirdId);
           this.addData = Object.assign({}, this.addData, { thirdId, oneToXArr, levelLen })
         } else {
           this.addData.oneToXArr = []

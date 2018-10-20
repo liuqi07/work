@@ -90,7 +90,6 @@
         }
       }
       const validateAge = (rule, value, cb) => {
-        console.log(rule, value)
         if(!value){
           cb(new Error('请输入年龄'))
         }else{
@@ -227,7 +226,6 @@
       },
       updateDetail() {
         this.$refs['updateDetailRef'].validate(valid => {
-          console.log(this.updateDetailData)
           if(valid){
             http.post({
               vm: this,

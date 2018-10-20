@@ -332,7 +332,6 @@ export default {
         if (valid) {
           const { type, roleId, userName, password, realName } = this.addUserData;
           this.addUserData.password = md5(password);
-          console.log(this.addUserData);
           
           http.post({
             vm: this,

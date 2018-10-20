@@ -162,7 +162,6 @@
   export default {
     data() {
       const validateOptions = (rule, options=[], cb) => {
-        console.log(options)
         const arr = []
         for(let i=0; i<options.length; i++){
           if(!options[i].desc){

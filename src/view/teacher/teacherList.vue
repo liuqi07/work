@@ -159,6 +159,7 @@
   export default {
     data() {
       const validateCourseId = (rule, val, cb) => {
+        this.$Message.info('校验待完善...')
         console.log(val)
         cb()
       }

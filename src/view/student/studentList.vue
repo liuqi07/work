@@ -119,9 +119,6 @@
           }
         })
       },
-      openLevelList(row) {
-        console.log('%c openLevelList', 'color:red;');
-      },
       changePage(pageIndex) {
         this.postData.pageIndex = pageIndex
         this.getStudentList()
