@@ -174,6 +174,15 @@
           cb()
         }
       }
+      const validateAnswer = (rule, answer, cb) => {
+        if(!answer){
+          cb(new Error('答案不能为空'))
+        }else if(this.isSelect && 'ABCD'.indexOf(answer.trim()) < 0){
+          cb(new Error('选择题请输入A、B、C、D选项中的一个'))
+        }else{
+          cb()
+        }
+      }
       return {
         postData: { pageIndex: 1, pageSize: 10 },
         postRules: {
@@ -182,6 +191,7 @@
           ],
           answer: [
             { required: true, message: '答案不能为空', trigger: 'blur' },
+            { validator: validateAnswer, trigger: 'blur' }
           ],
           type: [
             { required: true, type: 'number', message: '请选择题型', trigger: 'change' }

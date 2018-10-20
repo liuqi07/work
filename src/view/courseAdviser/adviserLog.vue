@@ -34,7 +34,7 @@
           },
           { title: '订单编号', key: 'orderNo', align: 'center' },
           { title: '创建时间', key: 'createTime', align: 'center' },
-          { title: '课程顾问Id', key: 'sysUserId', align: 'center' }
+          { title: '课程顾问', key: 'sysUserName', align: 'center' }
         ],
         adviserLogList: [],
         total: 0,
