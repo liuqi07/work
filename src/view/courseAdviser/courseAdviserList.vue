@@ -193,7 +193,7 @@
         })
       },
       getCourseAdviserList(cb) {
-        this.createDate && (this.postData.createDate = formatDate('YYYY-MM-DD', this.createDate))
+        this.postData.createDate = this.createDate ? formatDate('YYYY-MM-DD', this.createDate) : null
         http.get({
           vm: this,
           url: '/manager/course-adviser/list',

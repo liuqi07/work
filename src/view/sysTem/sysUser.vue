@@ -32,7 +32,7 @@
           </RadioGroup>
         </FormItem>
         <FormItem prop="userName" label="登录名：">
-          <Input v-model="addUserData.userName" style="width:300px;" placeholder="请输入登录名"></Input>
+          <Input v-model="addUserData.userName" style="width:300px;" placeholder="请输入登录名，要求20位以内"></Input>
         </FormItem>
         <FormItem prop="password" label="密码：">
           <Input type="password" v-model="addUserData.password" style="width:300px;" placeholder="请设置6-20位，字母数字组合密码"></Input>
@@ -246,7 +246,7 @@ export default {
       addUserRules: {
         userName: [
           { required: true, message: "请输入登录名", trigger: "blur" },
-          { type: 'string', min: 8, max: 20, message: "登录名要求8-20位之间", trigger: "blur" },
+          { type: 'string', max: 20, message: "登录名要求在20位之间", trigger: "blur" },
           { validator: validateUserName, trigger: 'blur' }
         ],
         password: [
@@ -273,7 +273,7 @@ export default {
       editUserRules: {
         userName: [
           { required: true, message: "请输入登录名", trigger: "blur" },
-          { type: 'string', min: 8, max: 20, message: "登录名要求8-20位之间", trigger: "blur" },
+          { type: 'string', max: 20, message: "登录名要求在20位之间", trigger: "blur" },
           { validator: validateUserName, trigger: 'blur' }
         ],
         realName: [
