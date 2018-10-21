@@ -199,8 +199,8 @@
           time: [
             { required: true, type: 'number', message: '答题时间不能为空', trigger: 'blur'},
             { required: true, type: 'number', message: '答题时间不能为空', trigger: 'change'},
-            { type: 'number', min: 1, max: 300, message: '答题时间不能超过300秒', trigger: 'blur'},
-            { type: 'number', min: 1, max: 300, message: '答题时间不能超过300秒', trigger: 'change'}
+            { type: 'number', min: 1, max: 300, message: '答题时间应在1-300秒之间', trigger: 'blur'},
+            { type: 'number', min: 1, max: 300, message: '答题时间应在1-300秒之间', trigger: 'change'}
           ],
           firstCode: [
             { required: true, message: '一级分类不能为空', trigger: 'change'}
@@ -310,8 +310,9 @@
         this.addModal = true
         this.addOrEdit = true
         this.$refs['postData'].resetFields()
+        const { pageIndex, pageSize } = this.postData
+        this.postData = { pageIndex, pageSize, time: 1 }
         this.questionUrl = '/manager/course-question/add'
-        this.postData = { type: 2, time: 0 }
       },
       saveQuestion() {
         this.$refs['postData'].validate(valid => {

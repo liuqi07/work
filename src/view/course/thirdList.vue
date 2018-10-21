@@ -35,7 +35,7 @@
         <FormItem prop="name" label="三级分类名称：" style="width: 300px;">
           <Input v-model="addData.name" size="small" placeholder="请输入三级分类名称" />
         </FormItem>
-        <FormItem label="级别：" style="width: 500px;" >
+        <FormItem label="级别：" style="width: 500px;" required>
           <Button type="dashed" size="small" @click="addLevel" icon="md-add" style="margin-right: 15px;">添加级别</Button>
           <Button type="error" size="small" @click="removeLevel" icon="md-remove">删除级别</Button>
         </FormItem>
@@ -307,13 +307,11 @@
         })
       },
       firstListChange(value) {
-        if (value) {
-          delete this.postData.parentCode
-          this.getSecondList()
-        } else {
-          delete this.postData.parentCode
-          this.secondList = [];
-        }
+        delete this.postData.parentCode
+        this.secondPostData.parentCode = value
+        this.addData.parentCode = null
+        this.secondList = [];
+        this.getSecondList()
         // value && this.getSecondList() || (this.secondList = [])
       },
       secondListOpenChange() {

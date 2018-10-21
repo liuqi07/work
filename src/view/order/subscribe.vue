@@ -454,6 +454,7 @@
           data: { orderId, teacherId, datesStr },
           success: res => {
             this.$Message.success('排课成功！')
+            this.getSubscribeList()
             this.subscribeArrangeData = { dateList: [{}, {}] }
           }
         })
