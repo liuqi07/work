@@ -22,8 +22,8 @@ export default {
       postData: { pageIndex: 1, pageSize: 10 },
       total: 0,
       columns: [
-        { title: '学生ID', key: 'studentId', align: 'center' },
-        { title: '操作员ID', key: 'operateId', align: 'center' },
+        { title: '学员姓名', key: 'studentName', align: 'center' },
+        { title: '操作员姓名', key: 'operateName', align: 'center' },
         { title: '订单号', key: 'orderNo', align: 'center' },
         { title: '描述', key: 'msg', align: 'center' },
         { title: '创建时间', key: 'createTime', align: 'center' },

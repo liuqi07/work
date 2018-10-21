@@ -41,16 +41,16 @@
         <Button type="primary" @click="saveSubscribeAllot">确定</Button>
       </div>
     </Modal>
-    <Modal title="排课" v-model="subscribeArrangeModal" @on-ok="saveSubscribeArrange">
+    <Modal :title="subscribeArrangeTitle" v-model="subscribeArrangeModal" @on-ok="saveSubscribeArrange">
       <Form :label-width="80">
         <FormItem label="上课时间：">
-          <Row>
+          <Row v-if="subscribeArrangeData.surplusClassHour>0">
             <DatePicker type="date" v-model="subscribeArrangeData.dateList[0].date" @on-change="onDateChange" :clearable="false" placeholder="选择日期"
               style="width: 120px; margin-right: 5px;"></DatePicker>
             <TimePicker :steps="[1, 30, 60]" v-model="subscribeArrangeData.dateList[0].time" hide-disabled-options :disabled-hours="[0,1,2,3,4,5,6,7,13,19,20,21,22,23]" :clearable="false" placeholder="选择时间段" style="width: 100px; margin-right: 5px;"></TimePicker>
             <Input :value="subscribeArrangeData.dateList[0].week" style="width: 80px;" placeholder="星期" readonly />
           </Row>
-          <Row style="margin-top: 10px;">
+          <Row style="margin-top: 10px;" v-if="subscribeArrangeData.surplusClassHour>1">
             <DatePicker type="date" v-model="subscribeArrangeData.dateList[1].date" @on-change="onDateChange" :clearable="false" placeholder="选择日期"
               style="width: 120px; margin-right: 5px;"></DatePicker>
             <TimePicker :steps="[1, 30, 60]" v-model="subscribeArrangeData.dateList[1].time" hide-disabled-options :disabled-hours="[0,1,2,3,4,5,6,7,13,19,20,21,22,23]" :clearable="false" placeholder="选择时间段" style="width: 100px; margin-right: 5px;"></TimePicker>
@@ -73,12 +73,12 @@
         <Row>
           <Col :span="10">
           <FormItem prop="studentName" label="学员姓名：" :label-width="100" style="width: 210px;">
-            <Input :value="subscribeChangeOrderData.studentName" />
+            <Input :value="subscribeChangeOrderData.studentName" disabled />
           </FormItem>
           </Col>
           <Col :span="10">
           <FormItem prop="studentMobilePhone" label="手机电话：" :label-width="100" style="width: 210px;">
-            <Input :value="subscribeChangeOrderData.studentMobilePhone" />
+            <Input :value="subscribeChangeOrderData.studentMobilePhone" disabled />
           </FormItem>
           </Col>
         </Row>
@@ -313,8 +313,8 @@
         firstList: [],
         secondList: [],
         thirdList: [],
-        coursePackerList: []
-
+        coursePackerList: [],
+        subscribeArrangeTitle: '',
       }
     },
     methods: {
@@ -414,6 +414,7 @@
             this.$Message.success('分配顾问成功！')
             this.subscribeAllotModal = false
             this.addSubscribeAllotData = {}
+            this.getSubscribeList()
           }
         })
       },
@@ -424,10 +425,12 @@
         }
       },
       // 排课
-      subscribeArrange({ orderId }) {
+      subscribeArrange({ orderId, surplusClassHour }) {
         this.subscribeArrangeData = { dateList: [{}, {}] }
         this.subscribeArrangeModal = true
         this.subscribeArrangeData.orderId = orderId
+        this.subscribeArrangeData.surplusClassHour = surplusClassHour
+        this.subscribeArrangeTitle = '排课'
         this.subscribeArrangeData.url = '/manager/order-subscribe/arrangeCourse'
         this.teacherList = []
         this.getClassBeginTime()
@@ -459,10 +462,14 @@
           }
         })
       },
-      subscribeArrangeAgain({ orderId }) {
+      // 重新排课
+      subscribeArrangeAgain({ orderId, surplusClassHour }) {
         this.subscribeArrangeData.teacherId = null
         this.subscribeArrangeModal = true
+        this.subscribeArrangeData.dateList = [{}, {}]
         this.subscribeArrangeData.orderId = orderId
+        this.subscribeArrangeData.surplusClassHour = surplusClassHour
+        this.subscribeArrangeTitle = '重新排课'
         this.subscribeArrangeData.url = '/manager/order-subscribe/arrangeCourseAgain'
         this.teacherList = []
       },

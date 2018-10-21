@@ -318,6 +318,9 @@
                 this.$Message.success('下架成功！')
                 this.getCourseList()
                 this.$Modal.remove()
+              },
+              error: err => {
+                this.$Modal.remove()
               }
             })
           }

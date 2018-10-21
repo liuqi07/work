@@ -35,6 +35,7 @@
     </Card>
     <Modal v-model="detailModal" :width="600">
       <p class="comment-detail-title">课程等级： <span>{{lookCommentData.courseLevel}}</span></p>
+      <p class="comment-detail-title" v-if="lookCommentData.teacherCommentLevel">教师评级： <span>{{lookCommentData.teacherCommentLevel}}</span></p>
       <p class="comment-detail-title">教师评语：</p>
       <Tag class="comment-detail-title" v-for="(item, index) in lookCommentData.labels" :color="item.color" :key="index">{{item.desc}}</Tag>
       <Input class="comment-detail-title" type="textarea" :value="lookCommentData.commentDesc" :rows="3" readonly disabled />
@@ -290,8 +291,8 @@
         this.postData.pageSize = s
         this.getCourseList()
       },
-      lookComment({ courseLevel, labels = [], commentDesc }) {
-        this.lookCommentData = { courseLevel, labels, commentDesc }
+      lookComment({ courseLevel, labels = [], commentDesc, teacherCommentLevel }) {
+        this.lookCommentData = { courseLevel, labels, commentDesc, teacherCommentLevel }        
         this.detailModal = true;
       },
       lookTask({ tableId }) {

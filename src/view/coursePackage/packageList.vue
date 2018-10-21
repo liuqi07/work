@@ -231,7 +231,7 @@
       addPackage() {
         const url = this.packageUrl
         const addOrEdit = this.addOrEdit
-        const { id, name, coursePackageDesc, firstId, secondId, thirdId, weekClassHour, weekCount, unitPrice, isDiscount, oneToX, discountUnitPrice, version } = this.addData
+        const { id, name, coursePackageDesc='', firstId, secondId, thirdId, weekClassHour, weekCount, unitPrice, isDiscount, oneToX, discountUnitPrice, version } = this.addData
 
         this.$refs['addPackage'].validate(valid => {
           if(valid) {
