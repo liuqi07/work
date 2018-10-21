@@ -62,25 +62,25 @@
         </FormItem>
         <FormItem prop="time" label="答题时间：" style="width: 300px;" >
           <Row>
-            <InputNumber v-model="postData.time" placeholder="请输入答题时间，精确到秒" /> 秒
+            <InputNumber v-model="postData.time" placeholder="请输入答题时间，不超过300秒" style="width: 180px;" /> 秒
           </Row>
         </FormItem>
-        <FormItem prop="firstCode" label="一级分类：" style="width: 220px;" >
+        <FormItem prop="firstCode" label="一级分类：" style="width: 300px;" >
           <Select v-model="postData.firstCode" @on-change="firstChange" @on-open-change="onFirstOpen" clearable>
             <Option v-for="item in firstList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem prop="secondCode" label="二级分类：" style="width: 220px;" >
+        <FormItem prop="secondCode" label="二级分类：" style="width: 300px;" >
           <Select v-model="postData.secondCode" @on-change="secondChange" clearable>
             <Option v-for="item in secondList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem prop="thirdCode" label="三级分类：" style="width: 220px;" >
+        <FormItem prop="thirdCode" label="三级分类：" style="width: 300px;" >
           <Select v-model="postData.thirdCode" @on-change="thirdChange" clearable>
             <Option v-for="item in thirdList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem prop="level" label="级别：" style="width: 220px;" >
+        <FormItem prop="level" label="级别：" style="width: 300px;" >
           <Select v-model="postData.level" clearable>
             <Option v-for="item in levelList" :value="item" :key="item">{{item}}</Option>
           </Select>
@@ -198,7 +198,9 @@
           ],
           time: [
             { required: true, type: 'number', message: '答题时间不能为空', trigger: 'blur'},
-            { required: true, type: 'number', message: '答题时间不能为空', trigger: 'change'}
+            { required: true, type: 'number', message: '答题时间不能为空', trigger: 'change'},
+            { type: 'number', min: 1, max: 300, message: '答题时间不能超过300秒', trigger: 'blur'},
+            { type: 'number', min: 1, max: 300, message: '答题时间不能超过300秒', trigger: 'change'}
           ],
           firstCode: [
             { required: true, message: '一级分类不能为空', trigger: 'change'}
@@ -300,6 +302,8 @@
     },
     methods: {
       search() {
+        // !this.postData.pageIndex && (this.postData.pageIndex = 1)
+        // !this.postData.pageSize && (this.postData.pageSize = 10)
         this.getQuestionList(() => { this.$Message.success('查询成功！') })
       },
       openAdd() {
@@ -322,10 +326,12 @@
               data: this.postData,
               success: res => {
                 this.$Message.success(msg)
-                this.postData = { pageIndex: 1, pageSize: 10 }
+                // this.postData = { pageIndex: 1, pageSize: 10 }
+                const { pageIndex, pageSize, ...rest} = this.postData
+                this.postData = { pageIndex, pageSize }
                 this.$refs['postData'].resetFields()
-                this.getQuestionList()
                 this.addModal = false
+                this.getQuestionList()
               }
             })
           }
@@ -335,10 +341,13 @@
         this.addModal = false
         this.importModal = false
         this.$refs['postData'].resetFields()
-        this.postData = { pageIndex: 1, pageSize: 10 }
+        // this.postData = { pageIndex: 1, pageSize: 10 }
+        const { pageIndex, pageSize, ...rest} = this.postData
+        this.postData = { pageIndex, pageSize }
         this.isSelect = false
       },
       edit({ id, question, answer, type, time, firstId, secondId, thirdId, level, options: _options }) {
+        this.$refs['postData'].resetFields()
         this.addModal = true
         this.addOrEdit = false
         this.questionUrl = '/manager/course-question/edit'

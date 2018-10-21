@@ -24,7 +24,7 @@
       <Page :total="total" show-total show-sizer @on-change="changePage" @on-page-size-change="changePageSize" :page-index="postData.pageIndex"
         :page-size="postData.pageSize" style="margin-top: 10px" />
     </Card>
-    <Modal v-model="detailModal" title="完善资料" :closable="false" :mask-closable="false">
+    <Modal v-model="detailModal" title="完善资料" >
       <Form ref="updateDetailRef" :model="updateDetailData" :rules="updateDetailRules" :label-width="100">
         <FormItem label="课程顾问编号：" style="width: 300px;">
           <Input v-model="updateDetailData.code" disabled />
@@ -36,7 +36,7 @@
           <Input v-model="updateDetailData.mobilePhone" disabled />
         </FormItem>
         <FormItem prop="idNo" label="身份证号：" style="width: 300px;">
-          <Input v-model="updateDetailData.idNo" />
+          <Input v-model="updateDetailData.idNo" @on-blur="onIdNoBlur" />
         </FormItem>
         <FormItem prop="sex" label="性别：" style="width: 300px;" >
           <RadioGroup v-model="updateDetailData.sex">
@@ -45,7 +45,7 @@
           </RadioGroup>
         </FormItem>
         <FormItem prop="age" label="年龄：" style="width: 300px;" >
-          <Input v-model="updateDetailData.age" placeholder="请输入年龄" ></Input>
+          <Input v-model="updateDetailData.age" placeholder="请输入年龄" @on-change="onAgeChange" ></Input>
         </FormItem>
         <FormItem prop="rate" label="提成比例：" style="width: 320px;" >
           <Row><Input v-model="updateDetailData.rate" style="width: 200px;" /> %</Row>
@@ -56,7 +56,7 @@
       </Form>
       <div slot="footer">
         <Button @click="cancelUpdateDetail">取消</Button>
-        <Button type="primary" @click="updateDetail">确定</Button>
+        <Button type="primary" @click="updateDetail" :loading="loading">确定</Button>
       </div>
     </Modal>
   </div>
@@ -67,33 +67,33 @@
   import { formatDate } from '@/libs/tools';
   export default {
     data() {
-      const validateIdNo = (rule, value, cb) => {
-        if(!value){
+      const validateIdNo = (rule, idNo, cb) => {        
+        if(!idNo){
           cb(new Error('身份找号不能为空'))
         }else{
+          // this.loading = true
           http.get({
             vm: this,
             url: '/manager/course-adviser/valid	',
-            data: { idNo: value, id: this.updateDetailData.id },
+            data: { idNo: idNo, id: this.updateDetailData.id },
             success: res => {
               if(!res.data){
                  cb(new Error('身份证号已存在'))
               }else{
-                this.updateDetailData.age = (new Date().getFullYear() - value.slice(6, 10)).toString()
+                this.updateDetailData.age = this._age ? this._age : (new Date().getFullYear() - idNo.slice(6, 10)).toString()
                 cb()
               }
-            },
-            error: err => {
-              cb(new Error('出错了！'))
+              // this.loading = false
             }
           })
         }
       }
-      const validateAge = (rule, value, cb) => {
-        if(!value){
+      const validateAge = (rule, age, cb) => {
+        console.log(age);
+        if(!age){
           cb(new Error('请输入年龄'))
         }else{
-          if(!/^(?:[1-9][0-9]?|1[01][0-9]|100)$/.test(value)){
+          if(!/^(?:[1-9][0-9]?|1[01][0-9]|100)$/.test(age)){
             cb(new Error('请输入正确的年龄'))
           }else{
             cb()
@@ -115,6 +115,7 @@
           pageSize: 10
         },
         total: 0,
+        loading: false,
         createDate: '',
         columns: [
           { title: '课程顾问编号', key: 'code', align: 'center', },
@@ -168,13 +169,15 @@
         updateDetailRules: {
           idNo: [
             { required: true, message: '身份证号不能为空', trigger: 'blur' },
+            { type: 'string', message: '请输入有效的身份证号', pattern: /^(^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$)|(^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])((\d{4})|\d{3}[Xx])$)$/, trigger: 'change' },
             { type: 'string', message: '请输入有效的身份证号', pattern: /^(^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$)|(^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])((\d{4})|\d{3}[Xx])$)$/, trigger: 'blur' },
+            { validator: validateIdNo, trigger: 'change' },
             { validator: validateIdNo, trigger: 'blur' }
           ],
           age: [
-            { required: true, message: '请填写年龄', trigger: 'blur' },
-            { type: 'string', message: '请输入正确的年龄', pattern: /^(?:[1-9][0-9]?|1[01][0-9]|100)$/ , trigger: 'blur' },
-            // { validator: validateAge, trigger: 'blur' }
+            { required: true, message: '请填写年龄', trigger: 'change' },
+            // { type: 'string', message: '请输入正确的年龄', pattern: /^(?:[1-9][0-9]?|1[01][0-9]|100)$/ , trigger: 'blur' },
+            { validator: validateAge, trigger: 'change' }
           ],
           rate: [
             { required: true, message: '请填写提成比例', trigger: 'blur' },
@@ -184,6 +187,7 @@
             { type: 'email', message: '请输入正确的邮箱', trigger: 'blur' }
           ]
         },
+        _age: null
       }
     },
     methods: {
@@ -220,13 +224,16 @@
         window.open('http://www.zilongshu.com/manager/course-adviser/export' + params)
       },
       openDetail({ code, realName, mobilePhone, idNo, sex, age, rate, email, id}) {
+        console.log('code, realName, mobilePhone, idNo, sex, age, rate, email, id -------> ', code, realName, mobilePhone, idNo, sex, age, rate, email, id);
+        
         this.detailModal = true
         this.$refs['updateDetailRef'].resetFields()
-        this.updateDetailData = { code, realName, mobilePhone, idNo, sex, age, rate: rate.toString(), email, id }
+        this.updateDetailData = { code, realName, mobilePhone, idNo, sex, age, rate: rate && rate.toString(), email, id }
       },
       updateDetail() {
         this.$refs['updateDetailRef'].validate(valid => {
           if(valid){
+            this._age && (this.updateDetailData.age = this._age)
             http.post({
               vm: this,
               url: '/manager/course-adviser/edit',
@@ -254,6 +261,12 @@
       changePageSize(pageSize) {
         this.postData.pageSize = pageSize
         this.getCourseAdviserList()
+      },
+      onAgeChange (e) {
+        this._age = e.target.value
+      },
+      onIdNoBlur (e) {
+        this._age = null
       }
     },
     mounted() {

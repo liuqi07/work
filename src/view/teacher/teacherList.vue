@@ -58,6 +58,7 @@
     <Modal v-model="lookDetailModal" title="教师详情">
       <p class="teacherDetailTitle">出生年月：<span>{{ teacherDetail.birthday }}</span></p>
       <p class="teacherDetailTitle">毕业院校：<span>{{ teacherDetail.school }}</span></p>
+      <p class="teacherDetailTitle">所获学位：<span>{{ teacherDetail.degreeStr }}</span></p>
       <p class="teacherDetailTitle">可用时段</p>
       <Table :columns="columns1" :data="weekTime" border size="small" :disabled-hover="true"></Table>
       <div class="certificate">
@@ -182,8 +183,16 @@
           { title: '国籍', key: 'nationality', align: 'center' },
           { title: '所获学位', key: 'degree', align: 'center', render: (h, params) => {
             const degree = params.row.degree
-            const degreeStr = degree === 1 ? '学士' : ( degree === 2 ? '硕士' : '博士')
-            return h('div', degreeStr)
+            switch(degree){
+              case 1: 
+                return h('div', '学士学位')
+              case 2:
+                return h('div', '硕士学位')
+              case 3:
+                return h('div', '博士学位')
+              default:
+                return h('div', '')
+            }
           } },
           { title: '年龄', key: 'age', align: 'center' },
           {
@@ -436,6 +445,9 @@
                 this.$Message.success('审核成功！')
                 this.getTeacherList()
                 this.$Modal.remove()
+              },
+              error: err => {
+                this.$Modal.remove()
               }
             })
           }
@@ -449,6 +461,21 @@
           data: { id: row.id },
           success: res => {
             this.teacherDetail = res.data
+            const degree = res.data.degree
+            switch(degree){
+              case 1: 
+                this.teacherDetail.degreeStr = '学士学位'
+                break
+              case 2:
+                this.teacherDetail.degreeStr = '硕士学位'
+                break
+              case 3:
+                this.teacherDetail.degreeStr = '博士学位'
+                break
+              default:
+                this.teacherDetail.degreeStr = ''
+                break
+            }
             const weekTimeVOS = res.data.weekTimeVOS
             const weekTime = [
               { 1: '08:00', 2: '08:00', 3: '08:00', 4: '08:00', 5: '08:00', 6: '08:00', 7: '08:00', cellClassName: {} },

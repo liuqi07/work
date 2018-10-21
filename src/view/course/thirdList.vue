@@ -181,7 +181,7 @@
     methods: {
       thirdAdd() {
         this.addModal = true
-        this.secondPostData = {}
+        this.secondPostData = { type: 2 }
         this.addData = {}
         this.levelList = []
         this.x = null
