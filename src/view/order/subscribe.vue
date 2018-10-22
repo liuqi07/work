@@ -41,7 +41,7 @@
         <Button type="primary" @click="saveSubscribeAllot">确定</Button>
       </div>
     </Modal>
-    <Modal :title="subscribeArrangeTitle" v-model="subscribeArrangeModal" @on-ok="saveSubscribeArrange">
+    <Modal :title="subscribeArrangeTitle" v-model="subscribeArrangeModal">
       <Form :label-width="80">
         <FormItem label="上课时间：">
           <Row v-if="subscribeArrangeData.surplusClassHour>0">
@@ -64,6 +64,10 @@
           <Button type="primary" @click="getTeacherList" style="margin-left: 10px;">查询可用教师</Button>
         </FormItem>
       </Form>
+      <div slot="footer">
+        <Button @click="cancelSubscribeArrange">取消</Button>
+        <Button type="primary" @click="saveSubscribeArrange">确定</Button>
+      </div>
     </Modal>
     <Modal title="转单" v-model="subscribeChangeOrderModal" >
       <Form :label-width="120" :model="subscribeChangeOrderData" :rules="subscribeChangeOrderRules" ref="subscribeChangeOrder">
@@ -348,8 +352,7 @@
       },
       // 查询可用教师
       getTeacherList() {
-        const { orderId, dateList } = this.subscribeArrangeData
-        
+        const { orderId, dateList, surplusClassHour } = this.subscribeArrangeData
         const dateTimes = dateList.map(d => {
           if(d.date && d.time){
             return formatDate('YYYY-MM-DD', d.date) + ' ' + d.time
@@ -358,10 +361,11 @@
         if(!dateTimes[0]){
           this.$Message.error('请完整填写第一组预约时间')
           return 
-        }else if(!dateTimes[1]){
+        }else if(surplusClassHour > 1 && !dateTimes[1]){
           this.$Message.error('请完整填写第二组预约时间')
           return 
         }
+        dateTimes.length = surplusClassHour
         this.subscribeArrangeData.dateTimes = dateTimes
         http.get({
           vm: this,
@@ -435,16 +439,20 @@
         this.teacherList = []
         this.getClassBeginTime()
       },
+      // 重新排课
+      subscribeArrangeAgain({ orderId, surplusClassHour }) {
+        this.subscribeArrangeData.teacherId = null
+        this.subscribeArrangeModal = true
+        this.subscribeArrangeData.dateList = [{}, {}]
+        this.subscribeArrangeData.orderId = orderId
+        this.subscribeArrangeData.surplusClassHour = surplusClassHour
+        this.subscribeArrangeTitle = '重新排课'
+        this.subscribeArrangeData.url = '/manager/order-subscribe/arrangeCourseAgain'
+        this.teacherList = []
+      },
       saveSubscribeArrange() {
         const { orderId, teacherId, dateTimes: datesStr, url } = this.subscribeArrangeData
-        if (datesStr.length !== 2) {
-          this.$Message.error({
-            content: '请选择排课日期后再进行操作！',
-            duration: 5
-          })
-          return
-        }
-        else if (!teacherId) {
+        if(!teacherId) {
           this.$Message.error({
             content: '请选择教师后再进行操作！',
             duration: 5
@@ -457,21 +465,15 @@
           data: { orderId, teacherId, datesStr },
           success: res => {
             this.$Message.success('排课成功！')
+            this.subscribeArrangeModal = false
             this.getSubscribeList()
             this.subscribeArrangeData = { dateList: [{}, {}] }
           }
         })
       },
-      // 重新排课
-      subscribeArrangeAgain({ orderId, surplusClassHour }) {
-        this.subscribeArrangeData.teacherId = null
-        this.subscribeArrangeModal = true
-        this.subscribeArrangeData.dateList = [{}, {}]
-        this.subscribeArrangeData.orderId = orderId
-        this.subscribeArrangeData.surplusClassHour = surplusClassHour
-        this.subscribeArrangeTitle = '重新排课'
-        this.subscribeArrangeData.url = '/manager/order-subscribe/arrangeCourseAgain'
-        this.teacherList = []
+      cancelSubscribeArrange(){
+        this.subscribeArrangeModal = false
+        this.subscribeArrangeData = { dateList: [{}, {}] }
       },
       // 转单
       subscribeChangeOrder({ orderId, orderNo, studentName, studentMobilePhone }) {

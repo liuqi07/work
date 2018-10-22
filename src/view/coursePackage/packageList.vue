@@ -127,9 +127,11 @@
     data() {
       const validateDiscountUnitPrice = (rule, value, cb) => {
         if(!value && this.discountUnitPriceRequire){
-          cb(new Error('优惠金额不能为空'))
+          cb(new Error('优惠金额不能为0或空'))
         }else if(typeof Number(value) !== 'number') {
           cb(new Error('请输入正确的金额'))
+        }else if(this.addData.unitPrice < value){
+          cb(new Error('优惠金额不能大于课程单价'))
         }else{
           cb()
         }
@@ -232,7 +234,7 @@
         const url = this.packageUrl
         const addOrEdit = this.addOrEdit
         const { id, name, coursePackageDesc='', firstId, secondId, thirdId, weekClassHour, weekCount, unitPrice, isDiscount, oneToX, discountUnitPrice, version } = this.addData
-
+        console.log(coursePackageDesc)
         this.$refs['addPackage'].validate(valid => {
           if(valid) {
             const addData = { id, name, coursePackageDesc, firstId, secondId, thirdId, weekClassHour, weekCount, unitPrice, isDiscount, oneToX, discountUnitPrice, version }
@@ -323,7 +325,7 @@
       packageEdit(packageData) {
         this.uploadIsShow = false
         this.addOrEdit = false
-	      // ('%c packageData', 'color:red;', packageData)
+	      console.log('%c packageData', 'color:red;', packageData)
         const { id, firstId, secondId, thirdId, oneToX, isDiscount=0, weekClassHour=0, weekCount=0, unitPrice=0, discountUnitPrice=0, version } = packageData
         this.discountUnitPriceRequire = isDiscount===1 ? true : false
         this.getFirstList(() => {

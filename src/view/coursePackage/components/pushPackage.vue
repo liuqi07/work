@@ -16,6 +16,7 @@
             { title: '二级分类', key: 'secondName', align: 'center' },
             { title: '三级分类', key: 'thirdName', align: 'center' },
             { title: '套餐单价', key: 'unitPrice', align: 'center' },
+            { title: '优惠单价', key: 'discountUnitPrice', align: 'center' },
             { title: '每周课时', key: 'weekClassHour', align: 'center' },
             { title: '总课时', key: 'allHour', align: 'center' },
             { title: '套餐总价', key: 'allPrice', align: 'center' }, 
@@ -26,7 +27,7 @@
             },
             { title: '已售出', key: 'sellCount', align: 'center' },
             {
-              title: '管理', key: 'actions', align: 'center', width: 200, render: (h, params) => {
+              title: '管理', key: 'actions', align: 'center', render: (h, params) => {
                 return h('div', [
                   h('Button', {
                     props: {
@@ -44,38 +45,7 @@
                     directives: [
                       { name: 'hasPermission', value: "packageLower" }
                     ]
-                  }, '下架'),
-                  h('Button', {
-                    props: {
-                      type: 'primary',
-                      size: 'small'
-                    },
-                    style: {
-                      marginRight: '5px'
-                    },
-                    on: {
-                      click: () => {
-                        this.packageEdit(params.row)
-                      }
-                    },
-                    directives: [
-                      { name: 'hasPermission', value: "packageEdit" }
-                    ]
-                  }, '套餐编辑'),
-                  h('Button', {
-                    props: {
-                      type: 'primary',
-                      size: 'small'
-                    },
-                    on: {
-                      click: () => {
-                        this.packageDelete(params.row)
-                      }
-                    },
-                    directives: [
-                      { name: 'hasPermission', value: "packageDelete" }
-                    ]
-                  }, '删除')
+                  }, '下架')
                 ])
               }
             }

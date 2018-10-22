@@ -15,6 +15,7 @@
 
   .certificate .item {
     margin: 0 5px;
+    cursor: pointer;
   }
 
   .teacherDetailTitle {
@@ -63,7 +64,7 @@
       <Table :columns="columns1" :data="weekTime" border size="small" :disabled-hover="true"></Table>
       <div class="certificate">
         <p class="teacherDetailTitle">证书资质</p>
-        <Avatar v-for="(item, index) in certificateUrls" class="item" size="large" shape="square" :src="item" :key="index" />
+        <Avatar v-for="(item, index) in certificateUrls" @click.native="handleView(item)" class="item" size="large" shape="square" :src="item" :key="index" />
       </div>
       <p class="teacherDetailTitle">自我介绍</p>
       <Input type="textarea" :value="selfDesc" :rows="4" readonly/>
@@ -149,6 +150,12 @@
       <div slot=footer>
         <Button @click="cancelFee" >取消</Button>
         <Button type="primary" @click="saveFee" >确定</Button>
+      </div>
+    </Modal>
+    <Modal title="证书资质" v-model="viewModal">
+      <img :src="largeImgSrc" style="width: 100%">
+      <div slot="footer">
+        <Button type="primary" @click="closeImgView">关闭</Button>
       </div>
     </Modal>
   </div>
@@ -365,6 +372,8 @@
         },
         feeModal: false,
         teacherId2: '',
+        viewModal: false,
+        largeImgSrc: '',
       }
     },
     methods: {
@@ -509,6 +518,14 @@
             this.selfDesc = res.data.selfDesc
           }
         })
+      },
+      handleView(src) {
+        this.largeImgSrc = src
+        this.viewModal = true
+      },
+      closeImgView(){
+        this.viewModal = false
+        this.largeImgSrc = ''
       },
       getSecondList() {
         http.get({

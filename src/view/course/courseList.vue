@@ -28,7 +28,7 @@
       <Page :total="total" show-total show-sizer @on-change="changePage" @on-page-size-change="changePageSize" :page-size="postData.pageSize"
         :page-index="postData.pageIndex" style="margin-top: 10px" />
     </Card>
-    <Modal title="添加课程" v-model="addCourseModal" >
+    <Modal :title="courseTitle" v-model="addCourseModal" >
       <Form :label-width="100" :model="addData" :rules="addRules" ref="addData">
         <FormItem prop="firstCode" label="一级分类：" style="width: 300px;" >
           <Select v-model="addData.firstCode" @on-change="firstChange" clearable>
@@ -87,10 +87,19 @@
         <FormItem prop="file" label="上传图片：" :required="fileIsRequire" v-if="fileReload">
           <input type="file" @change="handleFileChange">
         </FormItem>
+        <FormItem label="查看图片：" v-if="fileIsExist" style="width: 300px;">
+          <Button long type="primary" @click="handleView(addData.courseFileSrc)">查看</Button>
+        </FormItem>
       </Form>
       <div slot="footer">
         <Button @click="cancelAddCourse">取消</Button>
         <Button type="primary" @click="addCourse">确定</Button>
+      </div>
+    </Modal>
+    <Modal title="图片预览" v-model="courseFileModal">
+      <img :src="courseFileSrc" style="width: 100%;" />
+      <div slot="footer">
+        <Button type="primary" @click="handleCloseView">关闭</Button>
       </div>
     </Modal>
   </div>
@@ -199,6 +208,10 @@
         fileIsRequire: false,
         addOrEdit: true,
         fileReload: true,
+        courseTitle: '',
+        fileIsExist: false,
+        courseFileSrc: '',
+        courseFileModal: false,
       }
     },
     methods: {
@@ -219,10 +232,12 @@
         this.fileIsRequire = true
         this.addCourseModal = true
         this.addOrEdit = true
+        this.fileIsExist = false
         this.fileReload = false
         setTimeout(() => {
           this.fileReload = true
         }, 0);
+        this.courseTitle = '添加课程'
         this.addData = { oneToXArr: [], levelHour: [], firstList: [], secondList: [], thirdList: [] }
         this.courseEditUrl = ''
         this.$refs['addData'].resetFields()
@@ -331,6 +346,11 @@
         this.$refs['addData'].resetFields()
         this.fileIsRequire = false
         this.addOrEdit = false
+        this.fileIsExist = true
+        // this.fileReload = false
+        // setTimeout(() => {
+        //   this.fileReload = true
+        // }, 0);
         const { firstId, secondId, thirdId, oneToX, id, platform, name, courseDesc, classType } = courseData
         this.getFirstList(() => {
           const _firstCode = this.addData.firstList.find(f => f.id === firstId)
@@ -352,9 +372,16 @@
             })
           })
         })
-
+        this.courseTitle = '编辑课程'
         this.courseEditUrl = '/manager/course/edit'
         this.addCourseModal = true
+      },
+      handleView() {
+        this.courseFileModal = true
+      },
+      handleCloseView(){
+        this.courseFileSrc = ''
+        this.courseFileModal = false
       },
       getCourseDetail(id, cb) {
         http.get({
@@ -363,6 +390,7 @@
           data: { id },
           success: res => {
             this.addData.levelHour = res.data.levelHours
+            this.courseFileSrc = res.data.courseFile
             cb && cb()
           }
         })

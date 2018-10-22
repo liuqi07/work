@@ -17,10 +17,10 @@
 <template>
   <div>
     <Form :label-width="80" inline :model="postData">
-      <FormItem label="手机号：" style="width: 220px;">
+      <FormItem label="手机号：" :label-width="70" style="width: 200px;">
         <Input v-model="postData.mobilePhone" placeholder="请输入手机号" />
       </FormItem>
-      <FormItem label="订单状态：" style="width: 220px;">
+      <FormItem label="订单状态：" style="width: 200px;">
         <Select v-model="postData.status" clearable>
           <Option :value="1">未支付</Option>
           <Option :value="2">已支付/未分配顾问</Option>
@@ -164,6 +164,7 @@
                   props: {
                     type: 'success',
                     size: 'small',
+                    disabled: status === 1 ? true : false
                   },
                   style: {
                     marginRight: '5px',
@@ -358,6 +359,7 @@
           data: this.formalAllotData,
           success: res => {
             this.$Message.success('分配顾问成功！')
+            this.getFormalList()
             this.formalAllotModal = false
             this.formalAllotData = {}
           }
@@ -388,18 +390,31 @@
         }
       },
       // 重新排课
-      formalArrangeAgain({ orderId, name }) {
+      formalArrangeAgain({ orderId, name, weekTimeCount, thirdId }) {
         this.formalArrangeData.dateList = []
-        this.formalArrangeData.url = '/manager/order-formal/arrangeCourseAgain'
+        this.formalArrangeModal = true
+        this.formalArrangeData.weekTimeCount = weekTimeCount
         this.formalArrangeData.name = name
         this.formalArrangeData.orderId = orderId
+        this.formalArrangeData.thirdId = thirdId
+        this.formalArrangeData.url = '/manager/order-formal/arrangeCourseAgain'
+        this.getCourseList()
         this.teacherList = []
+        for (let i = 0; i < weekTimeCount; i++) {
+          this.formalArrangeData.dateList.push({ date: '', time: '', week: '' })
+        }
       },
       saveFormalArrange() {
         const { url, orderId, datesStr, teacherId, courseId = -1 } = this.formalArrangeData
-        if (!url || !orderId || !datesStr || !teacherId || !courseId) {
+        if (!teacherId) {
           this.$Message.error({
-            content: '标星内容不能为空，请填写后重新提交！',
+            content: '请选择教师',
+            duration: 5
+          })
+          return
+        }else if(!courseId){
+          this.$Message.error({
+            content: '请选择课程',
             duration: 5
           })
           return
@@ -410,6 +425,7 @@
           data: { orderId, datesStr, teacherId, courseId },
           success: res => {
             this.$Message.success('排课成功！')
+            this.getFormalList()
             this.formalArrangeModal = false
           }
         })
@@ -420,13 +436,14 @@
       // 打开退款弹框
       formalRefund({ orderId }) {
         this.formalRefundModal = true
+        this.submitFormalRefundFlag = true
         this.formalRefundData = {}
         http.get({
           vm: this,
-          url: 'manager/order-formal/refundDetail',
+          url: '/manager/order-formal/refundDetail',
           data: { orderId },
           success: res => {
-            this.submitFormalRefundFlag = true
+            this.submitFormalRefundFlag = false
             this.formalRefundData = res.data
           }
         })
@@ -442,6 +459,7 @@
           data: { orderId: this.formalRefundData.orderId },
           success: res => {
             this.$Message.success('退款成功！')
+            this.getFormalList()
           }
         })
       },
