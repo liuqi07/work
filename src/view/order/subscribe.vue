@@ -554,18 +554,19 @@
         })
       },
       getCoursePackerList() {
-        const _firstId = this.firstList.find(f => f.code === this.subscribeChangeOrderData.firstCode)
-        const _secondId = this.secondList.find(s => s.code === this.subscribeChangeOrderData.secondCode)
+        // const _firstId = this.firstList.find(f => f.code === this.subscribeChangeOrderData.firstCode)
+        // const _secondId = this.secondList.find(s => s.code === this.subscribeChangeOrderData.secondCode)
         const _thirdId = this.thirdList.find(t => t.code === this.subscribeChangeOrderData.thirdCode)
-        const firstId = _firstId && _firstId.id || null
-        const secondId = _secondId && _secondId.id || null
+        // const firstId = _firstId && _firstId.id || null
+        // const secondId = _secondId && _secondId.id || null
         const thirdId = _thirdId && _thirdId.id || null
         http.get({
           vm: this,
-          url: '/manager/course-package/list',
-          data: { pageIndex: 1, pageSize: 1000, firstId, secondId, thirdId },
+          url: '/manager/course-package/listByThird',
+          data: { third: thirdId },
           success: res => {
-            this.coursePackerList = res.data.list
+            this.coursePackerList = res.data
+            // this.coursePackerList = res.data.list
           }
         })
       },
@@ -573,16 +574,16 @@
         this.subscribeChangeOrderData.secondCode = null
         this.subscribeChangeOrderData.thirdCode = null
         this.subscribeChangeOrderData.coursePackerId = null
-        this.getSecondList()
+        val && this.getSecondList()
       },
       secondChange(val) {
         this.subscribeChangeOrderData.thirdCode = null
         this.subscribeChangeOrderData.coursePackerId = null
-        this.getThirdList()
+        val && this.getThirdList()
       },
       thirdChange(val) {
         this.subscribeChangeOrderData.coursePackerId = null
-        this.getCoursePackerList()
+        val && this.getCoursePackerList()
       },
       coursePackerChange() { },
       changePage(p) {

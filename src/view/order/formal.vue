@@ -38,9 +38,10 @@
         <DatePicker type="datetime" placeholder="请选择结束时间" v-model="endDateTime"></DatePicker>
       </FormItem>
       <Button type="primary" @click="search" style="margin-left: 20px; margin-right: 10px;">搜索</Button>
+      <Button type="primary" @click="formalAdd" v-hasPermission="'formalAdd'" style="margin-right: 10px;">创建订单</Button>
       <Button type="primary" @click="formalExport" v-hasPermission="'formalExport'">导出</Button>
     </Form>
-    <Card>
+    <Card style="margin-top: 5px;">
       <Table :columns="columns" :data="formalList"></Table>
       <Page :total="total" show-total show-sizer @on-change="changePage" @on-page-size-change="changePageSize" :page-size="postData.pageSize"
         :page-index="postData.pageIndex" style="margin-top: 10px" />
@@ -123,6 +124,41 @@
       <div slot="footer">
         <Button type="error" @click="cancelFormalRefund">取消</Button>
         <Button type="primary" @click="submitFormalRefund" :disabled="submitFormalRefundFlag">确定</Button>
+      </div>
+    </Modal>
+    <Modal title="创建订单" v-model="formalAddModal">
+      <Form :label-width="110" ref="formalAdd" :model="formalAddData" :rules="formalAddRules" >
+        <FormItem prop="firstCode" label="课程一级分类：" style="width: 300px;">
+          <Select v-model="formalAddData.firstCode" @on-change="firstChange" @on-open-change="onFirstOpen" >
+            <Option v-for="item in firstList" :value="item.code" :key="item.code">{{item.name}}</Option>
+          </Select>
+        </FormItem>
+        <FormItem prop="secondCode" label="课程二级分类：" style="width: 300px;">
+          <Select v-model="formalAddData.secondCode" @on-change="secondChange">
+            <Option v-for="item in secondList" :value="item.code" :key="item.code">{{item.name}}</Option>
+          </Select>
+        </FormItem>
+        <FormItem prop="thirdCode" label="课程三级分类：" style="width: 300px;">
+          <Select v-model="formalAddData.thirdCode" @on-change="thirdChange">
+            <Option v-for="item in thirdList" :value="item.code" :key="item.code">{{item.name}}</Option>
+          </Select>
+        </FormItem>
+        <FormItem prop="coursePackerId" label="套餐名称：" style="width: 300px;">
+          <Select v-model="formalAddData.coursePackerId">
+            <Option v-for="item in coursePackerList" :value="item.id" :key="item.code">{{item.name}}</Option>
+          </Select>
+        </FormItem>
+        <FormItem prop="mobilePhone" label="学员手机号" style="width: 350px;">
+          <Input v-model="formalAddData.mobilePhone" placeholder="请输入学员手机号" style="width: 120px; margin-right: 10px;"/>
+          <Button type="primary" @click="queryStudent">查询</Button>
+        </FormItem>
+        <FormItem prop="realName" label="学员姓名" style="width: 300px;">
+          <Input v-model="formalAddData.realName" :readonly="true" placeholder="请先查询学员"/>
+        </FormItem>
+      </Form>
+      <div slot="footer">
+        <Button @click="cancel">取消</Button>
+        <Button type="primary" @click="handleFormalAdd">确定</Button>
       </div>
     </Modal>
   </div>
@@ -274,7 +310,33 @@
         formalRefundModal: false,
         formalRefundData: {},
         submitFormalRefundFlag: true,
-        courseList: []
+        courseList: [],
+        formalAddModal: false,
+        formalAddData: {},
+        formalAddRules: {
+          firstCode: [
+            { required: true, message: '请选择一级分类', trigger: 'change' }
+          ],
+          secondCode: [
+            { required: true, message: '请选择二级分类', trigger: 'change' }
+          ],
+          thirdCode: [
+            { required: true, message: '请选择三级分类', trigger: 'change' }
+          ],
+          coursePackerId: [
+            { required: true, type: 'number', message: '请选择套餐', trigger: 'change' }
+          ],
+          mobilePhone: [
+            { required: true, message: '请输入学员手机号', trigger: 'blur' }
+          ],
+          realName: [
+            { required: true, message: '请先通过学员电话查询', trigger: 'blur' }
+          ]
+        },
+        firstList: [],
+        secondList: [],
+        thirdList: [],
+        coursePackerList: [],
       }
     },
     methods: {
@@ -368,6 +430,9 @@
       cancel () {
         this.formalAllotModal = false
         this.formalAllotData = {}
+        this.formalAddModal = false
+        this.formalAddData = {}
+        this.$refs['formalAdd'].resetFields()
       },
       // 变更顾问
       formalChange({ orderId, version }) {
@@ -494,7 +559,121 @@
         const _params = paramsArr.join('&')
         const params = _params && '?' + _params
         window.open('http://www.zilongshu.com/manager/order-formal/export' + params)
-      }
+      },
+      formalAdd() {
+        this.formalAddModal = true
+        this.formalAddData = {}
+        this.$refs['formalAdd'].resetFields()
+      },
+      queryStudent() {
+        this.formalAddData.realName = ''
+        this.formalAddData.studentId = ''
+        if(!this.formalAddData.mobilePhone){
+          this.$Message.error('请输入手机号后查询')
+          return
+        }
+        http.get({
+          vm: this,
+          url: '/manager/student/list',
+          data: { mobilePhone: this.formalAddData.mobilePhone, status: 1 },
+          success: res => {
+            const studentList = res.data.list
+            if(studentList.length>0){
+              this.$Message.success('查询成功！')
+              this.formalAddData = {...this.formalAddData, realName: studentList[0].realName, studentId: studentList[0].id }
+            }else{
+              this.$Message.error('未查询到该学员！')
+              this.formalAddData.realName = ''
+              this.formalAddData.studentId = ''
+            }
+          }
+        })
+      },
+      handleFormalAdd() {
+        this.$refs['formalAdd'].validate(valid => {
+          if(valid) {
+            const { coursePackerId, studentId } = this.formalAddData
+            http.post({
+              vm: this,
+              url: '/manager/order-formal/orderCreate',
+              data: { coursePackerId, studentId },
+              success: res => {
+                this.$Message.success('创建成功！')
+                this.formalAddModal = false
+                this.formalAddData = {}
+                this.getFormalList()
+                this.$refs['formalAdd'].resetFields()
+              }
+            })
+          }
+        })
+      },
+      /* ---------  四级联动 ----------- */
+
+      onFirstOpen(){
+        this.getFirstList()  
+      },
+      getFirstList() {
+        http.get({
+          vm: this,
+          url: '/manager/course-classification/getAll',
+          data: { type: 1 },
+          success: res => {
+            this.firstList = res.data
+          }
+        })
+      },
+      getSecondList() {
+        http.get({
+          vm: this,
+          url: '/manager/course-classification/getAll',
+          data: { type: 2, parentCode: this.formalAddData.firstCode },
+          success: res => {
+            this.secondList = res.data
+          }
+        })
+      },
+      getThirdList() {
+        http.get({
+          vm: this,
+          url: '/manager/course-classification/getAll',
+          data: { type: 3, parentCode: this.formalAddData.secondCode },
+          success: res => {
+            this.thirdList = res.data
+          }
+        })
+      },
+      getCoursePackerList() {
+        // const _firstId = this.firstList.find(f => f.code === this.formalAddData.firstCode)
+        // const _secondId = this.secondList.find(s => s.code === this.formalAddData.secondCode)
+        const _thirdId = this.thirdList.find(t => t.code === this.formalAddData.thirdCode)
+        // const firstId = _firstId && _firstId.id || null
+        // const secondId = _secondId && _secondId.id || null
+        const thirdId = _thirdId && _thirdId.id || null
+        http.get({
+          vm: this,
+          url: '/manager/course-package/listByThird',
+          data: { third: thirdId },
+          success: res => {
+            this.coursePackerList = res.data
+          }
+        })
+      },
+      firstChange(val) {
+        this.formalAddData.secondCode = null
+        this.formalAddData.thirdCode = null
+        this.formalAddData.coursePackerId = null
+        val && this.getSecondList()
+      },
+      secondChange(val) {
+        this.formalAddData.thirdCode = null
+        this.formalAddData.coursePackerId = null
+        val && this.getThirdList()
+      },
+      thirdChange(val) {
+        this.formalAddData.coursePackerId = null
+        val && this.getCoursePackerList()
+      },
     },
     mounted() {
       this.getFormalList()
