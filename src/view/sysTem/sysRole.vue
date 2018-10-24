@@ -298,6 +298,8 @@
             })
           })
         })
+        console.log(resourceIds.sort((a, b) => a - b));
+        
         http.post({
           vm: this,
           url: '/manager/sys-role/auth',

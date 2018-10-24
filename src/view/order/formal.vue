@@ -27,7 +27,6 @@
           <Option :value="3">已支付/已分配顾问/未排课</Option>
           <Option :value="4">上课中</Option>
           <Option :value="5">退款中</Option>
-          <Option :value="6">退款完毕</Option>
           <Option :value="7">已完结</Option>
         </Select>
       </FormItem>
@@ -37,7 +36,7 @@
       <FormItem label="结束日期：" style="width: 220px;">
         <DatePicker type="datetime" placeholder="请选择结束时间" v-model="endDateTime"></DatePicker>
       </FormItem>
-      <Button type="primary" @click="search" style="margin-left: 20px; margin-right: 10px;">搜索</Button>
+      <Button type="primary" @click="search" style="margin-left: 20px; margin-right: 10px;">查询</Button>
       <Button type="primary" @click="formalAdd" v-hasPermission="'formalAdd'" style="margin-right: 10px;">创建订单</Button>
       <Button type="primary" @click="formalExport" v-hasPermission="'formalExport'">导出</Button>
     </Form>

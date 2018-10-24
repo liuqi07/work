@@ -19,7 +19,7 @@
         <FormItem label="课程名称" style="width: 200px;">
           <Input v-model="postData.name" placeholder="请输入课程名称" />
         </FormItem>
-          <Button type="primary" @click="handleSearch" style="margin: 0 10px 0 20px;">搜索</Button>
+          <Button type="primary" @click="handleSearch" style="margin: 0 10px 0 20px;">查询</Button>
           <Button type="primary" v-hasPermission="'courseAdd'" @click="handleAddCourse" style="margin-right: 10px;">添加课程</Button>
           <Button type="success" v-show="status===1||status===3" v-hasPermission="'courseBatchPush'" @click="handleBatchPush" style="margin-right: 10px;">批量上架</Button>
           <Button type="error" v-show="status===2" v-hasPermission="'courseBatchLower'" @click="handleBatchLower">批量下架</Button>

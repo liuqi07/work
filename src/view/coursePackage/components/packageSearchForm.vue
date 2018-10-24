@@ -16,7 +16,7 @@
               <Option v-for="item in thirdList" :value="item.code" :key="item.code">{{item.name}}</Option>
             </Select>
           </FormItem>
-            <Button type="primary" @click="handleSearch" style="margin: 0 10px 0 20px;">搜索</Button>
+            <Button type="primary" @click="handleSearch" style="margin: 0 10px 0 20px;">查询</Button>
             <Button type="primary" v-hasPermission="'packageAdd'" @click="handleAddPackage" style="margin-right: 10px;">添加套餐</Button>
             <Button type="success" v-show="status===1||status===3" v-hasPermission="'packageBatchPush'" @click="handleBatchPush" style="margin-right: 10px;">批量上架</Button>
             <Button type="error" v-show="status===2" v-hasPermission="'packageBatchLower'" @click="handleBatchLower">批量下架</Button>

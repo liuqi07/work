@@ -2,7 +2,6 @@ import { login, logout, getUserInfo, getAccessRoutes } from "@/api/user";
 import { setToken, getToken, getMenuByRouter, formatRouter } from "@/libs/util";
 import routers from "@/router/routers";
 import defaultRouters from "@/router/defaultRouters";
-import http from "@/libs/http";
 
 export default {
   state: {
@@ -104,10 +103,6 @@ export default {
           if (res.data.code === 1) {
             const data = res.data;
             const routers = [...defaultRouters, ...formatRouter(data.data)];
-            // commit('setAvator', data.avator)
-            // commit('setloginName', data.user_name)
-            // commit('setUserId', data.user_id)
-            // commit('setAccess', data.access)
             commit("setAccessRoutes", routers);
             resolve(data);
           } else if (res.data.code === 2) {

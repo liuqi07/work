@@ -4,7 +4,7 @@
       <FormItem label="订单编号：" style="width: 250px;" :label-width="110">
         <Input v-model="postData.orderNo" placeholder="请输入订单编号"/>
       </FormItem>
-      <Button type="primary" @click="search" style="margin-left: 20px;">搜索</Button>
+      <Button type="primary" @click="search" style="margin-left: 20px;">查询</Button>
     </Form>
     <Card>
       <Table :columns="columns" :data="moneyLogList"></Table>
