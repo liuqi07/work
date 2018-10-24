@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- <Button type="primary" @click="search" style="margin-left: 50px; margin-right: 10px;">查询</Button> -->
     <Button type="primary" v-hasPermission="'firstAdd'" @click="firstAdd">添加一级分类</Button>
     <Card style="margin-top: 10px;">
       <Table :columns="columns" :data="firstList"></Table>

@@ -20,7 +20,7 @@
       <FormItem label="结束日期：" style="width: 220px;">
         <DatePicker type="datetime" placeholder="请选择结束时间" v-model="endDateTime"></DatePicker>
       </FormItem>
-      <Button type="primary" @click="search" style="margin-left: 20px; margin-right: 10px;">查询</Button>
+      <Button type="primary" @click="search" v-hasPermission="'search'" style="margin-left: 20px; margin-right: 10px;">查询</Button>
       <Button type="primary" @click="subscribeExport" v-hasPermission="'subscribeExport'">导出</Button>
     </Form>
     <Card>

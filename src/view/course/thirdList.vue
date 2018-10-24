@@ -12,7 +12,7 @@
           <Option v-for="item in secondList" :value="item.code" :key="item.code">{{item.name}}</Option>
         </Select>
       </FormItem>
-      <Button type="primary" @click="query" style="margin-left: 20px; margin-right: 10px;">查询</Button>
+      <Button type="primary" @click="search" v-hasPermission="'search'" style="margin-left: 20px; margin-right: 10px;">查询</Button>
       <Button type="primary" v-hasPermission="'thirdAdd'" @click="thirdAdd">添加三级分类</Button>
     </Form>
     <Card style="margin-top: 10px;">
@@ -187,7 +187,7 @@
         this.x = null
         this.$refs['addData'].resetFields()
       },
-      query() {
+      search() {
         this.getThirdList(() => {
           this.$Message.success('查询成功！')
         })

@@ -14,7 +14,7 @@
       <FormItem label="教师真实姓名：" style="width: 250px;" :label-width="110">
         <Input v-model="postData.teacherRealName" placeholder="教师真实姓名"/>
       </FormItem>
-      <Button type="primary" @click="search" style="margin-left: 20px;">查询</Button>
+      <Button type="primary" @click="search" v-hasPermission="'search'" style="margin-left: 20px;">查询</Button>
     </Form>
     <Card>
       <Table :columns="columns" :data="teacherCourseList"></Table>

@@ -16,7 +16,7 @@
         <FormItem label="注册日期：" style="width: 220px;">
           <DatePicker type="date" placeholder="请选择注册时间" v-model="createDate"></DatePicker>
         </FormItem>
-          <Button type="primary" @click="search" style="margin-left: 20px;">查询</Button>
+          <Button type="primary" @click="search" v-hasPermission="'search'" style="margin-left: 20px;">查询</Button>
       </Row>
     </Form>
     <Card>

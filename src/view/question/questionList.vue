@@ -36,7 +36,7 @@
           <Option v-for="item in levelList" :value="item" :key="item">{{item}}</Option>
         </Select>
       </FormItem>
-      <Button type="primary" @click="search" style="margin-left: 20px; margin-right: 10px;">查询</Button>
+      <Button type="primary" @click="search" v-hasPermission="'search'" style="margin-left: 20px; margin-right: 10px;">查询</Button>
       <Button type="primary" @click="openAdd" style="margin-right: 10px;" v-hasPermission="'questionAdd'">添加</Button>
       <Button type="primary" @click="openImport" v-hasPermission="'questionImport'" >导入</Button>
     </Form>

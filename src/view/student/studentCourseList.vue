@@ -26,7 +26,7 @@
             <Option v-for="item in postData.thirdList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
-      <Button type="primary" @click="query" style="margin-left: 20px;">查询</Button>
+      <Button type="primary" @click="query" v-hasPermission="'search'" style="margin-left: 20px;">查询</Button>
     </Form>
     <Card>
       <Table :columns="columns" :data="courseList"></Table>

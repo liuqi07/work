@@ -5,7 +5,7 @@
       <three-level :inline="true" @on_change="getThreeLevelData"></three-level>
       </Col>
       <Col :span="4">
-      <Button type="primary" @click="query" style="margin-right: 10px;">查询</Button>
+      <Button type="primary" @click="search" v-hasPermission="'search'" style="margin-right: 10px;">查询</Button>
       <Button type="primary" @click="openAdd" v-hasPermission="'masterialAdd'">添加教材</Button>
       </Col>
     </Row>
@@ -197,7 +197,7 @@
         this.addMaterialModal = false
         this.$refs['addData'].resetFields()
       },
-      query() {
+      search() {
         this.getMaterialList(()=>{
           this.$Message.success('查询成功！')
         })

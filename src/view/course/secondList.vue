@@ -6,7 +6,7 @@
           <Option v-for="item in firstList" :value="item.code" :key="item.code">{{item.name}}</Option>
         </Select>
       </FormItem>
-      <Button type="primary" @click="search" style="margin-left: 20px; margin-right: 10px;">查询</Button>
+      <Button type="primary" @click="search" v-hasPermission="'search'" style="margin-left: 20px; margin-right: 10px;">查询</Button>
       <Button type="primary" v-hasPermission="'secondAdd'" @click="secondAdd">添加二级分类</Button>
     </Form>
     <Card style="margin-top: 10px;">

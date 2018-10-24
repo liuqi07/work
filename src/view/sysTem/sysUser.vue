@@ -9,7 +9,7 @@
           <Option v-for="item in roleList" :value="item.id" :key="item.roleId">{{item.name}}</Option>
         </Select>
       </FormItem>
-        <Button type="primary" @click="search" style="margin:0 10px;">查询</Button>
+        <Button type="primary" @click="search" v-hasPermission="'search'" style="margin:0 10px;">查询</Button>
         <Button type="primary" v-hasPermission="'addSysUser'" @click="openAddModal">添加</Button>
     </Form>
     <Card>

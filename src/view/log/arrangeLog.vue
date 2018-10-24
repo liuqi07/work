@@ -10,7 +10,7 @@
             <Option :value="3">正式订单</Option>
           </Select>
         </FormItem>
-        <Button type="primary" @click="search" style="margin-left: 20px;">查询</Button>
+        <Button type="primary" @click="search" v-hasPermission="'search'" style="margin-left: 20px;">查询</Button>
       </Form>
       <Card>
         <Table :columns="columns" :data="arrangeLogList"></Table>

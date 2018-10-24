@@ -25,7 +25,7 @@
       <FormItem label="提交日期：" style="width: 220px;">
         <DatePicker type="date" placeholder="请选择提交日期" v-model="refundDate"></DatePicker>
       </FormItem>
-      <Button type="primary" @click="search" style="margin-left: 20px; margin-right: 20px;">查询</Button>
+      <Button type="primary" @click="search" v-hasPermission="'search'" style="margin-left: 20px; margin-right: 20px;">查询</Button>
       <Button type="primary" @click="refundExport" v-hasPermission="'refundExport'">导出</Button>
     </Form>
     <Card>
