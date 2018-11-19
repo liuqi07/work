@@ -87,6 +87,9 @@
         <FormItem prop="discountUnitPrice" label="优惠课时单价：" style="width: 300px;" :label-width="110" :required="discountUnitPriceRequire">
           <InputNumber v-model="addData.discountUnitPrice" :min="0" placeholder="请输入优惠课时单价" :disabled="!discountUnitPriceRequire" />
         </FormItem>
+        <FormItem prop="file" label="上传图片：" :required="fileIsRequire" v-if="fileReload">
+          <input type="file" @change="handleFileChange">
+        </FormItem>
       </Form>
       <div slot="footer">
         <Button @click="cancelAddPackage" style="margin-right: 10px;" >取消</Button>
@@ -99,30 +102,18 @@
 <script>
   import http from '@/libs/http';
   import axios from 'axios';
-  // import SearchForm from './components/searchForm.vue';
-  // import AllCourse from './components/allCourse.vue';
-  // import UnPushCourse from './components/unPushCourse.vue';
-  // import PushCourse from './components/pushCourse.vue';
-  // import LowerCourse from './components/lowerCourse.vue';
   import PackageSearchForm from './components/packageSearchForm.vue';
   import AllPackage from './components/allPackage.vue';
   import UnPushPackage from './components/unPushPackage.vue';
   import PushPackage from './components/pushPackage.vue';
   import LowerPackage from './components/lowerPackage.vue';
-  // import ThreeLevel from './components/threeLevel.vue';
   export default {
     components: {
-      // AllCourse,
-      // SearchForm,
-      // UnPushCourse,
-      // PushCourse,
-      // LowerCourse,
       PackageSearchForm,
       AllPackage,
       UnPushPackage,
       PushPackage,
       LowerPackage,
-      // ThreeLevel,
     },
     data() {
       const validateDiscountUnitPrice = (rule, value, cb) => {
@@ -205,6 +196,8 @@
         discountUnitPriceRequire: false,
         uploadIsShow: true,
         addOrEdit: true,
+        fileIsRequire: false,
+        fileReload: true,
       }
     },
     methods: {
@@ -225,28 +218,36 @@
         this.$refs['addPackage'].resetFields()
         this.addPackageModal = true
         this.uploadIsShow = true
+        this.fileIsRequire = true
         this.addData = { oneToXArr: [], firstList: [], secondList: [], thirdList: [], isDiscount: 0, weekClassHour: 0, weekCount: 0, unitPrice: 0, discountUnitPrice: 0 }
         this.packageUrl = '/manager/course-package/add'
         this.addOrEdit = true
+        this.fileReload = false
+        setTimeout(() => {
+          this.fileReload = true
+        }, 0);
         this.getFirstList()
       },
       addPackage() {
         const url = this.packageUrl
         const addOrEdit = this.addOrEdit
-        const { id, name, coursePackageDesc='', firstId, secondId, thirdId, weekClassHour, weekCount, unitPrice, isDiscount, oneToX, discountUnitPrice, version } = this.addData
-        console.log(coursePackageDesc)
+        const { id, name, coursePackageDesc='', firstId, secondId, thirdId, weekClassHour, weekCount, unitPrice, isDiscount, oneToX, discountUnitPrice, version, file } = this.addData
         this.$refs['addPackage'].validate(valid => {
           if(valid) {
-            const addData = { id, name, coursePackageDesc, firstId, secondId, thirdId, weekClassHour, weekCount, unitPrice, isDiscount, oneToX, discountUnitPrice, version }
+            const addData = { id, name, coursePackageDesc, firstId, secondId, thirdId, weekClassHour, weekCount, unitPrice, isDiscount, oneToX, discountUnitPrice, version, file }
             if(addOrEdit){
               delete addData.id
               delete addData.version
             }
+            const formData = new FormData()
+            for(let k in addData){
+              formData.append(k, addData[k])
+            }
             const msg = addOrEdit ? '添加成功！' : '编辑成功！'
-            http.post({
+            http._postwithupload({
               vm: this,
               url,
-              data: addData,
+              data: formData,
               success: res => {
                 this.$Message.success(msg)
                 this.addData = { oneToXArr: [], firstList: [], secondList: [], thirdList: [], isDiscount: 0, weekClassHour: 0, weekCount: 0, unitPrice: 0, discountUnitPrice: 0 }
@@ -323,15 +324,16 @@
         })
       },
       packageEdit(packageData) {
+        this.fileIsRequire = false
         this.uploadIsShow = false
         this.addOrEdit = false
 	      console.log('%c packageData', 'color:red;', packageData)
-        const { id, firstId, secondId, thirdId, oneToX, isDiscount=0, weekClassHour=0, weekCount=0, unitPrice=0, discountUnitPrice=0, version } = packageData
+        const { id, firstId, secondId, thirdId, oneToX, isDiscount=0, weekClassHour=0, weekCount=0, unitPrice=0, discountUnitPrice=0, version, file } = packageData
         this.discountUnitPriceRequire = isDiscount===1 ? true : false
         this.getFirstList(() => {
           const _firstCode = this.addData.firstList.find(f => f.id === firstId)
           const firstCode = _firstCode && _firstCode.code || ''
-          this.addData = Object.assign({}, this.addData, { id, firstCode, firstId, isDiscount, weekClassHour, weekCount, unitPrice, discountUnitPrice, version })
+          this.addData = Object.assign({}, this.addData, { id, firstCode, firstId, isDiscount, weekClassHour, weekCount, unitPrice, discountUnitPrice, version, file })
           this.getSecondList(() => {
             const _secondCode = this.addData.secondList.find(s => s.id === secondId)
             const secondCode = _secondCode && _secondCode.code || ''

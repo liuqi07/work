@@ -298,7 +298,7 @@
             })
           })
         })
-        console.log(resourceIds.sort((a, b) => a - b));
+        // console.log(resourceIds.sort((a, b) => a - b));
         
         http.post({
           vm: this,
@@ -308,7 +308,10 @@
             resourceIds: resourceIds.sort((a, b) => a - b)
           },
           success: res => {
-            this.$Message.success('授权成功！')
+            this.$Message.success({
+              content: '授权成功，该角色用户重新登陆后生效！',
+              duration: 6
+            })
           }
         })
       },
