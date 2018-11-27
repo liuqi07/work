@@ -51,7 +51,7 @@ export default [
     component: Main,
     meta: {
       icon: "md-cog",
-      title: "系统管理"
+      title: "后台管理"
     },
     children: [
       {
@@ -174,8 +174,7 @@ export default [
         name: "teacherCourseTable",
         component: () => import("@/view/teacher/teacherCourseTable.vue"),
         meta: {
-          icon: "",
-          title: "教师课表"
+          icon: ""
         }
       }
     ]
