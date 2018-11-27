@@ -209,8 +209,9 @@
             }
           },
           { title: 'zoom code', align: 'center', key: 'zoomCode' },
+          { title: 'zoomPassword', align: 'center', key: 'zoomPassword' },
           {
-            title: '操作', key: 'actions', align: 'center', width: 215, render: (h, params) => {
+            title: '操作', key: 'actions', align: 'center', width: 230, render: (h, params) => {
               return h('div', [
                 h('Button', {
                   props: {
@@ -273,7 +274,8 @@
                     size: 'small'
                   },
                   style: {
-                    marginBottom: '3px'
+                    marginBottom: '3px',
+                    marginRight: '5px'
                   },
                   on: {
                     click: () => {
@@ -284,6 +286,25 @@
                     { name: 'hasPermission', value: "teachCode" }
                   ]
                 }, '课程维护'),
+                h('Button', {
+                  props: {
+                    type: 'primary',
+                    size: 'small',
+                    disabled: params.row.isInZoom ? true : false
+                  },
+                  style: {
+                    marginBottom: '3px',
+                    // display: params.row.isInZoom ? 'none' : 'block'
+                  },
+                  on: {
+                    click: () => {
+                      this.addToZoom(params.row)
+                    }
+                  },
+                  directives: [
+                    { name: 'hasPermission', value: "addToZoom" }
+                  ]
+                }, '关联Zoom'),
               ])
             }
           },
@@ -542,6 +563,25 @@
         this.teacherId = id
         this.secondCodes = typeof teachCode === 'string' && JSON.parse(teachCode) || []
         this.getSecondList()
+      },
+      addToZoom({id}) {
+        this.$Modal.confirm({
+          title: '提示',
+          content: '<p>确认关联Zoom？</p>',
+          loading: true,
+          onOk: () => {
+            http.post({
+              vm: this,
+              url: '/manager/teacher/addToZoom',
+              data: { teacherId: id },
+              success: res => {
+                this.$Message.success('关联成功！')
+                this.getTeacherList();
+                this.$Modal.remove();
+              }
+            })   
+          }
+        });
       },
       saveTeachCode() {
         const { teacherId, secondCodes } = this
