@@ -64,7 +64,7 @@
       <input type="file" accept=".mp4,.MPEG4" @change="handleFileChange">
       <div slot="footer" >
         <Button @click="cancel" style="margin-right: 10px;">取消</Button>
-        <Button @click="uploadFile" type="primary" >确定</Button>
+        <Button @click="uploadFile" type="primary" :loading="uploading" >确定</Button>
       </div>
     </Modal>
   </div>
@@ -262,6 +262,7 @@
         tableId: null,
         uploadTitle: '',
         uploadPlayBack: null,
+        uploading: false,
       }
     },
     methods: {
@@ -334,6 +335,7 @@
       },
       uploadFile() {
         if (this.file) {
+          this.uploading = true
           const formData = new FormData()
           formData.append('tableId', this.tableId)
           formData.append('file', this.file)
@@ -345,9 +347,14 @@
               this.$Message.success('上传成功！')
               this.getCourseList()
               this.uploadModal = false
+              this.uploading = false
+            },
+            error: err => {
+              this.uploading = false
             }
           })
         } else {
+          this.file = null
           this.$Message.error('请先选择文件后点击上传！')
         }
       },

@@ -174,7 +174,8 @@ export default [
         name: "teacherCourseTable",
         component: () => import("@/view/teacher/teacherCourseTable.vue"),
         meta: {
-          icon: ""
+          icon: "",
+          title: "教师课表"
         }
       }
     ]
