@@ -1,6 +1,21 @@
 <template>
   <div>
     <Form :label-width="80" inline>
+      <FormItem label="课程顾问：" style="width: 220px;">
+        <Input v-model="postData.realName" placeholder="请输入课程顾问" />
+      </FormItem>
+      <FormItem label="身份证号：" style="width: 230px;">
+        <Input v-model="postData.idNo" placeholder="请输入课程顾问身份证号" />
+      </FormItem>
+      <FormItem label="顾问状态：" style="width: 200px;">
+        <Select v-model="postData.status" clearable>
+          <Option :value="1">正常</Option>
+          <Option :value="0">停用</Option>
+        </Select>
+      </FormItem>
+      <FormItem label="注册日期：" style="width: 220px;">
+        <DatePicker type="date" placeholder="请选择注册时间" v-model="createDate"></DatePicker>
+      </FormItem>
       <FormItem label="订单编号：" style="width: 220px;">
         <Input v-model="postData.orderNo" placeholder="请输入订单编号" />
       </FormItem>
@@ -22,6 +37,7 @@
 
 <script>
   import http from '@/libs/http';
+  import { formatDate } from '@/libs/tools';
   export default {
     data() {
       return {
@@ -38,6 +54,7 @@
         ],
         adviserLogList: [],
         total: 0,
+        createDate: '',
       }
     },
     methods: {
@@ -46,6 +63,7 @@
       },
       getAdviserLogList(cb) {
         !this.postData.orderNo && delete this.postData.orderNo
+        this.postData.createDate = this.createDate ? formatDate('YYYY-MM-DD', this.createDate) : null
         http.get({
           vm: this,
           url: '/manager/log/listLogAdviser',
