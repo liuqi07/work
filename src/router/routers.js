@@ -51,7 +51,7 @@ export default [
     component: Main,
     meta: {
       icon: "md-cog",
-      title: "系统管理"
+      title: "后台管理"
     },
     children: [
       {
