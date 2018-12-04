@@ -25,7 +25,7 @@
             <Option v-for="item in roleList" :value="item.id" :key="item.id" :label="item.name"></Option>
           </Select>
         </FormItem>
-        <FormItem prop="type" label="类型：">
+        <FormItem prop="type" label="用户类型：">
           <RadioGroup v-model="addUserData.type">
             <Radio :label="1">系统管理</Radio>
             <Radio :label="2">课程顾问</Radio>
