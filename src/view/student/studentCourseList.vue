@@ -153,7 +153,7 @@
                   directives: [
                     { name: 'hasPermission', value: "upload" }
                   ]
-                }, uploadPlayBack ? '查看课程回放' : '上传课程回放'),
+                }, uploadPlayBack ? '查看/重新上传' : '上传课程回放'),
                 h('Button', {
                   props: {
                     type: 'primary',
