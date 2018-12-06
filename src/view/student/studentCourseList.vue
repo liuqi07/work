@@ -60,8 +60,12 @@
       </div>
     </Modal>
     <Modal :title="uploadTitle" v-model="uploadModal">
-      <Button @click="openVideo" v-if="uploadPlayBack" type="success" style="margin-right: 50px;">查看回放</Button>
-      <input type="file" accept=".mp4,.MPEG4" @change="handleFileChange">
+      <Button @click="openVideo" v-if="uploadPlayBack" type="success" style="margin-right: 30px;">查看回放</Button>
+      <label for="file" style="display: inline-block; width: 80px; border: 1px solid #ccc; border-radius: 4px; line-height: 30px; text-align: center; cursor:pointer; margin-right: 10px;">
+        重新上传
+      </label>
+      <span>{{file&&file.name||''}}</span>
+      <input type="file" id="file" accept=".mp4,.MPEG4" @change="handleFileChange" style="display: none;">
       <div slot="footer" >
         <Button @click="cancel" style="margin-right: 10px;">取消</Button>
         <Button @click="uploadFile" type="primary" :loading="uploading" >确定</Button>
@@ -331,7 +335,8 @@
         this.tableId = tableId
         this.uploadModal = true
         this.uploadPlayBack = uploadPlayBack
-        this.uploadTitle = uploadPlayBack ? '查看课程回放' : '上传课程回放'
+        this.uploadTitle = uploadPlayBack ? '查看/重新上传' : '上传课程回放'
+        this.uploadTitle2 = uploadPlayBack ? '重新上传' : '上传课程回放'
       },
       uploadFile() {
         if (this.file) {
@@ -374,6 +379,7 @@
         this.uploadModal = false
       },
       handleFileChange(e) {
+        console.log(e)
         this.file = e.target.files[0]
       },
       secondOpenChange(action){
