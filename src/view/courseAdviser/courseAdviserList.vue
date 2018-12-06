@@ -103,7 +103,7 @@
       const validateRate = (rule, value, cb) => {
         if(!value){
           cb(new Error('请输入提成比例'))
-        }else if(typeof Number(value) !== 'number'){
+        }else if(isNaN(value)){
           cb(new Error('请输入数字'))
         }
         else if(value>100){
