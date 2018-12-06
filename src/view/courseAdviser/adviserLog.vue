@@ -2,10 +2,10 @@
   <div>
     <Form :label-width="80" inline>
       <FormItem label="课程顾问：" style="width: 220px;">
-        <Input v-model="postData.realName" placeholder="请输入课程顾问" />
+        <Input v-model="postData.realName" placeholder="请输入课程顾问"/>
       </FormItem>
       <FormItem label="身份证号：" style="width: 230px;">
-        <Input v-model="postData.idNo" placeholder="请输入课程顾问身份证号" />
+        <Input v-model="postData.idNo" placeholder="请输入课程顾问身份证号"/>
       </FormItem>
       <FormItem label="顾问状态：" style="width: 200px;">
         <Select v-model="postData.status" clearable>
@@ -17,10 +17,11 @@
         <DatePicker type="date" placeholder="请选择注册时间" v-model="createDate"></DatePicker>
       </FormItem>
       <FormItem label="订单编号：" style="width: 220px;">
-        <Input v-model="postData.orderNo" placeholder="请输入订单编号" />
+        <Input v-model="postData.orderNo" placeholder="请输入订单编号"/>
       </FormItem>
       <FormItem label="订单类型：" style="width: 220px;">
         <Select v-model="postData.type">
+          <Option :value="0">全部</Option>
           <Option :value="2">预约订单</Option>
           <Option :value="3">正式订单</Option>
         </Select>
@@ -29,28 +30,30 @@
     </Form>
     <Card>
       <Table :columns="columns" :data="adviserLogList"></Table>
-      <Page :total="total" show-total show-sizer @on-change="changePage" @on-page-size-change="changePageSize" :page-size="postData.pageSize"
-        :page-index="postData.pageIndex" style="margin-top: 10px" />
+      <Page :total="total" show-total show-sizer @on-change="changePage" @on-page-size-change="changePageSize"
+            :page-size="postData.pageSize"
+            :page-index="postData.pageIndex" style="margin-top: 10px"/>
     </Card>
   </div>
 </template>
 
 <script>
   import http from '@/libs/http';
-  import { formatDate } from '@/libs/tools';
+  import {formatDate} from '@/libs/tools';
+
   export default {
     data() {
       return {
-        postData: { pageIndex: 1, pageSize: 10 },
+        postData: {pageIndex: 1, pageSize: 10},
         columns: [
           {
             title: '订单类型', key: 'type', align: 'center', render: (h, params) => {
               return h('div', {}, params.row.type === 2 ? '预约订单' : '正式订单')
             }
           },
-          { title: '订单编号', key: 'orderNo', align: 'center' },
-          { title: '创建时间', key: 'createTime', align: 'center' },
-          { title: '课程顾问', key: 'sysUserName', align: 'center' }
+          {title: '订单编号', key: 'orderNo', align: 'center'},
+          {title: '创建时间', key: 'createTime', align: 'center'},
+          {title: '课程顾问', key: 'sysUserName', align: 'center'}
         ],
         adviserLogList: [],
         total: 0,
@@ -59,11 +62,14 @@
     },
     methods: {
       search() {
-        this.getAdviserLogList(() => { this.$Message.success('查询成功！') })
+        this.getAdviserLogList(() => {
+          this.$Message.success('查询成功！')
+        })
       },
       getAdviserLogList(cb) {
         !this.postData.orderNo && delete this.postData.orderNo
         this.postData.createDate = this.createDate ? formatDate('YYYY-MM-DD', this.createDate) : null
+        this.postData.type = this.postData.type === 0 ? null : this.postData.type
         http.get({
           vm: this,
           url: '/manager/log/listLogAdviser',
