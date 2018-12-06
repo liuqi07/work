@@ -5,10 +5,9 @@
 <template>
   <div class="login">
     <div class="login-con">
-      <Card icon="log-in" title="欢迎登录" :bordered="false">
+      <Card icon="log-in" title="欢迎登录子龙塾教育管理平台" :bordered="false">
         <div class="form-con">
           <login-form @on-success-valid="handleSubmit"></login-form>
-          <p class="login-tip">点击验证码可重新获取</p>
         </div>
       </Card>
     </div>

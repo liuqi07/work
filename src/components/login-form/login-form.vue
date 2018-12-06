@@ -27,6 +27,7 @@
           <p><img style="width: 70px; height: 32px;" :src="validCodeImg" @click="getValidCodeImg" alt='验证码'/></p>
         </Col>
       </Row>
+      <Row><p class="login-tip">点击验证码可重新获取</p></Row>
     </FormItem>
     <FormItem>
       <Button @click="handleSubmit" type="primary" long>登录</Button>

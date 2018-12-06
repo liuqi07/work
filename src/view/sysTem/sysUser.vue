@@ -25,7 +25,7 @@
             <Option v-for="item in roleList" :value="item.id" :key="item.id" :label="item.name"></Option>
           </Select>
         </FormItem>
-        <FormItem prop="type" label="类型：">
+        <FormItem prop="type" label="用户类型：">
           <RadioGroup v-model="addUserData.type">
             <Radio :label="1">系统管理</Radio>
             <Radio :label="2">课程顾问</Radio>
@@ -46,7 +46,7 @@
         <FormItem prop="mobilePhone" label="手机：">
           <Input v-model="addUserData.mobilePhone" style="width:300px;" placeholder="请输入管理人员手机号码"></Input>
         </FormItem>
-        <FormItem label="座机：">
+        <FormItem prop="seatPhone" label="座机：">
           <Input v-model="addUserData.seatPhone" style="width:300px;" placeholder="请输入管理人员座机号码"></Input>
         </FormItem>
       </Form>
@@ -75,7 +75,7 @@
         <FormItem prop="mobilePhone" label="手机：">
           <Input v-model="editUserData.mobilePhone" style="width:300px;" placeholder="请输入管理人员手机号码"></Input>
         </FormItem>
-        <FormItem label="座机：">
+        <FormItem prop="seatPhone" label="座机：">
           <Input v-model="editUserData.seatPhone" style="width:300px;" placeholder="请输入管理人员座机号码"></Input>
         </FormItem>
       </Form>
@@ -263,6 +263,9 @@ export default {
           { type: 'string', message: '请输入正确的手机号', pattern: /^1[34578]\d{9}$/, trigger: 'blur' },
           { validator: validateMobilePhone, trigger: 'blur' }
         ],
+        seatPhone: [
+          { type: 'string', message: '请输入正确的座机号', pattern: /^0\d{2}-\d{7,8}$/, trigger: 'blur' },
+        ],
         email: [
           { type: 'email', message: '请输入正确的邮箱', trigger: 'blur' },
           { validator: validateEmail, trigger: 'blur' }
@@ -285,6 +288,9 @@ export default {
         mobilePhone: [
           { type: 'string', message: '请输入正确的手机号', pattern: /^1[34578]\d{9}$/, trigger: 'blur' },
           { validator: validateMobilePhone, trigger: 'blur' }
+        ],
+        seatPhone: [
+          { type: 'string', message: '请输入正确的座机号', pattern: /^0\d{2}-\d{7,8}$/, trigger: 'blur' },
         ],
         email: [
           { type: 'email', message: '请输入正确的邮箱', trigger: 'blur' },

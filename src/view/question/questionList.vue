@@ -317,8 +317,9 @@
       saveQuestion() {
         this.$refs['postData'].validate(valid => {
           if(valid){
-            const options = this.postData.options
+            const { question, options } = this.postData
             this.postData.options = JSON.stringify(options)
+            this.postData.question = encodeURIComponent(question)
             const msg = this.addOrEdit ? '添加成功！' : '编辑成功！'
             const url = this.questionUrl
             http.post({
