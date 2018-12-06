@@ -267,7 +267,7 @@
         this.getCourseAdviserList()
       },
       onAgeChange (e) {
-        this._age = e.target.value
+        this._age = parseFloat(e.target.value)
       },
       onIdNoBlur (e) {
         this._age = null
