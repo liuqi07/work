@@ -20,10 +20,10 @@
 1. 克隆项目 `git clone git@gitee.com:liuqi07/work.git`
 2. 进入项目目录 `cd front-end`
 3. 安装依赖包 `npm install / yarn`
-4. 本地运行 
+4. 本地运行
     1. 切换到开发分支 `git checkout develop`
     2. 运行 `npm run dev`
 5. 打包发布
-    1. 切换到生产分支 `git checkout master`
+    1. 切换到生产分支 `git checkout develop`
     2. 运行 `npm run build`
     3. dist文件夹即为打包后的项目

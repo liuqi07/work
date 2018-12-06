@@ -44,9 +44,9 @@
             <Radio :label="2">女</Radio>
           </RadioGroup>
         </FormItem>
-        <FormItem prop="age" label="年龄：" style="width: 300px;" >
+        <!-- <FormItem prop="age" label="年龄：" style="width: 300px;" >
           <Input v-model="updateDetailData.age" placeholder="请输入年龄" @on-change="onAgeChange" ></Input>
-        </FormItem>
+        </FormItem> -->
         <FormItem prop="rate" label="提成比例：" style="width: 320px;" >
           <Row><Input v-model="updateDetailData.rate" style="width: 200px;" /> %</Row>
         </FormItem>
@@ -67,7 +67,7 @@
   import { formatDate } from '@/libs/tools';
   export default {
     data() {
-      const validateIdNo = (rule, idNo, cb) => {        
+      const validateIdNo = (rule, idNo, cb) => {
         if(!idNo){
           cb(new Error('身份找号不能为空'))
         }else{
@@ -80,7 +80,7 @@
               if(!res.data){
                  cb(new Error('身份证号已存在'))
               }else{
-                this.updateDetailData.age = this._age ? this._age : (new Date().getFullYear() - idNo.slice(6, 10)).toString()
+                // this.updateDetailData.age = this._age ? this._age : (new Date().getFullYear() - idNo.slice(6, 10)).toString()
                 cb()
               }
               // this.loading = false
@@ -89,7 +89,6 @@
         }
       }
       const validateAge = (rule, age, cb) => {
-        console.log(age);
         if(!age){
           cb(new Error('请输入年龄'))
         }else{
@@ -103,9 +102,13 @@
       const validateRate = (rule, value, cb) => {
         if(!value){
           cb(new Error('请输入提成比例'))
-        }else if(typeof Number(value) !== 'number'){
+        }else if(isNaN(value)){
           cb(new Error('请输入数字'))
-        }else{
+        }
+        else if(value>100){
+          cb(new Error('提成比例不能超过100%'))
+        }
+        else{
           cb()
         }
       }
@@ -186,8 +189,7 @@
           email: [
             { type: 'email', message: '请输入正确的邮箱', trigger: 'blur' }
           ]
-        },
-        _age: null
+        }
       }
     },
     methods: {
@@ -224,8 +226,8 @@
         window.open('http://www.zilongshu.com/manager/course-adviser/export' + params)
       },
       openDetail({ code, realName, mobilePhone, idNo, sex, age, rate, email, id}) {
-        console.log('code, realName, mobilePhone, idNo, sex, age, rate, email, id -------> ', code, realName, mobilePhone, idNo, sex, age, rate, email, id);
-        
+        // console.log('code, realName, mobilePhone, idNo, sex, age, rate, email, id -------> ', code, realName, mobilePhone, idNo, sex, age, rate, email, id);
+
         this.detailModal = true
         this.$refs['updateDetailRef'].resetFields()
         this.updateDetailData = { code, realName, mobilePhone, idNo, sex, age, rate: rate && rate.toString(), email, id }
@@ -233,7 +235,8 @@
       updateDetail() {
         this.$refs['updateDetailRef'].validate(valid => {
           if(valid){
-            this._age && (this.updateDetailData.age = this._age)
+            this.loading = true
+            // this._age && (this.updateDetailData.age = this._age)
             http.post({
               vm: this,
               url: '/manager/course-adviser/edit',
@@ -244,6 +247,10 @@
                 this.updateDetailData = {}
                 this.$refs['updateDetailRef'].resetFields()
                 this.getCourseAdviserList()
+                this.loading = false
+              },
+              error: err => {
+                this.loading = false
               }
             })
           }
@@ -263,7 +270,7 @@
         this.getCourseAdviserList()
       },
       onAgeChange (e) {
-        this._age = e.target.value
+        this._age = parseFloat(e.target.value)
       },
       onIdNoBlur (e) {
         this._age = null
