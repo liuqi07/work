@@ -67,7 +67,7 @@
   import { formatDate } from '@/libs/tools';
   export default {
     data() {
-      const validateIdNo = (rule, idNo, cb) => {        
+      const validateIdNo = (rule, idNo, cb) => {
         if(!idNo){
           cb(new Error('身份找号不能为空'))
         }else{
@@ -105,7 +105,11 @@
           cb(new Error('请输入提成比例'))
         }else if(typeof Number(value) !== 'number'){
           cb(new Error('请输入数字'))
-        }else{
+        }
+        else if(value>100){
+          cb(new Error('提成比例不能超过100%'))
+        }
+        else{
           cb()
         }
       }
@@ -225,7 +229,7 @@
       },
       openDetail({ code, realName, mobilePhone, idNo, sex, age, rate, email, id}) {
         console.log('code, realName, mobilePhone, idNo, sex, age, rate, email, id -------> ', code, realName, mobilePhone, idNo, sex, age, rate, email, id);
-        
+
         this.detailModal = true
         this.$refs['updateDetailRef'].resetFields()
         this.updateDetailData = { code, realName, mobilePhone, idNo, sex, age, rate: rate && rate.toString(), email, id }
