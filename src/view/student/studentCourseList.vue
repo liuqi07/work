@@ -62,7 +62,7 @@
     <Modal :title="uploadTitle" v-model="uploadModal">
       <Button @click="openVideo" v-if="uploadPlayBack" type="success" style="margin-right: 30px;">查看回放</Button>
       <label for="file" style="display: inline-block; width: 80px; border: 1px solid #ccc; border-radius: 4px; line-height: 30px; text-align: center; cursor:pointer; margin-right: 10px;">
-        重新上传
+        {{uploadTitle2}}
       </label>
       <span>{{file&&file.name||''}}</span>
       <input type="file" id="file" accept=".mp4,.MPEG4" @change="handleFileChange" style="display: none;">
@@ -267,6 +267,7 @@
         uploadTitle: '',
         uploadPlayBack: null,
         uploading: false,
+        uploadTitle2: '',
       }
     },
     methods: {
@@ -297,7 +298,7 @@
         this.getCourseList()
       },
       lookComment({ courseLevel, labels = [], commentDesc, teacherCommentLevel }) {
-        this.lookCommentData = { courseLevel, labels, commentDesc, teacherCommentLevel }        
+        this.lookCommentData = { courseLevel, labels, commentDesc, teacherCommentLevel }
         this.detailModal = true;
       },
       lookTask({ tableId }) {

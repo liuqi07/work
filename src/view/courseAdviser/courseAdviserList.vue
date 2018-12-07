@@ -1,4 +1,4 @@
-<template>
+git pull<template>
   <div>
     <Form :model="postData" :label-width="80" inline>
       <FormItem label="课程顾问：" style="width: 210px;">
