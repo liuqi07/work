@@ -139,11 +139,13 @@
           {
             title: '操作', key: 'actions', align: 'center', width: 200, render: (h, params) => {
               const uploadPlayBack = params.row.uploadPlayBack
+              const status = params.row.status
               return h('div', [
                 h('Button', {
                   props: {
                     type: uploadPlayBack ? 'success' : 'primary',
                     size: 'small',
+                    disabled: status === 2 ? false : true
                   },
                   style: {
                     marginRight: '5px',
@@ -162,6 +164,7 @@
                   props: {
                     type: 'primary',
                     size: 'small',
+                    disabled: status === 2 ? false : true
                   },
                   style: {
                     marginRight: '5px',
@@ -180,6 +183,7 @@
                   props: {
                     type: 'primary',
                     size: 'small',
+                    disabled: status === 2 ? false : true
                   },
                   style: {
                     marginRight: '5px',
@@ -198,6 +202,7 @@
                   props: {
                     type: 'primary',
                     size: 'small',
+                    disabled: status === 2 ? false : true
                   },
                   style: {
                     marginBottom: '3px'
