@@ -134,7 +134,7 @@
           { title: '二级分类名称', key: 'secondName', algin: 'center' },
           { title: '三级分类名称', key: 'name', algin: 'center' },
           { title: '操作时间', key: 'updateTime', algin: 'center' },
-          { title: '操作人', key: 'opearteName', algin: 'center' },
+          { title: '操作人', key: 'operateName', algin: 'center' },
           {
             title: '管理', key: 'actions', algin: 'center', render: (h, params) => {
               return h('div', [

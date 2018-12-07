@@ -49,7 +49,7 @@
             <Option v-for="item in hourList" :value="item.hour" :key="item.hour">{{item.hour}}</Option>
           </Select>
         </FormItem>
-        <FormItem prop="file" label="上传图片：" v-if="fileReload">
+        <FormItem prop="file" label="上传教材：" v-if="fileReload">
           <input type="file" @change="handleFileChange">
         </FormItem>
       </Form>
