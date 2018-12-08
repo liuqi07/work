@@ -122,7 +122,8 @@
       return {
         postData: {
           pageIndex: 1,
-          pageSize: 20
+          pageSize: 20,
+          firstCode:''
         },
         total: 0,
         secondPostData: { type: 2 },
@@ -213,6 +214,7 @@
         })
       },
       getThirdList(cb) {
+        this.postData.firstCode = this.secondPostData.parentCode;
         http.get({
           vm: this,
           url: '/manager/course-classification/third/list',
