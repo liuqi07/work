@@ -38,5 +38,6 @@ module.exports = {
   devServer: {
     // proxy: 'http://47.94.157.27:8001'
     proxy: 'http://www.zilongshu.com'
+    // proxy: 'http://localhost'
   }
 }
