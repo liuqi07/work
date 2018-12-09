@@ -199,7 +199,7 @@
                   style: {
                     marginRight: '5px',
                     marginBottom: '3px',
-                    display: status === 1 && sysUserName ? 'inline-block' : 'none'
+                    display: (status !==5 || status !==6) && sysUserName ? 'inline-block' : 'none'
                   },
                   on: {
                     click: () => {
