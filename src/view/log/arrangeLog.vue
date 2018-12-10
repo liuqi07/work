@@ -6,6 +6,7 @@
         </FormItem>
         <FormItem label="订单类型：" style="width: 220px;">
           <Select v-model="postData.type" placeholder="请选择订单类型">
+            <Option :value="">全部</Option>
             <Option :value="2">预约订单</Option>
             <Option :value="3">正式订单</Option>
           </Select>
