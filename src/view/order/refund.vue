@@ -59,7 +59,7 @@
           { title: '应退金额', key: 'shouldRefundAmt', align: 'center' },
           { title: '实退金额', key: 'realRefundAmt', align: 'center' },
           { title: '操作人', key: 'operateName', align: 'center' },
-          { title: '提交日期', key: 'createTime', align: 'center' }
+          { title: '提交日期', key: 'refundTime', align: 'center' }
         ],
         refundList: [],
       }
