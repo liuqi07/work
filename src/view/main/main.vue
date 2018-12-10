@@ -12,7 +12,7 @@
     <Layout>
       <Header class="header-con">
         <header-bar :collapsed="collapsed" @on-coll-change="handleCollapsedChange">
-          <user :user-avator="userAvator"/>
+          <user :user-avator="userAvator" :user-info="userInfo"/>
           <!-- <language @on-lang-change="setLocal" style="margin-right: 10px;" :lang="local"/>
           <fullscreen v-model="isFullscreen" style="margin-right: 10px;"/> -->
         </header-bar>
@@ -44,6 +44,7 @@ import { getNewTagList, getNextRoute, routeEqual } from '@/libs/util'
 import minLogo from '@/assets/images/logo-min.png'
 import maxLogo from '@/assets/images/logo.png'
 import './main.less'
+import http from '@/libs/http'
 export default {
   name: 'Main',
   components: {
@@ -59,7 +60,8 @@ export default {
       collapsed: false,
       minLogo,
       maxLogo,
-      isFullscreen: false
+      isFullscreen: false,
+      userInfo: {},
     }
   },
   computed: {
@@ -132,6 +134,15 @@ export default {
     },
     handleClick (item) {
       this.turnToPage(item)
+    },
+    getCurrInfo() {
+      http.get({
+        vm: this,
+        url: '/manager/getCurrentInfo',
+        success: res => {
+          this.userInfo = res.data
+        }
+      })
     }
   },
   watch: {
@@ -157,6 +168,7 @@ export default {
     // 设置初始语言
     this.setLocal(this.$i18n.locale)
     // 文档提示
+    this.getCurrInfo()
   }
 }
 </script>

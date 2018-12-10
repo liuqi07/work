@@ -199,12 +199,12 @@
                   props: {
                     type: 'success',
                     size: 'small',
-                    disabled: status === 1 ? true : false
+                    // disabled: status === 1 ? true : false
                   },
                   style: {
                     marginRight: '5px',
                     marginBottom: '3px',
-                    display: status === 1 ? 'inline-block' : 'none'
+                    display: (status === 1 || status === 2) ? 'inline-block' : 'none'
                   },
                   on: {
                     click: () => {
@@ -219,12 +219,12 @@
                   props: {
                     type: 'success',
                     size: 'small',
-                    disabled: status === 7 ? true : false
+                    // disabled: status === 7 ? true : false
                   },
                   style: {
                     marginRight: '5px',
                     marginBottom: '3px',
-                    display: status === 1 ? 'none' : 'inlie-block'
+                    display: (status === 3 || status === 4) ? 'inline-block' : 'none'
                   },
                   on: {
                     click: () => {
@@ -239,12 +239,12 @@
                   props: {
                     type: 'primary',
                     size: 'small',
-                    disabled: status === 1 ? true : false
+                    // disabled: status === 1 ? true : false
                   },
                   style: {
                     marginRight: '5px',
                     marginBottom: '3px',
-                    display: (status === 1 || status === 2 || status === 3) ? 'inline-block' : 'none'
+                    display: (status === 3) ? 'inline-block' : 'none'
                   },
                   on: {
                     click: () => {
@@ -259,12 +259,12 @@
                   props: {
                     type: 'primary',
                     size: 'small',
-                    disabled: (status === 7) ? true : false
+                    // disabled: (status === 7) ? true : false
                   },
                   style: {
                     marginRight: '5px',
                     marginBottom: '3px',
-                    display: (status === 1 || status === 2 || status === 3) ? 'none' : 'inline-block'
+                    display: (status === 4) ? 'inline-block' : 'none'
                   },
                   on: {
                     click: () => {
@@ -279,11 +279,12 @@
                   props: {
                     type: 'error',
                     size: 'small',
-                    disabled: (status === 1 || consumeClassHour > 3 || surplusClassHour === 0) ? true : false
+                    // disabled: (status === 1 || consumeClassHour > 3 || surplusClassHour === 0) ? true : false
                   },
                   style: {
                     marginRight: '5px',
                     marginBottom: '3px',
+                    display: (status === 2 || status === 3 || status === 4) ? 'inline-block' : 'none'
                   },
                   on: {
                     click: () => {

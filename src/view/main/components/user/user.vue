@@ -16,7 +16,7 @@
 <template>
   <div class="user-avator-dropdown">
     <Dropdown @on-click="handleClick">
-      <Avatar :src="userAvator" />
+      <span style="fontSize: 16px;display:inline-block;marginRight: 10px;" >{{ userInfo.userName }}</span>
       <Icon :size="18" type="md-arrow-dropdown"></Icon>
       <DropdownMenu slot="list">
         <DropdownItem name="mine">个人中心</DropdownItem>
@@ -65,6 +65,10 @@
         type: String,
         default: ''
       },
+      userInfo: {
+        type: Object,
+        default: {}
+      }
     },
     data() {
       const validateOldPwd = (rule, password, cb) => {
@@ -90,7 +94,7 @@
       }
       return {
         mine: false,
-        userInfo: {},
+        // userInfo: {},
         updateModal: false,
         updatePassword: {},
         oldPassword: '',
@@ -160,13 +164,13 @@
         switch (name) {
           case 'mine':
             this.mine = true
-            http.get({
-              vm: this,
-              url: '/manager/getCurrentInfo',
-              success: res => {
-                this.userInfo = res.data
-              }
-            })
+            // http.get({
+            //   vm: this,
+            //   url: '/manager/getCurrentInfo',
+            //   success: res => {
+            //     this.userInfo = res.data
+            //   }
+            // })
             break;
           case 'update':
             this.updateModal = true
