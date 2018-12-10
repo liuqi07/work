@@ -58,7 +58,7 @@
           { title: '剩余课时', key: 'surplusClassHour', align: 'center' },
           { title: '应退金额', key: 'shouldRefundAmt', align: 'center' },
           { title: '实退金额', key: 'realRefundAmt', align: 'center' },
-          { title: '操作人', key: 'SYSUserRealName', align: 'center' },
+          { title: '操作人', key: 'operateName', align: 'center' },
           { title: '提交日期', key: 'createTime', align: 'center' }
         ],
         refundList: [],
