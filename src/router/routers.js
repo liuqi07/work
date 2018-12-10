@@ -335,7 +335,7 @@ export default [
         component: () => import("@/view/log/arrangeLog.vue"),
         meta: {
           icon: "",
-          title: "转单日志"
+          title: "排课日志"
         }
       },
       {

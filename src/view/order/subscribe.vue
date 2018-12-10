@@ -72,7 +72,7 @@
     <Modal title="转单" v-model="subscribeChangeOrderModal" >
       <Form :label-width="120" :model="subscribeChangeOrderData" :rules="subscribeChangeOrderRules" ref="subscribeChangeOrder">
         <FormItem prop="orderNo" label="预约单号：" :label-width="100" style="width: 210px;">
-          <Input :value="subscribeChangeOrderData.orderNo" disabled />
+          <span>{{subscribeChangeOrderData.orderNo}}</span>
         </FormItem>
         <Row>
           <Col :span="10">
@@ -360,10 +360,10 @@
         })
         if(!dateTimes[0]){
           this.$Message.error('请完整填写第一组预约时间')
-          return 
+          return
         }else if(surplusClassHour > 1 && !dateTimes[1]){
           this.$Message.error('请完整填写第二组预约时间')
-          return 
+          return
         }
         dateTimes.length = surplusClassHour
         this.subscribeArrangeData.dateTimes = dateTimes
@@ -388,7 +388,7 @@
               return {
                 date: d.substr(0, 10),
                 time: d.substr(11, 8),
-                week: '星期 ' + new Date(d).getDay()
+                week: util.getWeek(d)
               }
             })
           }
