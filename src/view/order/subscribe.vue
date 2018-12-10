@@ -360,10 +360,10 @@
         })
         if(!dateTimes[0]){
           this.$Message.error('请完整填写第一组预约时间')
-          return 
+          return
         }else if(surplusClassHour > 1 && !dateTimes[1]){
           this.$Message.error('请完整填写第二组预约时间')
-          return 
+          return
         }
         dateTimes.length = surplusClassHour
         this.subscribeArrangeData.dateTimes = dateTimes
@@ -388,7 +388,7 @@
               return {
                 date: d.substr(0, 10),
                 time: d.substr(11, 8),
-                week: '星期 ' + new Date(d).getDay()
+                week: util.getWeek(d)
               }
             })
           }
