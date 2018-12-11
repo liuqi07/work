@@ -45,11 +45,8 @@
     </Modal>
     <Modal title="考试结果" v-model='lookExamModal' :width="860">
       <Row>
-        <Col :span="8"> 星级：
-        <Rate disabled v-model="lookExamData.result" allow-half :count="3" />
-        </Col>
         <Col :span="8"> 分数：
-        <Input :value="lookExamData.score" style="width: 100px;" readonly />
+          <span>{{lookExamData.score}}</span>
         </Col>
       </Row>
       <Card style="margin-top: 10px;">
