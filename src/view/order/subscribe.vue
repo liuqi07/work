@@ -388,7 +388,7 @@
               return {
                 date: d.substr(0, 10),
                 time: d.substr(11, 8),
-                week: util.getWeek(d)
+                week: getWeek(d)
               }
             })
           }
