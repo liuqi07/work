@@ -2,12 +2,14 @@
   .detail {
     margin: 10px 20px;
   }
-  .detail>p {
+
+  .detail > p {
     margin: 15px 0;
     position: relative;
     width: 400px;
   }
-  .detail>p>span {
+
+  .detail > p > span {
     position: absolute;
     left: 80px;
   }
@@ -31,67 +33,85 @@
           <Option v-for="item in thirdList" :value="item.code" :key="item.code">{{item.name}}</Option>
         </Select>
       </FormItem>
-      <FormItem label="级别：" style="width: 220px;" required>
-        <Select v-model="postData.level" clearable>
-          <Option v-for="item in levelList" :value="item" :key="item">{{item}}</Option>
+      <FormItem label="课程：" style="width: 220px;" required>
+        <Select v-model="postData.courseId" @on-change="courseChange" clearable>
+          <Option v-for="item in courseList" :value="item.id" :key="item.id">{{item.name}}</Option>
         </Select>
       </FormItem>
-      <Button type="primary" @click="search" v-hasPermission="'search'" style="margin-left: 20px; margin-right: 10px;">查询</Button>
+      <FormItem label="课时：" style="width: 220px;" required>
+        <Select v-model="postData.levelAndHourId" clearable>
+          <Option v-for="item in levelAndHourList" :value="item.id" :key="item.id">第{{item.level}}级别的第{{item
+            .hour}}课时
+          </Option>
+        </Select>
+      </FormItem>
+      <Button type="primary" @click="search" v-hasPermission="'search'" style="margin-left: 20px; margin-right: 10px;">
+        查询
+      </Button>
       <Button type="primary" @click="openAdd" style="margin-right: 10px;" v-hasPermission="'questionAdd'">添加</Button>
-      <Button type="primary" @click="openImport" v-hasPermission="'questionImport'" >导入</Button>
+      <Button type="primary" @click="openImport" v-hasPermission="'questionImport'">导入</Button>
     </Form>
     <Card>
       <Table :columns="columns" :data="questionList"></Table>
-      <Page :total="total" show-total show-sizer @on-change="changePage" @on-page-size-change="changePageSize" :page-size="postData.pageSize" :page-index="postData.pageIndex" style="margin-top: 10px"
+      <Page :total="total" show-total show-sizer @on-change="changePage" @on-page-size-change="changePageSize"
+            :page-size="postData.pageSize" :page-index="postData.pageIndex" style="margin-top: 10px"
       />
     </Card>
 
     <Modal title="添加" v-model="addModal">
       <Form :label-width="90" ref="postData" :model="postData" :rules="postRules">
-        <FormItem prop="question" label="问题：" style="width: 300px;" >
-          <Input v-model="postData.question" placeholder="请输入问题" />
+        <FormItem prop="question" label="问题：" style="width: 300px;">
+          <Input v-model="postData.question" placeholder="请输入问题"/>
         </FormItem>
-        <FormItem prop="answer" label="答案：" style="width: 300px;" >
-          <Input v-model="postData.answer" placeholder="请输入答案" />
+        <FormItem prop="answer" label="答案：" style="width: 300px;">
+          <Input v-model="postData.answer" placeholder="请输入答案"/>
         </FormItem>
-        <FormItem prop="type" label="题型：" style="width: 300px;" >
+        <FormItem prop="type" label="题型：" style="width: 300px;">
           <RadioGroup v-model="postData.type" @on-change="changeType">
             <Radio :label="1">选择题</Radio>
             <Radio :label="2">填空题</Radio>
           </RadioGroup>
         </FormItem>
-        <FormItem prop="time" label="答题时间：" style="width: 300px;" >
+        <FormItem prop="time" label="答题时间：" style="width: 300px;">
           <Row>
-            <InputNumber v-model="postData.time" placeholder="请输入答题时间，不超过300秒" style="width: 180px;" /> 秒
+            <InputNumber v-model="postData.time" placeholder="请输入答题时间，不超过300秒" style="width: 180px;"/>
+            秒
           </Row>
         </FormItem>
-        <FormItem prop="firstCode" label="一级分类：" style="width: 300px;" >
+        <FormItem prop="firstCode" label="一级分类：" style="width: 300px;">
           <Select v-model="postData.firstCode" @on-change="firstChange" @on-open-change="onFirstOpen" clearable>
             <Option v-for="item in firstList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem prop="secondCode" label="二级分类：" style="width: 300px;" >
+        <FormItem prop="secondCode" label="二级分类：" style="width: 300px;">
           <Select v-model="postData.secondCode" @on-change="secondChange" clearable>
             <Option v-for="item in secondList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem prop="thirdCode" label="三级分类：" style="width: 300px;" >
+        <FormItem prop="thirdCode" label="三级分类：" style="width: 300px;">
           <Select v-model="postData.thirdCode" @on-change="thirdChange" clearable>
             <Option v-for="item in thirdList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem prop="level" label="级别：" style="width: 300px;" >
-          <Select v-model="postData.level" clearable>
-            <Option v-for="item in levelList" :value="item" :key="item">{{item}}</Option>
+        <FormItem label="课程：" style="width: 220px;" required>
+          <Select v-model="postData.courseId" @on-change="courseChange" clearable>
+            <Option v-for="item in courseList" :value="item.id" :key="item.id">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem prop="options" label="选项：" style="width: 400px;" v-if="isSelect" >
+        <FormItem label="课时：" style="width: 220px;" required>
+          <Select v-model="postData.levelHourId" clearable>
+            <Option v-for="item in levelAndHourList" :value="item.id" :key="item.id">第{{item.level}}级别的第{{item
+              .hour}}课时
+            </Option>
+          </Select>
+        </FormItem>
+        <FormItem prop="options" label="选项：" style="width: 400px;" v-if="isSelect">
           <Row v-for="(item, index) in postData.options" style="margin-bottom: 5px;" :key="item.code">
             <Col :span="4" style="margin-right: 10px;">
-            <Input :value="item.code" disabled />
+              <Input :value="item.code" disabled/>
             </Col>
             <Col :span="16">
-            <Input v-model="item.desc" placeholder="请输入选项内容" />
+              <Input v-model="item.desc" placeholder="请输入选项内容"/>
             </Col>
           </Row>
         </FormItem>
@@ -101,7 +121,7 @@
         <Button type="primary" @click="saveQuestion">确定</Button>
       </div>
     </Modal>
-    <Modal title="详情" v-model="detailModal" >
+    <Modal title="详情" v-model="detailModal">
       <div class="detail">
         <p>问题：<span>{{detailData.question}}</span></p>
         <p>答案：<span>{{detailData.answer}}</span></p>
@@ -110,19 +130,22 @@
         <p>一级分类：<span>{{detailData.firstName}}</span></p>
         <p>二级分类：<span>{{detailData.secondName}}</span></p>
         <p>三级分类：<span>{{detailData.thirdName}}</span></p>
+        <p>课程名称：<span>{{detailData.courseName}}</span></p>
         <p>级别：<span>{{detailData.level}}</span></p>
+        <p>课时：<span>{{detailData.hour}}</span></p>
         <p>选项：
-          <p v-for="option in detailData.options" style="width: 200px; height: 20px; position: relative; top: -25px;" >
-              <span>{{option.code}}：</span><span style="position: absolute; left: 100px; width: 300px;">{{option.desc}}</span>
-          </p>
+        <p v-for="option in detailData.options" style="width: 200px; height: 20px; position: relative; top: -25px;">
+          <span>{{option.code}}：</span><span
+          style="position: absolute; left: 100px; width: 300px;">{{option.desc}}</span>
+        </p>
         </p>
       </div>
-      <div slot="footer" >
+      <div slot="footer">
         <Button type="primary" @click="detailAction">确定</Button>
       </div>
     </Modal>
-    <Modal title="导入" v-model="importModal" >
-      <Form :label-width="90" >
+    <Modal title="导入" v-model="importModal">
+      <Form :label-width="90">
         <FormItem label="一级分类：" style="width: 220px;" required>
           <Select v-model="postData.firstCode" @on-change="firstChange" @on-open-change="onFirstOpen">
             <Option v-for="item in firstList" :value="item.code" :key="item.code">{{item.name}}</Option>
@@ -140,97 +163,100 @@
         </FormItem>
         <FormItem label="级别：" style="width: 220px;" required>
           <Select v-model="postData.level">
-            <Option v-for="item in levelList" :value="item" :key="item">{{item}}</Option>
+            <Option v-for="item in levelAndHourList" :value="item" :key="item">{{item}}</Option>
           </Select>
         </FormItem>
-        <FormItem label="上传图片：" >
+        <FormItem label="上传图片：">
           <input type="file" @change="handleFileChange">
         </FormItem>
       </Form>
-      <div slot="footer" >
-        <Button @click="cancel" >取消</Button>
+      <div slot="footer">
+        <Button @click="cancel">取消</Button>
         <Button @click="importFile" type="primary">确定</Button>
       </div>
     </Modal>
-    
+
   </div>
 </template>
 
 <script>
   import http from '@/libs/http';
-  import { formatDate } from '@/libs/tools';
+  import {formatDate} from '@/libs/tools';
+
   export default {
     data() {
-      const validateOptions = (rule, options=[], cb) => {
+      const validateOptions = (rule, options = [], cb) => {
         const arr = []
-        for(let i=0; i<options.length; i++){
-          if(!options[i].desc){
-            arr.push(i+1)
+        for (let i = 0; i < options.length; i++) {
+          if (!options[i].desc) {
+            arr.push(i + 1)
           }
         }
-        if(arr.length>0){
+        if (arr.length > 0) {
           cb(new Error(`第${arr.join('、')}道选项不能为空`))
-        }else{
+        } else {
           cb()
         }
       }
       const validateAnswer = (rule, answer, cb) => {
-        if(!answer){
+        if (!answer) {
           cb(new Error('答案不能为空'))
-        }else if(this.isSelect && 'ABCD'.indexOf(answer.trim()) < 0){
+        } else if (this.isSelect && 'ABCD'.indexOf(answer.trim()) < 0) {
           cb(new Error('选择题请输入A、B、C、D选项中的一个'))
-        }else{
+        } else {
           cb()
         }
       }
       return {
-        postData: { pageIndex: 1, pageSize: 10 },
+        postData: {pageIndex: 1, pageSize: 10},
         postRules: {
           question: [
-            { required: true, message: '题目不能为空', trigger: 'blur' },
+            {required: true, message: '题目不能为空', trigger: 'blur'},
           ],
           answer: [
-            { required: true, message: '答案不能为空', trigger: 'blur' },
-            { validator: validateAnswer, trigger: 'blur' }
+            {required: true, message: '答案不能为空', trigger: 'blur'},
+            {validator: validateAnswer, trigger: 'blur'}
           ],
           type: [
-            { required: true, type: 'number', message: '请选择题型', trigger: 'change' }
+            {required: true, type: 'number', message: '请选择题型', trigger: 'change'}
           ],
           time: [
-            { required: true, type: 'number', message: '答题时间不能为空', trigger: 'blur'},
-            { required: true, type: 'number', message: '答题时间不能为空', trigger: 'change'},
-            { type: 'number', min: 1, max: 300, message: '答题时间应在1-300秒之间', trigger: 'blur'},
-            { type: 'number', min: 1, max: 300, message: '答题时间应在1-300秒之间', trigger: 'change'}
+            {required: true, type: 'number', message: '答题时间不能为空', trigger: 'blur'},
+            {required: true, type: 'number', message: '答题时间不能为空', trigger: 'change'},
+            {type: 'number', min: 1, max: 300, message: '答题时间应在1-300秒之间', trigger: 'blur'},
+            {type: 'number', min: 1, max: 300, message: '答题时间应在1-300秒之间', trigger: 'change'}
           ],
           firstCode: [
-            { required: true, message: '一级分类不能为空', trigger: 'change'}
+            {required: true, message: '一级分类不能为空', trigger: 'change'}
           ],
           secondCode: [
-            { required: true, message: '二级分类不能为空', trigger: 'change'}
+            {required: true, message: '二级分类不能为空', trigger: 'change'}
           ],
           thirdCode: [
-            { required: true, message: '三级分类不能为空', trigger: 'change'}
+            {required: true, message: '三级分类不能为空', trigger: 'change'}
           ],
           level: [
-            { required: true, type: 'number', message: '级别不能为空', trigger: 'change'}
+            {required: true, type: 'number', message: '级别不能为空', trigger: 'change'}
           ],
           options: [
-            { validator: validateOptions, trigger: 'blur' }
+            {validator: validateOptions, trigger: 'blur'}
           ]
         },
         columns: [
-          { title: '问题', key: 'question', align: 'center' },
-          { title: '答案', key: 'answer', align: 'center' },
+          {title: '问题', key: 'question', align: 'center'},
+          {title: '答案', key: 'answer', align: 'center'},
           {
             title: '题型', key: 'type', align: 'center', render: (h, params) => {
               return h('div', params.row.type === 1 ? '选择题' : '填空题')
             }
           },
-          { title: '答题时间', key: 'time', align: 'center' },
-          { title: '一级分类', key: 'firstName', align: 'center' },
-          { title: '二级分类', key: 'secondName', align: 'center' },
-          { title: '三级分类', key: 'thirdName', align: 'center' },
-          { title: '级别', key: 'level', align: 'center' },
+          {title: '答题时间', key: 'time', align: 'center'},
+          {title: '一级分类', key: 'firstName', align: 'center'},
+          {title: '二级分类', key: 'secondName', align: 'center'},
+          {title: '三级分类', key: 'thirdName', align: 'center'},
+          {title: '课程名称', key: 'courseName', align: 'center'},
+          {title: '级别', key: 'level', align: 'center'},
+          {title: '课时', key: 'hour', align: 'center'},
           {
             title: '选项', key: 'options', align: 'center', width: 200, render: (h, params) => {
               const options = params.row.options
@@ -243,9 +269,9 @@
                     marginBottom: '3px'
                   }
                 }, [
-                    h('span', {}, option.code + '. '),
-                    h('span', {}, option.desc)
-                  ])
+                  h('span', {}, option.code + '. '),
+                  h('span', {}, option.desc)
+                ])
               })
             }
           },
@@ -266,7 +292,7 @@
                     }
                   },
                   directives: [
-                    { name: 'hasPermission', value: "questionEdit" }
+                    {name: 'hasPermission', value: "questionEdit"}
                   ]
                 }, '编辑'),
                 h('Button', {
@@ -288,7 +314,8 @@
         firstList: [],
         secondList: [],
         thirdList: [],
-        levelList: [],
+        courseList: [],
+        levelAndHourList: [],
         total: 0,
         addModal: false,
         isSelect: false,
@@ -304,20 +331,22 @@
       search() {
         // !this.postData.pageIndex && (this.postData.pageIndex = 1)
         // !this.postData.pageSize && (this.postData.pageSize = 10)
-        this.getQuestionList(() => { this.$Message.success('查询成功！') })
+        this.getQuestionList(() => {
+          this.$Message.success('查询成功！')
+        })
       },
       openAdd() {
         this.addModal = true
         this.addOrEdit = true
         this.$refs['postData'].resetFields()
-        const { pageIndex, pageSize } = this.postData
-        this.postData = { pageIndex, pageSize, time: 1 }
+        const {pageIndex, pageSize} = this.postData
+        this.postData = {pageIndex, pageSize, time: 1}
         this.questionUrl = '/manager/course-question/add'
       },
       saveQuestion() {
         this.$refs['postData'].validate(valid => {
-          if(valid){
-            const { question, options } = this.postData
+          if (valid) {
+            const {question, options} = this.postData
             this.postData.options = JSON.stringify(options)
             this.postData.question = encodeURIComponent(question)
             const msg = this.addOrEdit ? '添加成功！' : '编辑成功！'
@@ -329,8 +358,8 @@
               success: res => {
                 this.$Message.success(msg)
                 // this.postData = { pageIndex: 1, pageSize: 10 }
-                const { pageIndex, pageSize, ...rest} = this.postData
-                this.postData = { pageIndex, pageSize }
+                const {pageIndex, pageSize, ...rest} = this.postData
+                this.postData = {pageIndex, pageSize}
                 this.$refs['postData'].resetFields()
                 this.addModal = false
                 this.getQuestionList()
@@ -344,62 +373,70 @@
         this.importModal = false
         this.$refs['postData'].resetFields()
         // this.postData = { pageIndex: 1, pageSize: 10 }
-        const { pageIndex, pageSize, ...rest} = this.postData
-        this.postData = { pageIndex, pageSize }
+        const {pageIndex, pageSize, ...rest} = this.postData
+        this.postData = {pageIndex, pageSize}
         this.isSelect = false
       },
-      edit({ id, question, answer, type, time, firstId, secondId, thirdId, level, options: _options }) {
+      edit({
+             id, question, answer, type, time, firstId, secondId, thirdId, courseId, levelHourId, options:
+          _options
+           }) {
         this.$refs['postData'].resetFields()
         this.addModal = true
         this.addOrEdit = false
-        this.questionUrl = '/manager/course-question/edit'
+        this.questionUrl = '/manager/course-question/edit';
 
         this.getFirstList(() => {
           const _firstCode = this.firstList.find(f => f.id === firstId)
-          const firstCode = _firstCode && _firstCode.code || ''
-          this.postData = Object.assign({}, this.postData, { id, firstCode, firstId, question, answer, type, time })
+          const firstCode = _firstCode && _firstCode.code || '';
+          this.postData = Object.assign({}, this.postData, {id, firstCode, firstId, question, answer, time,type})
           this.getSecondList(() => {
             const _secondCode = this.secondList.find(s => s.id === secondId)
             const secondCode = _secondCode && _secondCode.code || ''
-            this.postData = Object.assign({}, this.postData, { secondCode, secondId })
+            this.postData = Object.assign({}, this.postData, {secondCode, secondId})
             this.getThirdList(() => {
-              const _thirdCode = this.thirdList.find(s => s.id === thirdId)
+              const _thirdCode = this.thirdList.find(t => t.id === thirdId)
               const thirdCode = _thirdCode && _thirdCode.code || ''
-              const levelLen = _thirdCode && _thirdCode.level
-              this.postData.thirdId = _thirdCode && _thirdCode.id || null
-              for (let i = 0; i < levelLen; i++) {
-                this.levelList.push(i + 1)
-              }
-              this.postData = Object.assign({}, this.postData, { thirdCode, thirdId, level })
+              this.postData = Object.assign({}, this.postData, {thirdCode, thirdId})
+              this.getCourseList(() => {
+                const course = this.courseList.find(c => c.id === courseId);
+                if (course) {
+                  this.postData = Object.assign({}, this.postData, {courseId: course.id});
+                  this.getLevelAndHourList(() => {
+                    const levelHour = this.levelAndHourList.find(l => l.id === levelHourId);
+                    if (levelHour) {
+                      this.postData = Object.assign({}, this.postData, {levelHourId: levelHour.id});
+                    }
+                  })
+                }
+              })
             })
           })
         })
-
-
-        this.postData.options = type===1 && _options && JSON.parse(_options) || []
+        this.postData.options = type === 1 && _options && JSON.parse(_options) || []
         this.isSelect = type === 1 ? true : false
         // this.postData = { id, question, answer, type, time, firstId, secondId, thirdId, level, options }
       },
-      detail({id}){
+      detail({id}) {
         this.detailModal = true
         http.get({
           vm: this,
           url: '/manager/course-question/detail',
-          data: { id },
-          success: res => {   
+          data: {id},
+          success: res => {
             const _options = res.data.options && JSON.parse(res.data.options) || []
-            this.detailData = Object.assign({}, res.data, { options: _options })
+            this.detailData = Object.assign({}, res.data, {options: _options})
           }
         })
       },
-      detailAction(){
+      detailAction() {
         this.detailModal = false
       },
-      openImport(){
+      openImport() {
         this.importModal = true
         this.postData = {}
       },
-      importFile(){
+      importFile() {
         const formData = new FormData()
         for (let k in this.postData) {
           formData.append(k, this.postData[k])
@@ -410,7 +447,7 @@
           data: formData,
           success: res => {
             this.$Message.success('导入成功！')
-            this.postData = { pageIndex: 1, pageSize: 10 }
+            this.postData = {pageIndex: 1, pageSize: 10}
             this.importModal = false
             this.getQuestionList()
           }
@@ -435,7 +472,7 @@
         http.get({
           vm: this,
           url: '/manager/course-classification/getAll',
-          data: { type: 1 },
+          data: {type: 1},
           success: res => {
             this.firstList = res.data
             cb && cb()
@@ -446,7 +483,7 @@
         http.get({
           vm: this,
           url: '/manager/course-classification/getAll',
-          data: { type: 2, parentCode: this.postData.firstCode },
+          data: {type: 2, parentCode: this.postData.firstCode},
           success: res => {
             this.secondList = res.data
             cb && cb()
@@ -457,17 +494,37 @@
         http.get({
           vm: this,
           url: '/manager/course-classification/getAll',
-          data: { type: 3, parentCode: this.postData.secondCode },
+          data: {type: 3, parentCode: this.postData.secondCode},
           success: res => {
-            this.thirdList = res.data
+            this.thirdList = res.data;
             cb && cb()
           }
         })
       },
-      getLevelList() {
-
+      getCourseList(cb) {
+        http.get({
+          vm: this,
+          url: '/manager/course/listByThird',
+          data: {code: this.postData.thirdCode},
+          success: res => {
+            this.courseList = res.data
+            cb && cb()
+          }
+        })
+      },
+      getLevelAndHourList(cb) {
+        http.get({
+          vm: this,
+          url: '/manager/course/getLevelAndHourList',
+          data: {courseId: this.postData.courseId},
+          success: res => {
+            this.levelAndHourList = res.data;
+            cb && cb()
+          }
+        })
       },
       firstChange(val) {
+        delete this.postData.secondCode;
         const _firstId = this.firstList.find(f => f.code === val)
         this.postData.firstId = _firstId && _firstId.id || null
         this.postData.secondCode = null
@@ -480,6 +537,7 @@
         }
       },
       secondChange(val) {
+        delete this.postData.thirdCode;
         const _secondId = this.secondList.find(f => f.code === val)
         this.postData.secondId = _secondId && _secondId.id || null
         this.postData.thirdCode = null
@@ -490,23 +548,22 @@
         }
       },
       thirdChange(val) {
-        delete this.postData.level
+        delete this.postData.courseId;
         if (val) {
-          const _thirdId = this.thirdList.find(t => t.code === val)
-          const levelLen = _thirdId && _thirdId.level
-          this.postData.thirdId = _thirdId && _thirdId.id || null
-          for (let i = 0; i < levelLen; i++) {
-            this.levelList.push(i + 1)
-          }
-        } else {
-          this.levelList = []
+          this.getCourseList();
+        }
+      },
+      courseChange(val) {
+        delete this.postData.level;
+        if (val) {
+          this.getLevelAndHourList();
         }
       },
       changePage(p) {
         this.postData.pageIndex = p
         this.getQuestionList()
       },
-      changePageSize(s){
+      changePageSize(s) {
         this.postData.pageSize = s
         this.getQuestionList()
       },
@@ -519,10 +576,10 @@
         if (data === 1) {
           this.isSelect = true
           const options = [
-            { code: 'A', desc: '', order: 1 },
-            { code: 'B', desc: '', order: 2 },
-            { code: 'C', desc: '', order: 3 },
-            { code: 'D', desc: '', order: 4 }
+            {code: 'A', desc: '', order: 1},
+            {code: 'B', desc: '', order: 2},
+            {code: 'C', desc: '', order: 3},
+            {code: 'D', desc: '', order: 4}
           ]
           this.postData.options = options// = Object.assign({}, this.postData, { options })
         } else {
