@@ -22,6 +22,19 @@
             :page-index="postData.pageIndex"
             :page-size="postData.pageSize" style="margin-top: 10px"/>
     </Card>
+    <Modal :title="uploadTitle" v-model="uploadModal">
+      <Button @click="openVideo" v-if="tvUrl" type="success" style="margin-right: 30px;">查看录播课</Button>
+      <label for="file"
+             style="display: inline-block; width: 80px; border: 1px solid #ccc; border-radius: 4px; line-height: 30px; text-align: center; cursor:pointer; margin-right: 10px;">
+        {{uploadTitle2}}
+      </label>
+      <span>{{file&&file.name||''}}</span>
+      <input type="file" id="file" accept=".mp4,.MPEG4" @change="handleFileChange" style="display: none;">
+      <div slot="footer">
+        <Button @click="cancel" style="margin-right: 10px;">取消</Button>
+        <Button @click="uploadFile" type="primary" :loading="uploading">确定</Button>
+      </div>
+    </Modal>
   </div>
 </template>
 
@@ -61,14 +74,89 @@
               return h('div', statusStr)
             }
           },
+          {
+            title: '操作', key: 'actions', align: 'center', width: 200, render: (h, params) => {
+              const tvUrl = params.row.tvUrl
+              return h('div', [
+                h('Button', {
+                  props: {
+                    type: tvUrl ? 'success' : 'primary',
+                    size: 'small',
+                  },
+                  style: {
+                    marginRight: '5px',
+                    marginBottom: '3px'
+                  },
+                  on: {
+                    click: () => {
+                      this.upload({...params.row, tvUrl})
+                    }
+                  },
+                  directives: [
+                    {name: 'hasPermission', value: "upload"}
+                  ]
+                }, tvUrl ? '查看/重新上传' : '上传录播课'),
+              ])
+            }
+          }
         ],
         teacherCourseList: [],
         total: 0,
         secondList: [],
-        thirdList: []
+        thirdList: [],
+        uploadModal: false,
+        tableId: null,
+        uploadTitle: '',
+        tvUrl: null,
+        uploading: false,
+        uploadTitle2: '',
+        file: null
       };
     },
     methods: {
+      openVideo(){
+        window.open(this.tvUrl);
+      },
+      uploadFile() {
+        if (this.file) {
+          this.uploading = true
+          const formData = new FormData()
+          formData.append('tableId', this.tableId)
+          formData.append('file', this.file)
+          http._postwithupload({
+            vm: this,
+            url: '/manager/teacher/uploadCourseTv',
+            data: formData,
+            success: res => {
+              this.$Message.success('上传成功！')
+              this.getTeacherCourseList()
+              this.uploadModal = false
+              this.uploading = false
+            },
+            error: err => {
+              this.uploading = false
+            }
+          })
+        } else {
+          this.file = null
+          this.$Message.error('请先选择文件后点击上传！')
+        }
+      },
+      cancel(){
+        this.file = null
+        this.uploadModal = false
+      },
+      handleFileChange(e) {
+        this.file = e.target.files[0]
+      },
+      upload({tableId, tvUrl}) {
+        this.file = null
+        this.tableId = tableId
+        this.uploadModal = true
+        this.tvUrl = tvUrl
+        this.uploadTitle = tvUrl ? '查看/重新上传' : '上传录播课'
+        this.uploadTitle2 = tvUrl ? '重新上传' : '上传录播课'
+      },
       search() {
         this.getTeacherCourseList(() => {
           this.$Message.success("查询成功!");
