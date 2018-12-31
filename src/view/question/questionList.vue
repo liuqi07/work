@@ -146,24 +146,31 @@
     </Modal>
     <Modal title="导入" v-model="importModal">
       <Form :label-width="90">
-        <FormItem label="一级分类：" style="width: 220px;" required>
+        <FormItem label="一级分类：" style="width: 320px;" required>
           <Select v-model="postData.firstCode" @on-change="firstChange" @on-open-change="onFirstOpen">
             <Option v-for="item in firstList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem label="二级分类：" style="width: 220px;" required>
+        <FormItem label="二级分类：" style="width: 320px;" required>
           <Select v-model="postData.secondCode" @on-change="secondChange">
             <Option v-for="item in secondList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem label="三级分类：" style="width: 220px;" required>
+        <FormItem label="三级分类：" style="width: 320px;" required>
           <Select v-model="postData.thirdCode" @on-change="thirdChange">
             <Option v-for="item in thirdList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem label="级别：" style="width: 220px;" required>
-          <Select v-model="postData.level">
-            <Option v-for="item in levelAndHourList" :value="item" :key="item">{{item}}</Option>
+        <FormItem label="课程：" style="width: 320px;" required>
+          <Select v-model="postData.courseId" @on-change="courseChange">
+            <Option v-for="item in courseList" :value="item.id" :key="item.id">{{item.name}}</Option>
+          </Select>
+        </FormItem>
+        <FormItem label="课时：" style="width: 320px;" required>
+          <Select v-model="postData.levelHourId">
+            <Option v-for="item in levelAndHourList" :value="item.id" :key="item.id">第{{item.level}}级别的第{{item
+              .hour}}课时
+            </Option>
           </Select>
         </FormItem>
         <FormItem label="上传图片：">
