@@ -202,6 +202,7 @@
             }
           } },
           { title: '年龄', key: 'age', align: 'center' },
+          { title: '贝宝账号', key: 'payPal', align: 'center' },
           {
             title: '教师状态', key: 'status', align: 'center', render: (h, params) => {
               const status = params.row.status
