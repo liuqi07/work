@@ -56,15 +56,6 @@
                         style="width: 100px; margin-right: 5px;"></TimePicker>
             <Input :value="subscribeArrangeData.dateList[0].week" style="width: 80px;" placeholder="星期" readonly/>
           </Row>
-          <Row style="margin-top: 10px;" v-if="subscribeArrangeData.surplusClassHour>1">
-            <DatePicker type="date" v-model="subscribeArrangeData.dateList[1].date" @on-change="onDateChange"
-                        :clearable="false" placeholder="选择日期"
-                        style="width: 120px; margin-right: 5px;"></DatePicker>
-            <TimePicker :steps="[1, 30, 60]" v-model="subscribeArrangeData.dateList[1].time" hide-disabled-options
-                        :disabled-hours="[0,1,2,3,4,5,6,7,13,22,23]" :clearable="false" placeholder="选择时间段"
-                        style="width: 100px; margin-right: 5px;"></TimePicker>
-            <Input :value="subscribeArrangeData.dateList[1].week" style="width: 80px;" placeholder="星期" readonly/>
-          </Row>
         </FormItem>
         <FormItem label="可用教师：">
           <Select v-model="subscribeArrangeData.teacherId" style="width: 200px;">
@@ -298,7 +289,7 @@
         addSubscribeAllotData: [],
         subscribeArrangeModal: false, // 排课
         levelList: [],
-        subscribeArrangeData: {dateList: [{}, {}]},
+        subscribeArrangeData: {dateList: [{}]},
         teacherList: [],
         subscribeChangeOrderModal: false, // 转单
         subscribeChangeOrderData: {
@@ -381,10 +372,7 @@
           }
         })
         if (!dateTimes[0]) {
-          this.$Message.error('请完整填写第一组预约时间')
-          return
-        } else if (surplusClassHour > 1 && !dateTimes[1]) {
-          this.$Message.error('请完整填写第二组预约时间')
+          this.$Message.error('请完整填写预约时间')
           return
         }
         dateTimes.length = surplusClassHour
@@ -467,7 +455,7 @@
       subscribeArrangeAgain({orderId, surplusClassHour}) {
         this.subscribeArrangeData.teacherId = null;
         this.subscribeArrangeModal = true;
-        this.subscribeArrangeData.dateList = [{}, {}];
+        this.subscribeArrangeData.dateList = [{}];
         this.subscribeArrangeData.orderId = orderId;
         this.subscribeArrangeData.surplusClassHour = surplusClassHour;
         this.subscribeArrangeTitle = '重新排课';
@@ -503,13 +491,13 @@
             this.$Message.success('排课成功！')
             this.subscribeArrangeModal = false
             this.getSubscribeList()
-            this.subscribeArrangeData = {dateList: [{}, {}]}
+            this.subscribeArrangeData = {dateList: [{}]}
           }
         })
       },
       cancelSubscribeArrange() {
         this.subscribeArrangeModal = false
-        this.subscribeArrangeData = {dateList: [{}, {}]}
+        this.subscribeArrangeData = {dateList: [{}]}
       },
       // 转单
       subscribeChangeOrder({orderId, orderNo, studentName, studentMobilePhone}) {
