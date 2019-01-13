@@ -52,7 +52,7 @@
                         :clearable="false" placeholder="选择日期"
                         style="width: 120px; margin-right: 5px;"></DatePicker>
             <TimePicker :steps="[1, 30, 60]" v-model="subscribeArrangeData.dateList[0].time" hide-disabled-options
-                        :disabled-hours="[0,1,2,3,4,5,6,7,13,22,23]" :clearable="false" placeholder="选择时间段"
+                        :disabled-hours="[0,1,2,3,4,5,6,7,22,23]" :clearable="false" placeholder="选择时间段"
                         style="width: 100px; margin-right: 5px;"></TimePicker>
             <Input :value="subscribeArrangeData.dateList[0].week" style="width: 80px;" placeholder="星期" readonly/>
           </Row>

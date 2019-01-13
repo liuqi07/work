@@ -18,7 +18,7 @@
   <div>
     <Form :label-width="80" inline :model="postData">
       <FormItem label="手机号：" :label-width="70" style="width: 200px;">
-        <Input v-model="postData.mobilePhone" placeholder="请输入手机号" />
+        <Input v-model="postData.mobilePhone" placeholder="请输入手机号"/>
       </FormItem>
       <FormItem label="订单状态：" style="width: 200px;">
         <Select v-model="postData.status" clearable>
@@ -36,14 +36,17 @@
       <FormItem label="结束日期：" style="width: 220px;">
         <DatePicker type="datetime" placeholder="请选择结束时间" v-model="endDateTime"></DatePicker>
       </FormItem>
-      <Button type="primary" @click="search" v-hasPermission="'search'" style="margin-left: 20px; margin-right: 10px;">查询</Button>
+      <Button type="primary" @click="search" v-hasPermission="'search'" style="margin-left: 20px; margin-right: 10px;">
+        查询
+      </Button>
       <Button type="primary" @click="formalAdd" v-hasPermission="'formalAdd'" style="margin-right: 10px;">创建订单</Button>
       <Button type="primary" @click="formalExport" v-hasPermission="'formalExport'">导出</Button>
     </Form>
     <Card style="margin-top: 5px;">
       <Table :columns="columns" :data="formalList"></Table>
-      <Page :total="total" show-total show-sizer @on-change="changePage" @on-page-size-change="changePageSize" :page-size="postData.pageSize"
-        :page-index="postData.pageIndex" style="margin-top: 10px" />
+      <Page :total="total" show-total show-sizer @on-change="changePage" @on-page-size-change="changePageSize"
+            :page-size="postData.pageSize"
+            :page-index="postData.pageIndex" style="margin-top: 10px"/>
     </Card>
     <Modal title="分配/变更顾问" v-model="formalAllotModal">
       <Form :label-width="80">
@@ -61,20 +64,23 @@
     <Modal title="排课" v-model="formalArrangeModal">
       <Form :label-width="100">
         <FormItem label="课程名称：" required>
-          <Input :value="formalArrangeData.name" disabled />
+          <Input :value="formalArrangeData.name" disabled/>
         </FormItem>
         <FormItem label="上课时间：" required>
           <Row v-for="i in formalArrangeData.weekTimeCount" :key="i" style="margin-bottom: 5px;">
-            <DatePicker type="date" v-model="formalArrangeData.dateList[i-1].date" @on-change="onDateChange" :clearable="false" placeholder="选择日期"
-              style="width: 120px; margin-right: 5px;"></DatePicker>
-            <TimePicker :steps="[1, 30, 60]" v-model="formalArrangeData.dateList[i-1].time" hide-disabled-options :disabled-hours="[0,1,2,3,4,5,6,7,13,22,23]"
-              :clearable="false" placeholder="选择时间段" style="width: 100px; margin-right: 5px;"></TimePicker>
-            <Input v-model="formalArrangeData.dateList[i-1].week" style="width: 80px;" placeholder="星期" readonly />
+            <DatePicker type="date" v-model="formalArrangeData.dateList[i-1].date" @on-change="onDateChange"
+                        :clearable="false" placeholder="选择日期"
+                        style="width: 120px; margin-right: 5px;"></DatePicker>
+            <TimePicker :steps="[1, 30, 60]" v-model="formalArrangeData.dateList[i-1].time" hide-disabled-options
+                        :disabled-hours="[0,1,2,3,4,5,6,7,22,23]"
+                        :clearable="false" placeholder="选择时间段" style="width: 100px; margin-right: 5px;"></TimePicker>
+            <Input v-model="formalArrangeData.dateList[i-1].week" style="width: 80px;" placeholder="星期" readonly/>
           </Row>
         </FormItem>
         <FormItem label="可用教师：" required>
           <Select v-model="formalArrangeData.teacherId" style="width: 200px;">
-            <Option v-for="item in teacherList" :value="item.id" :key="item.id">{{item.realName}} {{item.zoomCode}}</Option>
+            <Option v-for="item in teacherList" :value="item.id" :key="item.id">{{item.realName}} {{item.zoomCode}}
+            </Option>
           </Select>
           <Button type="primary" @click="getTeacherList" style="margin-left: 10px;">查询可用教师</Button>
         </FormItem>
@@ -126,9 +132,9 @@
       </div>
     </Modal>
     <Modal title="创建订单" v-model="formalAddModal">
-      <Form :label-width="110" ref="formalAdd" :model="formalAddData" :rules="formalAddRules" >
+      <Form :label-width="110" ref="formalAdd" :model="formalAddData" :rules="formalAddRules">
         <FormItem prop="firstCode" label="课程一级分类：" style="width: 300px;">
-          <Select v-model="formalAddData.firstCode" @on-change="firstChange" @on-open-change="onFirstOpen" >
+          <Select v-model="formalAddData.firstCode" @on-change="firstChange" @on-open-change="onFirstOpen">
             <Option v-for="item in firstList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
@@ -165,35 +171,38 @@
 
 <script>
   import http from '@/libs/http'
-  import { formatDate, getWeek } from '@/libs/tools';
+  import {formatDate, getWeek} from '@/libs/tools';
   import $ from 'jquery';
+
   export default {
     data() {
       return {
-        postData: { pageIndex: 1, pageSize: 10 },
+        postData: {pageIndex: 1, pageSize: 10},
         startDateTime: null,
         endDateTime: null,
         columns: [
-          { title: '订单编号', key: 'orderNo', algin: 'center' },
-          { title: '课程名称', key: 'name', algin: 'center' },
-          { title: '学员姓名', key: 'studentRealName', algin: 'center' },
-          { title: '手机号码', key: 'studentMobilePhone', algin: 'center', render: (h, params) => {
-            const studentMobilePhone = params.row.studentMobilePhone
-            return h('div', studentMobilePhone && studentMobilePhone.replace(studentMobilePhone.substr(3, 4), '****') || '')
-          }  },
-          { title: '订单状态', key: 'statusStr', algin: 'center' },
-          { title: '课程总价', key: 'allPrice', algin: 'center' },
-          { title: '优惠总价', key: 'discountAllPrice', algin: 'center' },
-          { title: '总课时', key: 'allHour', algin: 'center' },
-          { title: '消费课时', key: 'consumeClassHour', algin: 'center' },
-          { title: '剩余课时', key: 'surplusClassHour', algin: 'center' },
-          { title: '课程顾问', key: 'sysUserRealName', algin: 'center' },
-          { title: '任课教师', key: 'teacherRealName', algin: 'center' },
-          { title: '推荐人', key: 'recommendPhone', algin: 'center' },
-          { title: '下单时间', key: 'createTime', algin: 'center' },
+          {title: '订单编号', key: 'orderNo', algin: 'center'},
+          {title: '课程名称', key: 'name', algin: 'center'},
+          {title: '学员姓名', key: 'studentRealName', algin: 'center'},
+          {
+            title: '手机号码', key: 'studentMobilePhone', algin: 'center', render: (h, params) => {
+              const studentMobilePhone = params.row.studentMobilePhone
+              return h('div', studentMobilePhone && studentMobilePhone.replace(studentMobilePhone.substr(3, 4), '****') || '')
+            }
+          },
+          {title: '订单状态', key: 'statusStr', algin: 'center'},
+          {title: '课程总价', key: 'allPrice', algin: 'center'},
+          {title: '优惠总价', key: 'discountAllPrice', algin: 'center'},
+          {title: '总课时', key: 'allHour', algin: 'center'},
+          {title: '消费课时', key: 'consumeClassHour', algin: 'center'},
+          {title: '剩余课时', key: 'surplusClassHour', algin: 'center'},
+          {title: '课程顾问', key: 'sysUserRealName', algin: 'center'},
+          {title: '任课教师', key: 'teacherRealName', algin: 'center'},
+          {title: '推荐人', key: 'recommendPhone', algin: 'center'},
+          {title: '下单时间', key: 'createTime', algin: 'center'},
           {
             title: '操作', key: 'actions', algin: 'center', width: 180, render: (h, params) => {
-              const { status, consumeClassHour, surplusClassHour } = params.row
+              const {status, consumeClassHour, surplusClassHour} = params.row
               return h('div', [
                 h('Button', {
                   props: {
@@ -212,7 +221,7 @@
                     }
                   },
                   directives: [
-                    { name: 'hasPermission', value: "formalAllot" }
+                    {name: 'hasPermission', value: "formalAllot"}
                   ]
                 }, '分配顾问'),
                 h('Button', {
@@ -232,7 +241,7 @@
                     }
                   },
                   directives: [
-                    { name: 'hasPermission', value: "formalChange" }
+                    {name: 'hasPermission', value: "formalChange"}
                   ]
                 }, '变更顾问'),
                 h('Button', {
@@ -244,7 +253,7 @@
                   style: {
                     marginRight: '5px',
                     marginBottom: '3px',
-                    display: (status === 3) ? 'inline-block' : 'none'
+                    display: (status === 3 || status === 4) ? 'inline-block' : 'none'
                   },
                   on: {
                     click: () => {
@@ -252,7 +261,7 @@
                     }
                   },
                   directives: [
-                    { name: 'hasPermission', value: "formalArrange" }
+                    {name: 'hasPermission', value: "formalArrange"}
                   ]
                 }, '排课'),
                 h('Button', {
@@ -268,11 +277,12 @@
                   },
                   on: {
                     click: () => {
+                      console.log(params.row);
                       this.formalArrangeAgain(params.row)
                     }
                   },
                   directives: [
-                    { name: 'hasPermission', value: "formalArrangeAgain" }
+                    {name: 'hasPermission', value: "formalArrangeAgain"}
                   ]
                 }, '重新排课'),
                 h('Button', {
@@ -292,7 +302,7 @@
                     }
                   },
                   directives: [
-                    { name: 'hasPermission', value: "formalRefund" }
+                    {name: 'hasPermission', value: "formalRefund"}
                   ]
                 }, '退款'),
               ])
@@ -305,7 +315,7 @@
         formalAllotModal: false,
         formalAllotData: {},
         formalArrangeModal: false,
-        formalArrangeData: { dateList: [] },
+        formalArrangeData: {dateList: []},
         teacherList: [],
         formalRefundModal: false,
         formalRefundData: {},
@@ -315,22 +325,22 @@
         formalAddData: {},
         formalAddRules: {
           firstCode: [
-            { required: true, message: '请选择一级分类', trigger: 'change' }
+            {required: true, message: '请选择一级分类', trigger: 'change'}
           ],
           secondCode: [
-            { required: true, message: '请选择二级分类', trigger: 'change' }
+            {required: true, message: '请选择二级分类', trigger: 'change'}
           ],
           thirdCode: [
-            { required: true, message: '请选择三级分类', trigger: 'change' }
+            {required: true, message: '请选择三级分类', trigger: 'change'}
           ],
           coursePackerId: [
-            { required: true, type: 'number', message: '请选择套餐', trigger: 'change' }
+            {required: true, type: 'number', message: '请选择套餐', trigger: 'change'}
           ],
           mobilePhone: [
-            { required: true, message: '请输入学员手机号', trigger: 'blur' }
+            {required: true, message: '请输入学员手机号', trigger: 'blur'}
           ],
           realName: [
-            { required: true, message: '请先通过学员电话查询', trigger: 'blur' }
+            {required: true, message: '请先通过学员电话查询', trigger: 'blur'}
           ]
         },
         firstList: [],
@@ -343,7 +353,9 @@
       search() {
         this.postData.startDateTime = this.startDateTime && formatDate('YYYY-MM-DD hh:mm:ss', this.startDateTime) || null
         this.postData.endDateTime = this.endDateTime && formatDate('YYYY-MM-DD hh:mm:ss', this.endDateTime) || null
-        this.getFormalList(() => { this.$Message.success('查询成功！') })
+        this.getFormalList(() => {
+          this.$Message.success('查询成功！')
+        })
       },
       getFormalList(cb) {
         http.get({
@@ -368,15 +380,15 @@
         })
       },
       getTeacherList() {
-        const { orderId, dateList } = this.formalArrangeData
+        const {orderId, dateList} = this.formalArrangeData
         const datesStr = dateList.map(d => {
-          if(d.date && d.time){
+          if (d.date && d.time) {
             return formatDate('YYYY-MM-DD', d.date) + ' ' + d.time
           }
         })
-        for(let i = 0; i<datesStr.length; i++){
-          if(!datesStr[i]){
-            this.$Message.error(`请完整填写第 ${i+1} 组日期`)
+        for (let i = 0; i < datesStr.length; i++) {
+          if (!datesStr[i]) {
+            this.$Message.error(`请完整填写第 ${i + 1} 组日期`)
             return
           }
         }
@@ -384,7 +396,7 @@
         http.get({
           vm: this,
           url: '/manager/teacher/queryTeacherByTimes',
-          data: { orderId, dateTimes: JSON.stringify(this.formalArrangeData.datesStr), classType: 3 },
+          data: {orderId, dateTimes: JSON.stringify(this.formalArrangeData.datesStr), classType: 3},
           success: res => {
             this.teacherList = res.data
             this.$Message.success('查询成功！')
@@ -396,16 +408,27 @@
         http.get({
           vm: this,
           url: '/manager/course/listByThird',
-          data: { thirdId: this.formalArrangeData.thirdId },
+          data: {thirdId: this.formalArrangeData.thirdId},
           success: res => {
             this.courseList = res.data
           }
         })
       },
+      getTeacher(id) {
+        http.get({
+          vm: this,
+          url: '/manager/teacher/detailSmall',
+          data: {id: id},
+          success: res => {
+            this.teacherList.push(res.data)
+            this.formalArrangeData.teacherId = res.data.id;
+          }
+        })
+      },
       // 分配顾问
-      formalAllot({ orderId, version }) {
+      formalAllot({orderId, version}) {
         this.formalAllotModal = true
-        this.formalAllotData = { orderId, version }
+        this.formalAllotData = {orderId, version}
       },
       saveFormalAllot() {
         if (!this.formalAllotData.adviserId) {
@@ -427,7 +450,7 @@
           }
         })
       },
-      cancel () {
+      cancel() {
         this.formalAllotModal = false
         this.formalAllotData = {}
         this.formalAddModal = false
@@ -435,12 +458,12 @@
         this.$refs['formalAdd'].resetFields()
       },
       // 变更顾问
-      formalChange({ orderId, version }) {
+      formalChange({orderId, version}) {
         this.formalAllotModal = true
-        this.formalAllotData = { orderId, version }
+        this.formalAllotData = {orderId, version}
       },
       // 排课
-      formalArrange({ orderId, weekTimeCount, name, thirdId }) {
+      formalArrange({orderId, weekTimeCount, name, thirdId, teacherId}) {
         this.formalArrangeData.dateList = []
         this.formalArrangeModal = true
         this.formalArrangeData.weekTimeCount = weekTimeCount
@@ -450,12 +473,15 @@
         this.formalArrangeData.url = '/manager/order-formal/arrangeCourse'
         this.getCourseList()
         this.teacherList = []
+        if (teacherId) {
+          this.getTeacher(teacherId);
+        }
         for (let i = 0; i < weekTimeCount; i++) {
-          this.formalArrangeData.dateList.push({ date: '', time: '', week: '' })
+          this.formalArrangeData.dateList.push({date: '', time: '', week: ''})
         }
       },
       // 重新排课
-      formalArrangeAgain({ orderId, name, weekTimeCount, thirdId }) {
+      formalArrangeAgain({orderId, name, weekTimeCount, thirdId, teacherId}) {
         this.formalArrangeData.dateList = []
         this.formalArrangeModal = true
         this.formalArrangeData.weekTimeCount = weekTimeCount
@@ -465,19 +491,22 @@
         this.formalArrangeData.url = '/manager/order-formal/arrangeCourseAgain'
         this.getCourseList()
         this.teacherList = []
+        if (teacherId) {
+          this.getTeacher(teacherId);
+        }
         for (let i = 0; i < weekTimeCount; i++) {
-          this.formalArrangeData.dateList.push({ date: '', time: '', week: '' })
+          this.formalArrangeData.dateList.push({date: '', time: '', week: ''})
         }
       },
       saveFormalArrange() {
-        const { url, orderId, datesStr, teacherId, courseId = -1 } = this.formalArrangeData
+        const {url, orderId, datesStr, teacherId, courseId = -1} = this.formalArrangeData
         if (!teacherId) {
           this.$Message.error({
             content: '请选择教师',
             duration: 5
           })
           return
-        }else if(!courseId){
+        } else if (!courseId) {
           this.$Message.error({
             content: '请选择课程',
             duration: 5
@@ -487,7 +516,7 @@
         http.post({
           vm: this,
           url,
-          data: { orderId, datesStr, teacherId, courseId },
+          data: {orderId, datesStr, teacherId, courseId},
           success: res => {
             this.$Message.success('排课成功！')
             this.getFormalList()
@@ -499,21 +528,21 @@
         this.formalArrangeModal = false
       },
       // 打开退款弹框
-      formalRefund({ orderId }) {
+      formalRefund({orderId}) {
         this.formalRefundModal = true
         this.submitFormalRefundFlag = true
         this.formalRefundData = {}
         http.get({
           vm: this,
           url: '/manager/order-formal/refundDetail',
-          data: { orderId },
+          data: {orderId},
           success: res => {
             this.submitFormalRefundFlag = false
             this.formalRefundData = res.data
           }
         })
       },
-      cancelFormalRefund({ orderId }) {
+      cancelFormalRefund({orderId}) {
         this.formalRefundModal = false
         this.formalRefundData = {}
       },
@@ -521,7 +550,7 @@
         http.post({
           vm: this,
           url: '/manager/order-formal/refund',
-          data: { orderId: this.formalRefundData.orderId },
+          data: {orderId: this.formalRefundData.orderId},
           success: res => {
             this.$Message.success('退款成功！')
             this.getFormalList()
@@ -547,9 +576,14 @@
         this.formalRefundData.file = e.target.files[0]
       },
       formalExport() {
-        const { mobilePhone, status } = this.postData
-        const { startDateTime, endDateTime } = this
-        const formData = { mobilePhone, status, startDateTime: formatDate('YYYY-MM-DD hh:mm:ss', startDateTime), endDateTime: formatDate('YYYY-MM-DD hh:mm:ss', endDateTime) }
+        const {mobilePhone, status} = this.postData
+        const {startDateTime, endDateTime} = this
+        const formData = {
+          mobilePhone,
+          status,
+          startDateTime: formatDate('YYYY-MM-DD hh:mm:ss', startDateTime),
+          endDateTime: formatDate('YYYY-MM-DD hh:mm:ss', endDateTime)
+        }
         const paramsArr = []
         for (let k in formData) {
           if (formData[k]) {
@@ -568,20 +602,24 @@
       queryStudent() {
         this.formalAddData.realName = ''
         this.formalAddData.studentId = ''
-        if(!this.formalAddData.mobilePhone){
+        if (!this.formalAddData.mobilePhone) {
           this.$Message.error('请输入手机号后查询')
           return
         }
         http.get({
           vm: this,
           url: '/manager/student/list',
-          data: { mobilePhone: this.formalAddData.mobilePhone, status: 1 },
+          data: {mobilePhone: this.formalAddData.mobilePhone, status: 1},
           success: res => {
             const studentList = res.data.list
-            if(studentList.length>0){
+            if (studentList.length > 0) {
               this.$Message.success('查询成功！')
-              this.formalAddData = {...this.formalAddData, realName: studentList[0].realName, studentId: studentList[0].id }
-            }else{
+              this.formalAddData = {
+                ...this.formalAddData,
+                realName: studentList[0].realName,
+                studentId: studentList[0].id
+              }
+            } else {
               this.$Message.error('未查询到该学员！')
               this.formalAddData.realName = ''
               this.formalAddData.studentId = ''
@@ -591,12 +629,12 @@
       },
       handleFormalAdd() {
         this.$refs['formalAdd'].validate(valid => {
-          if(valid) {
-            const { coursePackerId, studentId } = this.formalAddData
+          if (valid) {
+            const {coursePackerId, studentId} = this.formalAddData
             http.post({
               vm: this,
               url: '/manager/order-formal/orderCreate',
-              data: { coursePackerId, studentId },
+              data: {coursePackerId, studentId},
               success: res => {
                 this.$Message.success('创建成功！')
                 this.formalAddModal = false
@@ -610,14 +648,14 @@
       },
       /* ---------  四级联动 ----------- */
 
-      onFirstOpen(){
-        this.getFirstList()  
+      onFirstOpen() {
+        this.getFirstList()
       },
       getFirstList() {
         http.get({
           vm: this,
           url: '/manager/course-classification/getAll',
-          data: { type: 1 },
+          data: {type: 1},
           success: res => {
             this.firstList = res.data
           }
@@ -627,7 +665,7 @@
         http.get({
           vm: this,
           url: '/manager/course-classification/getAll',
-          data: { type: 2, parentCode: this.formalAddData.firstCode },
+          data: {type: 2, parentCode: this.formalAddData.firstCode},
           success: res => {
             this.secondList = res.data
           }
@@ -637,7 +675,7 @@
         http.get({
           vm: this,
           url: '/manager/course-classification/getAll',
-          data: { type: 3, parentCode: this.formalAddData.secondCode },
+          data: {type: 3, parentCode: this.formalAddData.secondCode},
           success: res => {
             this.thirdList = res.data
           }
@@ -653,7 +691,7 @@
         http.get({
           vm: this,
           url: '/manager/course-package/listByThird',
-          data: { third: thirdId },
+          data: {third: thirdId},
           success: res => {
             this.coursePackerList = res.data
           }
