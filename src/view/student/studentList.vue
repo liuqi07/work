@@ -42,10 +42,7 @@
         columns: [
           { title: '学员编号', key: 'code', align: 'center' },
           { title: '学员姓名', key: 'realName', align: 'center' },
-          { title: '手机号码', key: 'mobilePhone', align: 'center', render: (h, params) => {
-            const mobilePhone = params.row.mobilePhone
-            return h('div', mobilePhone && mobilePhone.replace(mobilePhone.substr(3, 4), '****') || '')
-          } },
+          { title: '手机号码', key: 'mobilePhone', align: 'center'},
           { title: '性别', key: 'sex', align: 'center', render: (h, params) => {
             const sex = params.row.sex
             return h('div', {}, sex === 1 ? '男' : (sex === 2 ? '女' : '未知'))

@@ -138,10 +138,7 @@
           {title: '课程名称', key: 'courseName', align: 'center'},
           {title: '学员姓名', key: 'studentName', align: 'center'},
           {
-            title: '手机号', key: 'studentMobilePhone', align: 'center', render: (h, params) => {
-              const studentMobilePhone = params.row.studentMobilePhone
-              return h('div', studentMobilePhone && studentMobilePhone.replace(studentMobilePhone.substr(3, 4), '****') || '')
-            }
+            title: '手机号', key: 'studentMobilePhone', align: 'center'
           },
           {
             title: '预约订单状态', key: 'status', align: 'center', render: (h, parmas) => {
