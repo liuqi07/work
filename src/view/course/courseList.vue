@@ -86,7 +86,7 @@
           </Row>
         </FormItem>
         <FormItem prop="file" label="上传图片：" :required="fileIsRequire" v-if="fileReload">
-          <input type="file" @change="handleFileChange">
+          <input type="file" @change="handleFileChange" id="file">
         </FormItem>
         <FormItem label="查看图片：" v-if="fileIsExist" style="width: 300px;">
           <Button long type="primary" @click="handleView(addData.courseFileSrc)">查看</Button>
@@ -373,6 +373,7 @@
             })
           })
         })
+        document.getElementById("file").value = "";
         this.courseTitle = '编辑课程'
         this.courseEditUrl = '/manager/course/edit'
         this.addCourseModal = true
