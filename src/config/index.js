@@ -15,6 +15,7 @@ export default {
   baseUrl: {
     // dev: 'http://192.168.0.101:8001',
     dev: '',
+    // pro: 'http://101.200.33.47'
     pro: 'http://www.zilongshu.com'
   }
 }
