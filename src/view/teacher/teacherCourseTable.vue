@@ -35,6 +35,20 @@
         <Button @click="uploadFile" type="primary" :loading="uploading">确定</Button>
       </div>
     </Modal>
+    <Modal title="上课链接" v-model="classUrlModelShow">
+      <Form :model="classUrlModel" :label-width="90">
+        <FormItem label="教师上课链接：" style="width: 450px;" :label-width="110">
+          <Input v-model="classUrlModel.start_url"/>
+        </FormItem>
+        <FormItem label="学生上课链接：" style="width: 450px;" :label-width="110">
+          <Input v-model="classUrlModel.join_url"/>
+        </FormItem>
+      </Form>
+      <div slot=footer>
+        <Button @click="classUrlModelShow=false">取消</Button>
+        <Button type="primary" @click="saveClassUrl" :loading="classUrlBtn">确定</Button>
+      </div>
+    </Modal>
   </div>
 </template>
 
@@ -45,6 +59,9 @@
   export default {
     data() {
       return {
+        classUrlBtn: false,
+        classUrlModelShow: false,
+        classUrlModel: {tableId: null, start_url: null, join_url: null},
         postData: {pageIndex: 1, pageSize: 10},
         columns: [
           {title: '教师姓名', key: 'teacherName', align: 'center'},
@@ -96,6 +113,24 @@
                     {name: 'hasPermission', value: "upload"}
                   ]
                 }, tvUrl ? '查看/重新上传' : '上传录播课'),
+                h('Button', {
+                  props: {
+                    type: 'primary',
+                    size: 'small'
+                  },
+                  style: {
+                    marginRight: '5px',
+                    marginBottom: '3px'
+                  },
+                  on: {
+                    click: () => {
+                      this.openSaveClassUrl(params.row)
+                    }
+                  },
+                  directives: [
+                    {name: 'hasPermission', value: "saveClassUrl"}
+                  ]
+                }, '上课链接'),
               ])
             }
           }
@@ -114,8 +149,63 @@
       };
     },
     methods: {
-      openVideo(){
+      openVideo() {
         window.open(this.tvUrl);
+      },
+      openSaveClassUrl(row) {
+        const id = row.tableId;
+        if (id) {
+          const url = '/manager/teacher/lookClassUrl';
+          http.get({
+            vm: this,
+            url,
+            data: {tableId: id},
+            success: res => {
+              this.classUrlModel.tableId = id;
+              this.classUrlModel.join_url = res.data.join_url;
+              this.classUrlModel.start_url = res.data.start_url;
+              this.classUrlModelShow = true;
+            }
+          })
+        } else {
+          this.$Message.error('请选择需要维护上课地址的课程！')
+        }
+      },
+      saveClassUrl() {
+        if (!this.classUrlModel.tableId) {
+          this.$Message.error('请选择需要维护上课地址的课程！');
+          return;
+        }
+        if (!this.classUrlModel.join_url) {
+          this.$Message.error('请维护学生的上课地址！');
+          return;
+        }
+        if (!this.classUrlModel.start_url) {
+          this.$Message.error('请维护教师的上课地址！');
+          return;
+        }
+
+        if (this.classUrlModel.tableId && this.classUrlModel.join_url && this.classUrlModel.start_url) {
+          this.classUrlBtn = true;
+          http.post({
+            vm: this,
+            url: '/manager/teacher/saveClassUrl',
+            data: {
+              tableId: this.classUrlModel.tableId,
+              join_url: this.classUrlModel.join_url,
+              start_url: this.classUrlModel.start_url
+            },
+            success: res => {
+              if (res.code === 1) {
+                this.classUrlModel = {tableId: null, start_url: null, join_url: null};
+                this.classUrlModelShow = false;
+                this.classUrlBtn = false;
+              } else {
+                this.$Message.error(res.msg);
+              }
+            }
+          })
+        }
       },
       uploadFile() {
         if (this.file) {
@@ -142,7 +232,7 @@
           this.$Message.error('请先选择文件后点击上传！')
         }
       },
-      cancel(){
+      cancel() {
         this.file = null
         this.uploadModal = false
       },
