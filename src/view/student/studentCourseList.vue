@@ -129,6 +129,9 @@
                 case 3:
                   statusStr = '已退款'
                   break;
+                case 4:
+                  statusStr = '已关闭'
+                  break;
               }
               return h('div', {}, statusStr)
             }

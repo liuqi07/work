@@ -46,15 +46,19 @@
     </Modal>
     <Modal :title="subscribeArrangeTitle" v-model="subscribeArrangeModal">
       <Form :label-width="80">
+        <FormItem label="课时数量：">
+          <Input-number v-model="subscribeArrangeData.surplusClassHour"
+                        @on-change="surplusClassHourChange"/>
+        </FormItem>
         <FormItem label="上课时间：">
-          <Row v-if="subscribeArrangeData.surplusClassHour>0">
-            <DatePicker type="date" v-model="subscribeArrangeData.dateList[0].date" @on-change="onDateChange"
+          <Row v-for="(item,index) in subscribeArrangeData.dateList">
+            <DatePicker type="date" v-model="subscribeArrangeData.dateList[index].date" @on-change="onDateChange"
                         :clearable="false" placeholder="选择日期"
                         style="width: 120px; margin-right: 5px;"></DatePicker>
-            <TimePicker :steps="[1, 30, 60]" v-model="subscribeArrangeData.dateList[0].time" hide-disabled-options
+            <TimePicker :steps="[1, 30, 60]" v-model="subscribeArrangeData.dateList[index].time" hide-disabled-options
                         :disabled-hours="[0,1,2,3,4,5,6,7,22,23]" :clearable="false" placeholder="选择时间段"
                         style="width: 100px; margin-right: 5px;"></TimePicker>
-            <Input :value="subscribeArrangeData.dateList[0].week" style="width: 80px;" placeholder="星期" readonly/>
+            <Input :value="subscribeArrangeData.dateList[index].week" style="width: 80px;" placeholder="星期" readonly/>
           </Row>
         </FormItem>
         <FormItem label="可用教师：">
@@ -286,7 +290,7 @@
         addSubscribeAllotData: [],
         subscribeArrangeModal: false, // 排课
         levelList: [],
-        subscribeArrangeData: {dateList: [{}]},
+        subscribeArrangeData: {dateList: [{}], surplusClassHour: 0},
         teacherList: [],
         subscribeChangeOrderModal: false, // 转单
         subscribeChangeOrderData: {
@@ -330,6 +334,13 @@
       }
     },
     methods: {
+      surplusClassHourChange(value) {
+        if (this.subscribeArrangeData.surplusClassHour > this.subscribeArrangeData.dateList.length) {
+          this.subscribeArrangeData.dateList.push({date: null, time: null, week: null})
+        } else if (this.subscribeArrangeData.surplusClassHour < this.subscribeArrangeData.dateList.length) {
+          this.subscribeArrangeData.dateList.splice(value)
+        }
+      },
       search() {
         this.postData.startDateTime = this.startDateTime && formatDate('YYYY-MM-DD hh:mm:ss', this.startDateTime) || null
         this.postData.endDateTime = this.endDateTime && formatDate('YYYY-MM-DD hh:mm:ss', this.endDateTime) || null
@@ -438,7 +449,11 @@
       },
       // 排课
       subscribeArrange({orderId, surplusClassHour}) {
-        this.subscribeArrangeData = {dateList: [{}, {}]};
+        let dateList = [];
+        for (let i = 0; i < surplusClassHour; i++) {
+          dateList.push({date: null, time: null, week: null});
+        }
+        this.subscribeArrangeData = {dateList: dateList};
         this.subscribeArrangeModal = true;
         this.subscribeArrangeData.orderId = orderId;
         this.subscribeArrangeData.surplusClassHour = surplusClassHour;
@@ -450,9 +465,14 @@
       },
       // 重新排课
       subscribeArrangeAgain({orderId, surplusClassHour}) {
+        console.log(surplusClassHour);
+        let dateList = [];
+        for (let i = 0; i < surplusClassHour; i++) {
+          dateList.push({date: null, time: null, week: null});
+        }
+        this.subscribeArrangeData = {dateList: dateList};
         this.subscribeArrangeData.teacherId = null;
         this.subscribeArrangeModal = true;
-        this.subscribeArrangeData.dateList = [{}];
         this.subscribeArrangeData.orderId = orderId;
         this.subscribeArrangeData.surplusClassHour = surplusClassHour;
         this.subscribeArrangeTitle = '重新排课';
@@ -465,14 +485,14 @@
         http.get({
           vm: this,
           url,
-          data: {orderId: orderId,classType: 2},
+          data: {orderId: orderId, classType: 2},
           success: res => {
             this.levelList = res.data;
           }
         })
       },
       saveSubscribeArrange() {
-        const {orderId, teacherId, dateTimes: datesStr, url,level} = this.subscribeArrangeData
+        const {orderId, teacherId, dateTimes: datesStr, url, level} = this.subscribeArrangeData
         if (!teacherId) {
           this.$Message.error({
             content: '请选择教师后再进行操作！',
@@ -483,7 +503,7 @@
         http.post({
           vm: this,
           url,
-          data: {orderId, teacherId, datesStr,level},
+          data: {orderId, teacherId, datesStr, level},
           success: res => {
             this.$Message.success('排课成功！')
             this.subscribeArrangeModal = false
@@ -526,11 +546,13 @@
           }
         })
       },
-      onDateChange(date) {
+      onDateChange() {
         const dateList = this.subscribeArrangeData.dateList
         dateList.map(d => {
+          console.log(getWeek(d.date))
           d.week = getWeek(d.date)
         })
+        this.subscribeArrangeData.dateList = dateList;
       },
       cancel() {
         this.subscribeChangeOrderModal = false
