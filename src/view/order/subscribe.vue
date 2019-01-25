@@ -46,7 +46,7 @@
     </Modal>
     <Modal :title="subscribeArrangeTitle" v-model="subscribeArrangeModal">
       <Form :label-width="80">
-        <FormItem label="课时数量：">
+        <FormItem label="剩余课时数量：">
           <Input-number v-model="subscribeArrangeData.surplusClassHour"
                         @on-change="surplusClassHourChange"/>
         </FormItem>
