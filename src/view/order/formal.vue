@@ -189,7 +189,7 @@
           },
           {title: '订单状态', key: 'statusStr', algin: 'center'},
           {title: '课程总价', key: 'allPrice', algin: 'center'},
-          {title: '优惠总价', key: 'discountAllPrice', algin: 'center'},
+          {title: '优惠总价', key: 'realAmt', algin: 'center'},
           {title: '总课时', key: 'allHour', algin: 'center'},
           {title: '消费课时', key: 'consumeClassHour', algin: 'center'},
           {title: '剩余课时', key: 'surplusClassHour', algin: 'center'},

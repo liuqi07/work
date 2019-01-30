@@ -16,10 +16,11 @@
             { title: '二级分类', key: 'secondName', align: 'center' },
             { title: '三级分类', key: 'thirdName', align: 'center' },
             { title: '套餐单价', key: 'unitPrice', align: 'center' },
-            { title: '优惠单价', key: 'discountUnitPrice', align: 'center' },
+            { title: '课时单价优惠金额', key: 'discountUnitPrice', align: 'center' },
             { title: '每周课时', key: 'weekClassHour', align: 'center' },
             { title: '总课时', key: 'allHour', align: 'center' },
-            { title: '套餐总价', key: 'allPrice', align: 'center' }, 
+            { title: '套餐总价', key: 'allPrice', align: 'center' },
+            { title: '优惠总价', key: 'realAmt', align: 'center' },
             {
               title: '套餐状态', key: 'status', align: 'center', render: (h, params) => {
                 let statusDesc = ''
