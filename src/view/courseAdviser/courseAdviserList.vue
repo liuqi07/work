@@ -48,9 +48,6 @@ git pull
             <Radio :label="2">女</Radio>
           </RadioGroup>
         </FormItem>
-        <!-- <FormItem prop="age" label="年龄：" style="width: 300px;" >
-          <Input v-model="updateDetailData.age" placeholder="请输入年龄" @on-change="onAgeChange" ></Input>
-        </FormItem> -->
         <FormItem prop="rate" label="提成比例：" style="width: 320px;">
           <Row><Input v-model="updateDetailData.rate" style="width: 200px;"/> %</Row>
         </FormItem>
@@ -195,11 +192,6 @@ git pull
             },
             {validator: validateIdNo, trigger: 'change'},
             {validator: validateIdNo, trigger: 'blur'}
-          ],
-          age: [
-            {required: true, message: '请填写年龄', trigger: 'change'},
-            // { type: 'string', message: '请输入正确的年龄', pattern: /^(?:[1-9][0-9]?|1[01][0-9]|100)$/ , trigger: 'blur' },
-            {validator: validateAge, trigger: 'change'}
           ],
           sex: [
             {required: true, message: '请填写性别', trigger: 'change'},
