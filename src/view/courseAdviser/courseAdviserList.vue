@@ -90,17 +90,6 @@ git pull
           })
         }
       }
-      const validateAge = (rule, age, cb) => {
-        if (!age) {
-          cb(new Error('请输入年龄'))
-        } else {
-          if (!/^(?:[1-9][0-9]?|1[01][0-9]|100)$/.test(age)) {
-            cb(new Error('请输入正确的年龄'))
-          } else {
-            cb()
-          }
-        }
-      }
       const validateRate = (rule, value, cb) => {
         if (!value) {
           cb(new Error('请输入提成比例'))
@@ -244,11 +233,10 @@ git pull
         window.open('http://www.zilongshu.com/manager/course-adviser/export' + params)
       },
       openDetail({code, realName, mobilePhone, idNo, sex, age, rate, email, id}) {
-        // console.log('code, realName, mobilePhone, idNo, sex, age, rate, email, id -------> ', code, realName, mobilePhone, idNo, sex, age, rate, email, id);
-
-        this.detailModal = true
-        this.$refs['updateDetailRef'].resetFields()
+        this.detailModal = true;
+        this.$refs['updateDetailRef'].resetFields();
         this.updateDetailData = {code, realName, mobilePhone, idNo, sex, age, rate: rate && rate.toString(), email, id}
+        console.log(this.updateDetailData)
       },
       updateDetail() {
         this.$refs['updateDetailRef'].validate(valid => {
