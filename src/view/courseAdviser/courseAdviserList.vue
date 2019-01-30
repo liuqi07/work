@@ -239,24 +239,29 @@ git pull
         console.log(this.updateDetailData)
       },
       updateDetail() {
+        console.log(this.updateDetailData);
         this.$refs['updateDetailRef'].validate(valid => {
           if (valid) {
             this.loading = true
-            // this._age && (this.updateDetailData.age = this._age)
             http.post({
               vm: this,
               url: '/manager/course-adviser/edit',
               data: this.updateDetailData,
               success: res => {
-                this.$Message.success('更新成功！')
-                this.detailModal = false
-                this.updateDetailData = {}
-                this.$refs['updateDetailRef'].resetFields()
-                this.getCourseAdviserList()
-                this.loading = false
+                this.loading = false;
+                if (res.code === 1) {
+                  this.$Message.success('更新成功!');
+                  this.detailModal = false
+                  this.updateDetailData = {}
+                  this.$refs['updateDetailRef'].resetFields()
+                  this.getCourseAdviserList()
+                } else {
+                  this.$Message.error(res.msg);
+                }
               },
               error: err => {
-                this.loading = false
+                this.loading = false;
+                this.$Message.error(err);
               }
             })
           }
