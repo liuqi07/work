@@ -209,7 +209,6 @@
               return h('div', {}, status === 1 ? '未审核' : '已审核')
             }
           },
-          { title: 'zoomPassword', align: 'center', key: 'zoomPassword' },
           {
             title: '操作', key: 'actions', align: 'center', width: 230, render: (h, params) => {
               return h('div', [
