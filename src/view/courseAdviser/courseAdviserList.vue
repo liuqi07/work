@@ -102,7 +102,6 @@ git pull
         }
       }
       const validateSex = (rule, sex, cb) => {
-        console.log('性别： ', sex)
         if(!sex) {
           cb(new Error('请选择性别'))
         }else {
