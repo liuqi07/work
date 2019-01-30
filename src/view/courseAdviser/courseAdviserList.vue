@@ -90,6 +90,25 @@ git pull
           })
         }
       }
+      const validateAge = (rule, age, cb) => {
+        if (!age) {
+          cb(new Error('请输入年龄'))
+        } else {
+          if (!/^(?:[1-9][0-9]?|1[01][0-9]|100)$/.test(age)) {
+            cb(new Error('请输入正确的年龄'))
+          } else {
+            cb()
+          }
+        }
+      }
+      const validateSex = (rule, sex, cb) => {
+        console.log('性别： ', sex)
+        if(!sex) {
+          cb(new Error('请选择性别'))
+        }else {
+          cb()
+        }
+      }
       const validateRate = (rule, value, cb) => {
         if (!value) {
           cb(new Error('请输入提成比例'))
@@ -183,7 +202,8 @@ git pull
             {validator: validateIdNo, trigger: 'blur'}
           ],
           sex: [
-            {required: true, message: '请填写性别', trigger: 'change'},
+            // {required: true, message: '请填写性别', trigger: 'change'},
+            {validator: validateSex, trigger: 'change'}
           ],
           mobilePhone: [
             {required: true, message: '请填写手机号', trigger: 'change'},
