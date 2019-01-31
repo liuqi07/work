@@ -56,6 +56,7 @@ export default {
       params.push(k + "=" + data[k]);
     }
     params.join("&");
+    console.log(params)
     axios({
       url: baseUrl + url + "?" + params.join("&"),
       method: "post",
@@ -67,6 +68,14 @@ export default {
         error && error();
       });
   },
+  _post: function({ vm, url, data = {}, success, error }) {
+    console.log(data)
+    axios.post(baseUrl + url, data).then(handleResponse(vm, success, error))
+      .catch(function (error) {
+        alert(JSON.stringify(error));
+      });
+  },
+
   _postwithupload: function({ vm, url, data = {}, success, error }) {
     axios({
       url: baseUrl + url,
