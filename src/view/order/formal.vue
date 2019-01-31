@@ -172,7 +172,6 @@
 <script>
   import http from '@/libs/http'
   import {formatDate, getWeek} from '@/libs/tools';
-  import $ from 'jquery';
 
   export default {
     data() {
@@ -549,8 +548,13 @@
           url: '/manager/order-formal/refund',
           data: {orderId: this.formalRefundData.orderId},
           success: res => {
-            this.$Message.success('退款成功！')
-            this.getFormalList()
+            if (res.code === 1) {
+              this.$Message.success('退款申请提交成功!');
+              this.getFormalList();
+              this.formalRefundModal = false;
+            } else {
+              this.$Message.error(res.msg);
+            }
           }
         })
       },
