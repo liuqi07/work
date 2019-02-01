@@ -278,7 +278,25 @@
                   directives: [
                     {name: 'hasPermission', value: "subscribeChangeOrder"}
                   ]
-                }, '转单')
+                }, '转单'),
+                h('Button', {
+                  props: {
+                    type: 'primary',
+                    size: 'small',
+                    disabled: status < 4 ? false : true
+                  },
+                  style: {
+                    marginBottom: '3px'
+                  },
+                  on: {
+                    click: () => {
+                      this.overStatus(params.row)
+                    }
+                  },
+                  directives: [
+                    {name: 'hasPermission', value: "over"}
+                  ]
+                }, '完结'),
               ])
             }
           },
@@ -334,6 +352,33 @@
       }
     },
     methods: {
+      //订单置换为完结状态
+      overStatus({orderId}) {
+        this.$Modal.confirm({
+          title: "Title",
+          content: `确定将此预约订单置换为完结状态？`,
+          loading: true,
+          onOk: () => {
+            const params = new URLSearchParams();
+            params.append('orderId', orderId);
+            params.append('status', '4');
+            http._post({
+              vm: this,
+              url: "/manager/order-subscribe/dealOrderStatus",
+              data: params,
+              success: res => {
+                if (res.code === 1) {
+                  this.$Message.success("状态置换成功!");
+                  this.$Modal.remove();
+                  this.getSubscribeList();
+                } else {
+                  this.$Message.error(res.msg);
+                }
+              }
+            });
+          }
+        });
+      },
       surplusClassHourChange(value) {
         if (this.subscribeArrangeData.surplusClassHour > this.subscribeArrangeData.dateList.length) {
           this.subscribeArrangeData.dateList.push({date: null, time: null, week: null})
