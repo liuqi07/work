@@ -1,24 +1,23 @@
 import axios from "axios";
 import config from "@/config";
 import Cookie from "js-cookie";
+
 const baseUrl =
   process.env.NODE_ENV === "development"
     ? config.baseUrl.dev
     : config.baseUrl.pro;
 
 const handleResponse = (vm, success, error) => res => {
-  // 成功
-  if (res.data.code === 1) {
+  if (res.data.code === 1) {// 请求成功
     success && success(res.data);
-  } else if (res.data.code === 2) {
+  } else if (res.data.code === 2) {// 请求失败
     vm.$Message.warning({
       content: res.data.msg,
       duration: 6
     });
     error && error();
   }
-  // 登录过期，清空token、userName、
-  else if (res.data.code === 3) {
+  else if (res.data.code === 3) {// 重新登录
     vm.$Message.warning({
       content: res.data.msg,
       duration: 6
@@ -39,7 +38,7 @@ const handleResponse = (vm, success, error) => res => {
 };
 
 export default {
-  get: function({ vm, url, data, success, error }) {
+  get: function ({vm, url, data, success, error}) {
     axios
       .get(baseUrl + url, {
         params: data
@@ -50,7 +49,7 @@ export default {
         error && error();
       });
   },
-  post: function({ vm, url, data = {}, success, error }) {
+  post: function ({vm, url, data = {}, success, error}) {
     let params = [];
     for (let k in data) {
       params.push(k + "=" + data[k]);
@@ -68,15 +67,14 @@ export default {
         error && error();
       });
   },
-  _post: function({ vm, url, data = {}, success, error }) {
-    console.log(data)
+  _post: function ({vm, url, data = {}, success, error}) {
     axios.post(baseUrl + url, data).then(handleResponse(vm, success, error))
       .catch(function (error) {
         alert(JSON.stringify(error));
       });
   },
 
-  _postwithupload: function({ vm, url, data = {}, success, error }) {
+  _postwithupload: function ({vm, url, data = {}, success, error}) {
     axios({
       url: baseUrl + url,
       method: "post",
