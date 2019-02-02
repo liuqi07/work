@@ -23,7 +23,9 @@
       <Button type="primary" @click="search" v-hasPermission="'search'" style="margin-left: 20px; margin-right: 10px;">
         查询
       </Button>
+      <Button type="primary" @click="subCreate" v-hasPermission="'subCreate'" style="margin-right: 10px;">创建订单</Button>
       <Button type="primary" @click="subscribeExport" v-hasPermission="'subscribeExport'">导出</Button>
+
     </Form>
     <Card>
       <Table :columns="columns" :data="subscribeList"></Table>
@@ -31,6 +33,41 @@
             :page-size="postData.pageSize"
             :page-index="postData.pageIndex" style="margin-top: 10px"/>
     </Card>
+    <Modal title="创建订单" v-model="subCreateShow">
+      <Form :label-width="110" ref="subCreateForm" :model="subCreateData" :rules="subCreateFormRules">
+        <FormItem prop="firstCode" label="课程一级分类：" style="width: 300px;">
+          <Select v-model="subCreateData.firstCode" @on-change="firstChange('create')" @on-open-change="getFirstList">
+            <Option v-for="item in firstList" :value="item.code" :key="item.code">{{item.name}}</Option>
+          </Select>
+        </FormItem>
+        <FormItem prop="secondCode" label="课程二级分类：" style="width: 300px;">
+          <Select v-model="subCreateData.secondCode" @on-change="secondChange('create')">
+            <Option v-for="item in secondList" :value="item.code" :key="item.code">{{item.name}}</Option>
+          </Select>
+        </FormItem>
+        <FormItem prop="thirdCode" label="课程三级分类：" style="width: 300px;">
+          <Select v-model="subCreateData.thirdCode" @on-change="thirdChange('create')">
+            <Option v-for="item in thirdList" :value="item.code" :key="item.code">{{item.name}}</Option>
+          </Select>
+        </FormItem>
+        <FormItem prop="courseId" label="课程名称：" style="width: 300px;">
+          <Select v-model="subCreateData.courseId">
+            <Option v-for="item in courseList" :value="item.id" :key="item.code">{{item.name}}</Option>
+          </Select>
+        </FormItem>
+        <FormItem prop="mobilePhone" label="学员手机号" style="width: 350px;">
+          <Input v-model="subCreateData.mobilePhone" placeholder="请输入学员手机号" style="width: 120px; margin-right: 10px;"/>
+          <Button type="primary" @click="queryStudent">查询</Button>
+        </FormItem>
+        <FormItem prop="realName" label="学员姓名" style="width: 300px;">
+          <Input v-model="subCreateData.realName" :readonly="true" placeholder="请先查询学员"/>
+        </FormItem>
+      </Form>
+      <div slot="footer">
+        <Button @click="cancel">取消</Button>
+        <Button type="primary" @click="handleSubCreateData" :loading="subCreateLoading">确定</Button>
+      </div>
+    </Modal>
     <Modal title="分配/变更顾问" v-model="subscribeAllotModal">
       <Form :label-width="80">
         <FormItem label="选择顾问">
@@ -98,17 +135,17 @@
           </Col>
         </Row>
         <FormItem prop="firstCode" label="课程一级分类：" style="width: 300px;">
-          <Select v-model="subscribeChangeOrderData.firstCode" @on-change="firstChange">
+          <Select v-model="subscribeChangeOrderData.firstCode" @on-change="firstChange('change')">
             <Option v-for="item in firstList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
         <FormItem prop="secondCode" label="课程二级分类：" style="width: 300px;">
-          <Select v-model="subscribeChangeOrderData.secondCode" @on-change="secondChange">
+          <Select v-model="subscribeChangeOrderData.secondCode" @on-change="secondChange('change')">
             <Option v-for="item in secondList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
         <FormItem prop="thirdCode" label="课程三级分类：" style="width: 300px;">
-          <Select v-model="subscribeChangeOrderData.thirdCode" @on-change="thirdChange">
+          <Select v-model="subscribeChangeOrderData.thirdCode" @on-change="thirdChange('change')">
             <Option v-for="item in thirdList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
@@ -133,6 +170,29 @@
   export default {
     data() {
       return {
+        subCreateLoading: false,
+        subCreateShow: false,
+        subCreateData: {},
+        subCreateFormRules: {
+          firstCode: [
+            {required: true, message: '请选择一级分类', trigger: 'change'}
+          ],
+          secondCode: [
+            {required: true, message: '请选择二级分类', trigger: 'change'}
+          ],
+          thirdCode: [
+            {required: true, message: '请选择三级分类', trigger: 'change'}
+          ],
+          courseId: [
+            {required: true, type: 'number', message: '请选择课程', trigger: 'change'}
+          ],
+          mobilePhone: [
+            {required: true, message: '请输入学员手机号', trigger: 'blur'}
+          ],
+          realName: [
+            {required: true, message: '请先通过学员电话查询', trigger: 'blur'}
+          ]
+        },
         postData: {pageIndex: 1, pageSize: 10},
         startDateTime: null,
         endDateTime: null,
@@ -347,11 +407,71 @@
         firstList: [],
         secondList: [],
         thirdList: [],
+        courseList: [],
         coursePackerList: [],
         subscribeArrangeTitle: '',
       }
     },
     methods: {
+      handleSubCreateData() {
+        this.$refs['subCreateForm'].validate(valid => {
+          if (valid) {
+            this.subCreateLoading = true;
+            const params = new URLSearchParams();
+            params.append('courseId', this.subCreateData.courseId);
+            params.append('studentId', this.subCreateData.studentId);
+            http._post({
+              vm: this,
+              url: '/manager/order-subscribe/orderCreate',
+              data: params,
+              success: res => {
+                this.$Message.success('创建成功!');
+                this.subCreateShow = false;
+                this.getSubscribeList();
+                this.subCreateLoading = false;
+              },
+              error: res => {
+                this.subCreateLoading = false;
+              }
+            })
+          }
+        })
+      },
+      //根据三级分类查询学生
+      queryStudent() {
+        this.subCreateData.realName = ''
+        this.subCreateData.studentId = ''
+        if (!this.subCreateData.mobilePhone) {
+          this.$Message.error('请输入手机号后查询')
+          return
+        }
+        http.get({
+          vm: this,
+          url: '/manager/student/list',
+          data: {mobilePhone: this.subCreateData.mobilePhone, status: 1},
+          success: res => {
+            const studentList = res.data.list
+            if (studentList.length > 0) {
+              this.$Message.success('查询成功！')
+              this.subCreateData = {
+                ...this.subCreateData,
+                realName: studentList[0].realName,
+                studentId: studentList[0].id
+              }
+            } else {
+              this.$Message.error('未查询到该学员！')
+              this.subCreateData.realName = ''
+              this.subCreateData.studentId = ''
+            }
+          }
+        })
+      },
+      //创建预约订单
+      subCreate() {
+        this.subCreateShow = true;
+        this.subCreateData = {};
+        this.$refs['subCreateForm'].resetFields()
+      },
       //订单置换为完结状态
       overStatus({orderId}) {
         this.$Modal.confirm({
@@ -627,57 +747,83 @@
           }
         })
       },
-      getSecondList() {
+      getSecondList(parentCode) {
         http.get({
           vm: this,
           url: '/manager/course-classification/getAll',
-          data: {type: 2, parentCode: this.subscribeChangeOrderData.firstCode},
+          data: {type: 2, parentCode: parentCode},
           success: res => {
             this.secondList = res.data
           }
         })
       },
-      getThirdList() {
+      getThirdList(parentCode) {
         http.get({
           vm: this,
           url: '/manager/course-classification/getAll',
-          data: {type: 3, parentCode: this.subscribeChangeOrderData.secondCode},
+          data: {type: 3, parentCode: parentCode},
           success: res => {
             this.thirdList = res.data
           }
         })
       },
       getCoursePackerList() {
-        // const _firstId = this.firstList.find(f => f.code === this.subscribeChangeOrderData.firstCode)
-        // const _secondId = this.secondList.find(s => s.code === this.subscribeChangeOrderData.secondCode)
-        const _thirdId = this.thirdList.find(t => t.code === this.subscribeChangeOrderData.thirdCode)
-        // const firstId = _firstId && _firstId.id || null
-        // const secondId = _secondId && _secondId.id || null
-        const thirdId = _thirdId && _thirdId.id || null
         http.get({
           vm: this,
           url: '/manager/course-package/listByThird',
-          data: {third: thirdId},
+          data: {code: this.subscribeChangeOrderData.thirdCode},
           success: res => {
             this.coursePackerList = res.data
-            // this.coursePackerList = res.data.list
           }
         })
       },
       firstChange(val) {
-        this.subscribeChangeOrderData.secondCode = null
-        this.subscribeChangeOrderData.thirdCode = null
-        this.subscribeChangeOrderData.coursePackerId = null
-        val && this.getSecondList()
+        let parentCode = null;
+        if (val === 'create') {
+          this.subCreateData.secondCode = null;
+          this.subCreateData.thirdCode = null;
+          this.subCreateData.courseId = null;
+          parentCode = this.subCreateData.firstCode;
+        } else if ('change') {
+          this.subscribeChangeOrderData.secondCode = null;
+          this.subscribeChangeOrderData.thirdCode = null;
+          this.subscribeChangeOrderData.coursePackerId = null;
+          parentCode = this.subscribeChangeOrderData.firstCode;
+        }
+        val && this.getSecondList(parentCode)
       },
       secondChange(val) {
-        this.subscribeChangeOrderData.thirdCode = null
-        this.subscribeChangeOrderData.coursePackerId = null
-        val && this.getThirdList()
+        let parentCode = null;
+        if (val === 'create') {
+          this.subCreateData.thirdCode = null;
+          this.subCreateData.courseId = null;
+          parentCode = this.subCreateData.secondCode;
+        } else if ('change') {
+          this.subscribeChangeOrderData.thirdCode = null;
+          this.subscribeChangeOrderData.coursePackerId = null;
+          parentCode = this.subscribeChangeOrderData.secondCode;
+        }
+        val && this.getThirdList(parentCode)
       },
       thirdChange(val) {
-        this.subscribeChangeOrderData.coursePackerId = null
-        val && this.getCoursePackerList()
+        if (val === 'create') {
+          this.subCreateData.courseId = null;
+          val && this.getCourseList();
+        } else if ('change') {
+          this.subscribeChangeOrderData.coursePackerId = null;
+          val && this.getCoursePackerList()
+        }
+      },
+      getCourseList() {
+        this.courseList = []
+        http.get({
+          vm: this,
+          url: '/manager/course/listByThird',
+          data: {code: this.subCreateData.thirdCode},
+          success: res => {
+            this.courseList = res.data
+          }
+        })
       },
       coursePackerChange() {
       },
