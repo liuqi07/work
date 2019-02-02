@@ -198,7 +198,8 @@
           {title: '下单时间', key: 'createTime', algin: 'center'},
           {
             title: '操作', key: 'actions', algin: 'center', width: 180, render: (h, params) => {
-              const {status, consumeClassHour, surplusClassHour} = params.row
+              const {status, consumeClassHour, surplusClassHour, isFree} = params.row;
+              console.log(isFree);
               return h('div', [
                 h('Button', {
                   props: {
@@ -290,7 +291,7 @@
                   style: {
                     marginRight: '5px',
                     marginBottom: '3px',
-                    display: (status === 2 || status === 3 || status === 4) ? 'inline-block' : 'none'
+                    display: ((status === 2 || status === 3 || status === 4) && !isFree) ? 'inline-block' : 'none'
                   },
                   on: {
                     click: () => {
@@ -301,6 +302,26 @@
                     {name: 'hasPermission', value: "formalRefund"}
                   ]
                 }, '退款'),
+                h('Button', {
+                  props: {
+                    type: 'primary',
+                    size: 'small',
+                    disabled: status === 1 ? false : true
+                  },
+                  style: {
+                    marginRight: '5px',
+                    marginBottom: '3px',
+                    display: status === 1 ? 'inline-block' : 'none'
+                  },
+                  on: {
+                    click: () => {
+                      this.freePay(params.row)
+                    }
+                  },
+                  directives: [
+                    {name: 'hasPermission', value: "freePay"}
+                  ]
+                }, '免支付'),
               ])
             }
           }
@@ -346,6 +367,32 @@
       }
     },
     methods: {
+      //免支付
+      freePay({orderId}) {
+        this.$Modal.confirm({
+          title: "Title",
+          content: `确定对此正式订单进行免支付？`,
+          loading: true,
+          onOk: () => {
+            const params = new URLSearchParams();
+            params.append('orderId', orderId);
+            http._post({
+              vm: this,
+              url: "/manager/order-formal/freePay",
+              data: params,
+              success: res => {
+                if (res.code === 1) {
+                  this.$Message.success("免支付成功!");
+                  this.$Modal.remove();
+                  this.getFormalList();
+                } else {
+                  this.$Message.error(res.msg);
+                }
+              }
+            });
+          }
+        });
+      },
       search() {
         this.postData.startDateTime = this.startDateTime && formatDate('YYYY-MM-DD hh:mm:ss', this.startDateTime) || null
         this.postData.endDateTime = this.endDateTime && formatDate('YYYY-MM-DD hh:mm:ss', this.endDateTime) || null
@@ -525,16 +572,16 @@
       },
       // 打开退款弹框
       formalRefund({orderId}) {
-        this.formalRefundModal = true
-        this.submitFormalRefundFlag = true
-        this.formalRefundData = {}
         http.get({
           vm: this,
           url: '/manager/order-formal/refundDetail',
           data: {orderId},
           success: res => {
-            this.submitFormalRefundFlag = false
-            this.formalRefundData = res.data
+            if (res.code === 1) {
+              this.formalRefundModal = true
+              this.submitFormalRefundFlag = false
+              this.formalRefundData = res.data
+            }
           }
         })
       },
