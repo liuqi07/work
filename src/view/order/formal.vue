@@ -595,13 +595,13 @@
           url: '/manager/order-formal/refund',
           data: {orderId: this.formalRefundData.orderId},
           success: res => {
-            if (res.code === 1) {
-              this.$Message.success('退款申请提交成功!');
-              this.getFormalList();
-              this.formalRefundModal = false;
-            } else {
-              this.$Message.error(res.msg);
-            }
+            this.submitFormalRefundFlag = false;
+            this.$Message.success('退款申请提交成功!');
+            this.getFormalList();
+            this.formalRefundModal = false;
+          },
+          error: res => {
+            this.submitFormalRefundFlag = false;
           }
         })
       },
@@ -730,16 +730,10 @@
         })
       },
       getCoursePackerList() {
-        // const _firstId = this.firstList.find(f => f.code === this.formalAddData.firstCode)
-        // const _secondId = this.secondList.find(s => s.code === this.formalAddData.secondCode)
-        const _thirdId = this.thirdList.find(t => t.code === this.formalAddData.thirdCode)
-        // const firstId = _firstId && _firstId.id || null
-        // const secondId = _secondId && _secondId.id || null
-        const thirdId = _thirdId && _thirdId.id || null
         http.get({
           vm: this,
           url: '/manager/course-package/listByThird',
-          data: {third: thirdId},
+          data: {code: this.formalAddData.thirdCode},
           success: res => {
             this.coursePackerList = res.data
           }
