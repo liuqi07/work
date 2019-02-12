@@ -31,35 +31,35 @@
     </Card>
     <Modal title="添加套餐" v-model="addPackageModal">
       <Form :label-width="100" :model="addData" :rules="addRules" ref="addPackage">
-        <FormItem prop="firstCode" label="一级分类：" style="width: 250px;" >
+        <FormItem prop="firstCode" label="一级分类：" style="width: 250px;" :label-width="120" >
           <Select v-model="addData.firstCode" @on-change="firstChange" clearable>
             <Option v-for="item in addData.firstList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem prop="secondCode" label="二级分类：" style="width: 250px;" >
+        <FormItem prop="secondCode" label="二级分类：" style="width: 250px;" :label-width="120" >
           <Select v-model="addData.secondCode" @on-change="secondChange" clearable>
             <Option v-for="item in addData.secondList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem prop="thirdCode" label="三级分类：" style="width: 250px;" >
+        <FormItem prop="thirdCode" label="三级分类：" style="width: 250px;" :label-width="120" >
           <Select v-model="addData.thirdCode" @on-change="thirdChange" clearable>
             <Option v-for="item in addData.thirdList" :value="item.code" :key="item.code">{{item.name}}</Option>
           </Select>
         </FormItem>
-        <FormItem prop="name" label="套餐名称：" style="width: 300px;" >
+        <FormItem prop="name" label="套餐名称：" style="width: 300px;" :label-width="120" >
           <Input v-model="addData.name" placeholder="请输入套餐名称" />
         </FormItem>
-        <FormItem prop="coursePackageDesc" label="套餐描述：" style="width: 300px;">
+        <FormItem prop="coursePackageDesc" label="套餐描述：" style="width: 300px;" :label-width="120" >
           <Input v-model="addData.coursePackageDesc" placeholder="请输入套餐描述，不超过200字" />
         </FormItem>
-        <FormItem prop="oneToX" label="授课比例：" style="width: 300px;" >
+        <FormItem prop="oneToX" label="授课比例：" style="width: 300px;" :label-width="120" >
           <Select v-model="addData.oneToX" placeholder="请先选择三级分类" clearable>
             <Option v-for="item in addData.oneToXArr" :key="item" :value="parseInt(item)">{{item}}</Option>
           </Select>
         </FormItem>
         <Row>
           <Col :span="10">
-            <FormItem prop="weekCount" label="周数：" style="width: 300px;" >
+            <FormItem prop="weekCount" label="周数：" style="width: 300px;" :label-width="120" >
               <InputNumber v-model="addData.weekCount" :min="1" placeholder="请输入周数" />
             </FormItem>
           </Col>
@@ -71,7 +71,7 @@
         </Row>
         <Row>
           <Col :span="10">
-            <FormItem prop="unitPrice" label="课时单价：" style="width: 300px;" >
+            <FormItem prop="unitPrice" label="课时单价：" style="width: 300px;" :label-width="120" >
               <InputNumber v-model="addData.unitPrice" :min="1" placeholder="请输入课时单价" />
             </FormItem>
           </Col>
@@ -84,11 +84,11 @@
             </FormItem>
           </Col>
         </Row>
-        <FormItem prop="discountUnitPrice" label="课时单价优惠金额：" style="width: 300px;" :label-width="110" :required="discountUnitPriceRequire">
+        <FormItem prop="discountUnitPrice" label="课时单价优惠金额：" style="width: 300px;" :label-width="120" :required="discountUnitPriceRequire">
           <InputNumber v-model="addData.discountUnitPrice" :min="0" placeholder="请输入课时单价优惠金额"
                        :disabled="!discountUnitPriceRequire" />
         </FormItem>
-        <FormItem prop="file" label="上传图片：" :required="fileIsRequire" v-if="fileReload">
+        <FormItem prop="file" label="上传图片：" :label-width="120" :required="fileIsRequire" v-if="fileReload">
           <input type="file" @change="handleFileChange">
         </FormItem>
       </Form>
