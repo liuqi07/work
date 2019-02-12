@@ -24,6 +24,19 @@
             :page-index="postData.pageIndex" :page-size="postData.pageSize"
             style="margin-top: 10px"/>
     </Card>
+    <Modal title="变更顾问" v-model="changeAdviserShow">
+      <Form :label-width="80">
+        <FormItem label="选择顾问" style="width: 300px;">
+          <Select v-model="changeAdviserForm.adviserId">
+            <Option v-for="item in adviserList" :value="item.id" :key="item.id">{{item.realName}}</Option>
+          </Select>
+        </FormItem>
+      </Form>
+      <div slot="footer">
+        <Button @click="changeAdviserShow=false">取消</Button>
+        <Button type="primary" @click="saveAdviserAllot" :loading="changeAdviserLoading">确定</Button>
+      </div>
+    </Modal>
   </div>
 </template>
 
@@ -34,6 +47,10 @@
   export default {
     data() {
       return {
+        changeAdviserLoading: false,
+        changeAdviserShow: false,
+        changeAdviserForm: {},
+        adviserList: [],
         postData: {
           pageIndex: 1,
           pageSize: 10
@@ -66,6 +83,10 @@
                     type: params.row.status !== 1 ? 'success' : 'error',
                     size: 'small',
                   },
+                  style: {
+                    marginRight: '5px',
+                    marginBottom: '3px',
+                  },
                   on: {
                     click: () => {
                       this.frozenOrThaw(params.row)
@@ -74,7 +95,25 @@
                   directives: [
                     {name: 'hasPermission', value: "frozenOrThaw"}
                   ]
-                }, params.row.status === 1 ? '冻结' : '解冻')
+                }, params.row.status === 1 ? '冻结' : '解冻'),
+                h('Button', {
+                  props: {
+                    type: 'primary',
+                    size: 'small',
+                  },
+                  style: {
+                    marginRight: '5px',
+                    marginBottom: '3px',
+                  },
+                  on: {
+                    click: () => {
+                      this.changeAdviser(params.row)
+                    }
+                  },
+                  directives: [
+                    {name: 'hasPermission', value: "studentAllot"}
+                  ]
+                }, "变更顾问"),
               ])
             }
           },
@@ -83,8 +122,53 @@
       }
     },
     methods: {
-      search() {
-        this.postData.createDate = formatDate('YYYY-MM-DD', this.createDate)
+      saveAdviserAllot: function () {
+        if (!this.changeAdviserForm.adviserId) {
+          this.$Message.error({
+            content: '分配顾问失败，请先选择一个顾问！',
+            duration: 5
+          });
+          return;
+        } else {
+          this.changeAdviserLoading = true;
+          const params = new URLSearchParams();
+          params.append('studentId', this.changeAdviserForm.studentId);
+          params.append('adviserId', this.changeAdviserForm.adviserId);
+          http._post({
+            vm: this,
+            url: '/manager/student/changeAdviser',
+            data: params,
+            success: res => {
+              this.$Message.success('分配顾问成功!');
+              this.getStudentList();
+              this.changeAdviserShow = false;
+              this.changeAdviserLoading = false;
+            },
+            error: res => {
+              this.changeAdviserLoading = false;
+            }
+          })
+        }
+      },
+      getAdviserList: function () {
+        http.get({
+          vm: this,
+          url: '/manager/course-adviser/getAll',
+          data: {},
+          success: res => {
+            this.adviserList = res.data;
+            console.log(this.adviserList)
+          }
+        })
+      },
+      changeAdviser: function (row) {
+        this.changeAdviserShow = true;
+        this.changeAdviserForm = {};
+        this.changeAdviserForm.studentId = row.id;
+        this.getAdviserList();
+      },
+      search: function () {
+        this.postData.createDate = formatDate('YYYY-MM-DD', this.createDate);
         this.getStudentList(() => {
           this.$Message.success('查询成功')
         })

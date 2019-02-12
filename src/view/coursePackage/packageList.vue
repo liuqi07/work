@@ -86,7 +86,7 @@
         </Row>
         <FormItem prop="discountUnitPrice" label="课时单价优惠金额：" style="width: 300px;" :label-width="120" :required="discountUnitPriceRequire">
           <InputNumber v-model="addData.discountUnitPrice" :min="0" placeholder="请输入课时单价优惠金额"
-                       :disabled="!discountUnitPriceRequire" />
+                       :disabled="!discountUnitPriceRequire" />元
         </FormItem>
         <FormItem prop="file" label="上传图片：" :label-width="120" :required="fileIsRequire" v-if="fileReload">
           <input type="file" @change="handleFileChange">
