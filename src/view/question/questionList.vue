@@ -185,7 +185,7 @@
             </Option>
           </Select>
         </FormItem>
-        <FormItem label="上传图片：">
+        <FormItem label="上传文件：">
           <input type="file" @change="handleFileChange">
         </FormItem>
       </Form>
