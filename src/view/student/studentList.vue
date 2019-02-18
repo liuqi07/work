@@ -75,6 +75,7 @@
             }
           },
           {title: '注册时间', key: 'createTime', align: 'center'},
+          {title: '课程顾问', key: 'sysUserName', align: 'center'},
           {
             title: '操作', key: 'actions', align: 'center', render: (h, params) => {
               return h('div', [
