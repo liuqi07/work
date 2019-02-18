@@ -423,19 +423,7 @@
         })
       },
       getTeacherList() {
-        const {orderId, dateList} = this.formalArrangeData
-        const datesStr = dateList.map(d => {
-          if (d.date && d.time) {
-            return formatDate('YYYY-MM-DD', d.date) + ' ' + d.time
-          }
-        })
-        for (let i = 0; i < datesStr.length; i++) {
-          if (!datesStr[i]) {
-            this.$Message.error(`请完整填写第 ${i + 1} 组日期`)
-            return
-          }
-        }
-        this.formalArrangeData.datesStr = datesStr
+        const {orderId} = this.formalArrangeData
         http.get({
           vm: this,
           url: '/manager/teacher/queryTeacherByTimes',
@@ -542,19 +530,23 @@
         }
       },
       saveFormalArrange() {
-        const {url, orderId, datesStr, teacherId, courseId = -1} = this.formalArrangeData
+        const {url, orderId, teacherId, courseId, dateList} = this.formalArrangeData
+        const datesStr = dateList.map(d => {
+          if (d.date && d.time) {
+            return formatDate('YYYY-MM-DD', d.date) + ' ' + d.time
+          }
+        })
+        for (let i = 0; i < datesStr.length; i++) {
+          if (!datesStr[i]) {
+            this.$Message.error(`请完整填写第 ${i + 1} 组日期`)
+            return
+          }
+        }
+        this.formalArrangeData.datesStr = datesStr
         if (!teacherId) {
-          this.$Message.error({
-            content: '请选择教师',
-            duration: 5
-          })
-          return
+          this.$Message.error({ content: '请选择教师', duration: 5 }); return
         } else if (!courseId) {
-          this.$Message.error({
-            content: '请选择课程',
-            duration: 5
-          })
-          return
+          this.$Message.error({ content: '请选择课程', duration: 5 }); return
         }
         http.post({
           vm: this,
