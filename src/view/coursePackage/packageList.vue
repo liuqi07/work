@@ -72,7 +72,7 @@
         <Row>
           <Col :span="10">
             <FormItem prop="unitPrice" label="课时单价：" style="width: 300px;" :label-width="120" >
-              <InputNumber v-model="addData.unitPrice" :min="1" placeholder="请输入课时单价" />
+              <InputNumber v-model="addData.unitPrice" :min="1" placeholder="请输入课时单价" />元
             </FormItem>
           </Col>
           <Col :span="10">

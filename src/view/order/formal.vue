@@ -20,6 +20,9 @@
       <FormItem label="手机号：" :label-width="70" style="width: 200px;">
         <Input v-model="postData.mobilePhone" placeholder="请输入手机号"/>
       </FormItem>
+      <FormItem label="订单号：" :label-width="70" style="width: 200px;">
+        <Input v-model="postData.orderNo" placeholder="请输入订单号"/>
+      </FormItem>
       <FormItem label="订单状态：" style="width: 200px;">
         <Select v-model="postData.status" clearable>
           <Option :value="1">未支付</Option>

@@ -416,14 +416,13 @@
                 this.$Message.success('新增成功')
                 this.feeListModal = false
                 this.$refs['feeListData'].resetFields()
+                this.feeModal = false;
+                this.secondList2 = []
+                this.thirdList2 = []
+                this.courseList2 = []
+                this.feeListData = { pageIndex: 1, pageSize: 10 }
               }
             })
-            this.secondList2 = []
-            this.thirdList2 = []
-            this.courseList2 = []
-            this.feeListData = { pageIndex: 1, pageSize: 10 }
-            this.feeModal = false
-            // this.getFeeList()
           }
         })
       },
