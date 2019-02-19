@@ -88,8 +88,18 @@
           <Button type="primary" @click="getTeacherList" style="margin-left: 10px;">查询可用教师</Button>
         </FormItem>
         <FormItem label="课程名称：" style="width: 300px;" required>
-          <Select v-model="formalArrangeData.courseId" style="width: 200px;">
+          <Select v-model="formalArrangeData.courseId" style="width: 200px;" @on-change="courseChange">
             <Option v-for="item in courseList" :value="item.id" :key="item.id">{{item.name}}</Option>
+          </Select>
+        </FormItem>
+        <FormItem label="课程等级：" style="width: 300px;" required>
+          <Select v-model="formalArrangeData.level" @on-change="levelChange" clearable>
+            <Option v-for="item in LevelList" :value="item.level" :key="item.level">{{item.level}}</Option>
+          </Select>
+        </FormItem>
+        <FormItem label="课时：" style="width: 300px;" required>
+          <Select v-model="formalArrangeData.hour" clearable>
+            <Option v-for="item in hourList" :value="item.hour" :key="item.hour">{{item.hour}}</Option>
           </Select>
         </FormItem>
       </Form>
@@ -202,7 +212,6 @@
           {
             title: '操作', key: 'actions', algin: 'center', width: 180, render: (h, params) => {
               const {status, consumeClassHour, surplusClassHour, isFree} = params.row;
-              console.log(isFree);
               return h('div', [
                 h('Button', {
                   props: {
@@ -277,7 +286,6 @@
                   },
                   on: {
                     click: () => {
-                      console.log(params.row);
                       this.formalArrangeAgain(params.row)
                     }
                   },
@@ -367,9 +375,46 @@
         secondList: [],
         thirdList: [],
         coursePackerList: [],
+        LevelList: [],
+        hourList: [],
       }
     },
     methods: {
+      levelChange() {
+        this.formalArrangeData.hour = null;
+        this.getHourList(this.formalArrangeData.courseId, this.formalArrangeData.level)
+      },
+      courseChange() {
+        this.formalArrangeData.level = null
+        this.formalArrangeData.hour = null
+        this.LevelList = []
+        this.hourList = []
+        this.getLevelList(this.formalArrangeData.courseId)
+      },
+      getLevelList(courseId) {
+        if (courseId) {
+          http.get({
+            vm: this,
+            url: '/manager/course/detail',
+            data: {id: courseId},
+            success: res => {
+              this.LevelList = res.data.levelHours
+            }
+          })
+        }
+      },
+      getHourList(courseId, level) {
+        if (courseId && level) {
+          http.get({
+            vm: this,
+            url: '/manager/course/getHoursByCourseAndLevel',
+            data: {courseId: courseId, level: level},
+            success: res => {
+              this.hourList = res.data;
+            }
+          })
+        }
+      },
       //免支付
       freePay({orderId}) {
         this.$Modal.confirm({
@@ -504,7 +549,12 @@
         this.formalArrangeData.name = name
         this.formalArrangeData.orderId = orderId
         this.formalArrangeData.thirdId = thirdId
-        this.formalArrangeData.url = '/manager/order-formal/arrangeCourse'
+        this.formalArrangeData.url = '/manager/order-formal/arrangeCourse';
+        this.LevelList = [];
+        this.hourList = [];
+        this.formalArrangeData.level = null
+        this.formalArrangeData.hour = null
+        this.formalArrangeData.courseId = null
         this.getCourseList()
         this.teacherList = []
         if (teacherId) {
@@ -522,7 +572,12 @@
         this.formalArrangeData.name = name
         this.formalArrangeData.orderId = orderId
         this.formalArrangeData.thirdId = thirdId
-        this.formalArrangeData.url = '/manager/order-formal/arrangeCourseAgain'
+        this.formalArrangeData.url = '/manager/order-formal/arrangeCourseAgain';
+        this.LevelList = [];
+        this.hourList = [];
+        this.formalArrangeData.level = null
+        this.formalArrangeData.hour = null
+        this.formalArrangeData.courseId = null
         this.getCourseList()
         this.teacherList = []
         if (teacherId) {
@@ -533,7 +588,7 @@
         }
       },
       saveFormalArrange() {
-        const {url, orderId, teacherId, courseId, dateList} = this.formalArrangeData
+        const {url, orderId, teacherId, courseId, dateList, level, hour} = this.formalArrangeData
         const datesStr = dateList.map(d => {
           if (d.date && d.time) {
             return formatDate('YYYY-MM-DD', d.date) + ' ' + d.time
@@ -547,14 +602,16 @@
         }
         this.formalArrangeData.datesStr = datesStr
         if (!teacherId) {
-          this.$Message.error({ content: '请选择教师', duration: 5 }); return
+          this.$Message.error({content: '请选择教师', duration: 5});
+          return
         } else if (!courseId) {
-          this.$Message.error({ content: '请选择课程', duration: 5 }); return
+          this.$Message.error({content: '请选择课程', duration: 5});
+          return
         }
         http.post({
           vm: this,
           url,
-          data: {orderId, datesStr, teacherId, courseId},
+          data: {orderId, datesStr, teacherId, courseId, level, hour},
           success: res => {
             this.$Message.success('排课成功！')
             this.getFormalList()
