@@ -248,12 +248,12 @@
                   props: {
                     type: 'primary',
                     size: 'small',
-                    // disabled: status === 1 ? true : false
+                    // disabled: status === 3 ? false : true
                   },
                   style: {
                     marginRight: '5px',
                     marginBottom: '3px',
-                    display: (status === 3 || status === 4) ? 'inline-block' : 'none'
+                    display: (status === 3) ? 'inline-block' : 'none'
                   },
                   on: {
                     click: () => {
