@@ -45,8 +45,8 @@
         </Select>
       </FormItem>
       <FormItem label="课时：" style="width: 220px;" required>
-        <Select v-model="postData.levelHourId">
-          <Option v-for="item in hourList" :value="item.id" :key="item.id">lesson{{item.hour}}
+        <Select v-model="postData.hour">
+          <Option v-for="item in hourList" :value="item.hour" :key="item.hour">lesson{{item.hour}}
           </Option>
         </Select>
       </FormItem>
@@ -108,9 +108,9 @@
             <Option v-for="item in levelList" :value="item" :key="item">level{{item}}</Option>
           </Select>
         </FormItem>
-        <FormItem prop="levelHourId" label="课时：" style="width: 220px;" required>
-          <Select v-model="postData.levelHourId" clearable>
-            <Option v-for="item in hourList" :value="item.id" :key="item.id">lesson{{item.hour}}
+        <FormItem prop="hour" label="课时：" style="width: 220px;" required>
+          <Select v-model="postData.hour" clearable>
+            <Option v-for="item in hourList" :value="item.hour" :key="item.hour">lesson{{item.hour}}
             </Option>
           </Select>
         </FormItem>
@@ -180,8 +180,8 @@
           </Select>
         </FormItem>
         <FormItem label="课时：" style="width: 320px;" required>
-          <Select v-model="postData.levelHourId">
-            <Option v-for="item in hourList" :value="item.id" :key="item.id">lesson{{item.hour}}
+          <Select v-model="postData.hour">
+            <Option v-for="item in hourList" :value="item.hour" :key="item.hour">lesson{{item.hour}}
             </Option>
           </Select>
         </FormItem>
@@ -229,7 +229,7 @@
       return {
         levelList: [],
         hourList: [],
-        postData: {pageIndex: 1, pageSize: 10, levelHourId: null},
+        postData: {pageIndex: 1, pageSize: 10},
         postRules: {
           question: [
             {required: true, message: '题目不能为空', trigger: 'blur'},
@@ -262,7 +262,7 @@
           level: [
             {required: true, type: 'number', message: '级别不能为空', trigger: 'change'}
           ],
-          levelHourId: [
+          hour: [
             {required: true, type: 'number', message: '课时不能为空', trigger: 'change'}
           ],
           options: [
@@ -405,7 +405,7 @@
         this.isSelect = false
       },
       edit({
-             id, question, answer, type, time, firstId, secondId, thirdId, courseId, level,levelHourId, options:
+             id, question, answer, type, time, firstId, secondId, thirdId, courseId, level,hour, options:
           _options
            }) {
         this.$refs['postData'].resetFields()
@@ -434,9 +434,9 @@
                     if (level_) {
                       this.postData = Object.assign({}, this.postData, {level: level_});
                       this.getHoursByCourseAndLevel(() => {
-                        const levelHour = this.hourList.find(l => l.id === levelHourId);
+                        const levelHour = this.hourList.find(l => l.hour === hour);
                         if (levelHour) {
-                          this.postData = Object.assign({}, this.postData, {levelHourId: levelHour.id});
+                          this.postData = Object.assign({}, this.postData, {hour: levelHour.hour});
                         }
                       })
                     }
@@ -604,7 +604,7 @@
         }
       },
       levelChange(val) {
-        delete this.postData.levelHourId;
+        delete this.postData.hour;
         if (val) {
           this.getHoursByCourseAndLevel();
         }
