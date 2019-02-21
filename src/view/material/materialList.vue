@@ -160,7 +160,7 @@
                   props: {
                     type: 'primary',
                     size: 'small',
-                    disabled: params.row.status === 1 ? false : true
+                    // disabled: params.row.status === 1 ? false : true
                   },
                   style: {
                     marginRight: '5px',

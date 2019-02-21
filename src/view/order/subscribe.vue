@@ -109,8 +109,13 @@
           <Button type="primary" @click="getTeacherList" style="margin-left: 10px;">查询可用教师</Button>
         </FormItem>
         <FormItem label="课程级别：">
-          <Select v-model="subscribeArrangeData.level" style="width: 200px;">
+          <Select v-model="subscribeArrangeData.level" style="width: 200px;" @on-change="levelChange">
             <Option v-for="item in levelList" :value="item" :key="item">{{item}}</Option>
+          </Select>
+        </FormItem>
+        <FormItem label="课时：" style="width: 200px;" required>
+          <Select v-model="subscribeArrangeData.hour" clearable>
+            <Option v-for="item in hourList" :value="item.hour" :key="item.hour">{{item.hour}}</Option>
           </Select>
         </FormItem>
       </Form>
@@ -411,6 +416,7 @@
         secondList: [],
         thirdList: [],
         courseList: [],
+        hourList:[],
         coursePackerList: [],
         subscribeArrangeTitle: '',
       }
@@ -616,7 +622,7 @@
         }
       },
       // 排课
-      subscribeArrange({orderId, surplusClassHour}) {
+      subscribeArrange({orderId, surplusClassHour,courseId}) {
         let dateList = [];
         for (let i = 0; i < surplusClassHour; i++) {
           dateList.push({date: null, time: null, week: null});
@@ -624,6 +630,7 @@
         this.subscribeArrangeData = {dateList: dateList};
         this.subscribeArrangeModal = true;
         this.subscribeArrangeData.orderId = orderId;
+        this.subscribeArrangeData.courseId = courseId;
         this.subscribeArrangeData.surplusClassHour = surplusClassHour;
         this.subscribeArrangeTitle = '排课';
         this.subscribeArrangeData.url = '/manager/order-subscribe/arrangeCourse';
@@ -632,8 +639,7 @@
         this.getCourseLevels(orderId);
       },
       // 重新排课
-      subscribeArrangeAgain({orderId, surplusClassHour}) {
-        console.log(surplusClassHour);
+      subscribeArrangeAgain({orderId, surplusClassHour,courseId}) {
         let dateList = [];
         for (let i = 0; i < surplusClassHour; i++) {
           dateList.push({date: null, time: null, week: null});
@@ -642,6 +648,7 @@
         this.subscribeArrangeData.teacherId = null;
         this.subscribeArrangeModal = true;
         this.subscribeArrangeData.orderId = orderId;
+        this.subscribeArrangeData.courseId = courseId;
         this.subscribeArrangeData.surplusClassHour = surplusClassHour;
         this.subscribeArrangeTitle = '重新排课';
         this.subscribeArrangeData.url = '/manager/order-subscribe/arrangeCourseAgain';
@@ -660,7 +667,7 @@
         })
       },
       saveSubscribeArrange() {
-        const {orderId, teacherId, dateTimes: datesStr, url, level} = this.subscribeArrangeData
+        const {orderId, teacherId, dateTimes: datesStr, url, level,hour,courseId} = this.subscribeArrangeData
         if (!teacherId) {
           this.$Message.error({
             content: '请选择教师后再进行操作！',
@@ -671,7 +678,7 @@
         http.post({
           vm: this,
           url,
-          data: {orderId, teacherId, datesStr, level},
+          data: {orderId, teacherId, datesStr, level,hour,courseId},
           success: res => {
             this.$Message.success('排课成功！')
             this.subscribeArrangeModal = false
@@ -827,6 +834,23 @@
             this.courseList = res.data
           }
         })
+      },
+      levelChange() {
+        this.subscribeArrangeData.hour = null;
+        this.getHourList(this.subscribeArrangeData.courseId, this.subscribeArrangeData.level)
+      },
+      getHourList(courseId, level) {
+        console.log(this.subscribeArrangeData);
+        if (courseId && level) {
+          http.get({
+            vm: this,
+            url: '/manager/course/getHoursByCourseAndLevel',
+            data: {courseId: courseId, level: level},
+            success: res => {
+              this.hourList = res.data;
+            }
+          })
+        }
       },
       coursePackerChange() {
       },
