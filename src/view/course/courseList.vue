@@ -181,6 +181,7 @@
           ],
           name: [
             { required: true, message: '课程名称不能为空', trigger: 'blur' },
+            { type: 'string', max: 20, message: '课程名称不能超过20个字', trigger: 'blur' },
             { validator: validateName, trigger: 'blur' }
           ],
           courseDesc: [

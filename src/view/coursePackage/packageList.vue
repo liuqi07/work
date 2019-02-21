@@ -163,7 +163,7 @@
           ],
           name: [
             { required: true, message: '套餐名称不能为空', trigger: 'blur' },
-            { type: 'string', max: 50, message: '套餐名称不能超过50字', trigger: 'blur' },
+            { type: 'string', max: 20, message: '套餐名称不能超过20字', trigger: 'blur' },
             { validator: validateName, trigger: 'blur' }
           ],
           oneToX: [
