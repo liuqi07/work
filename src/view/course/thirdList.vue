@@ -45,10 +45,10 @@
             <InputNumber :min="1" size="small" v-model="item.level" disabled style="width: 50px;" />
             </Col>
             <Col :span="8"> 选择题数量
-            <InputNumber :min="1" size="small" v-model="item.selectCount" style="width: 50px;" />
+            <InputNumber :min="0" size="small" v-model="item.selectCount" style="width: 50px;" />
             </Col>
             <Col :span="8"> 填空题数量
-            <InputNumber :min="1" size="small" v-model="item.blankCount" style="width: 50px;" />
+            <InputNumber :min="0" size="small" v-model="item.blankCount" style="width: 50px;" />
             </Col>
           </Row>
         </FormItem>
@@ -60,7 +60,7 @@
       </Form>
       <div slot="footer">
         <Button @click="cancel" >取消</Button>
-        <Button @click="add" type="primary" >确定</Button>
+        <Button @click="add" type="primary" :loading="loadBtnAdd">确定</Button>
       </div>
     </Modal>
     <Modal title="编辑" v-model="editModal" >
@@ -78,10 +78,10 @@
             <InputNumber :min="1" size="small" v-model="item.level" disabled style="width: 50px;" />
             </Col>
             <Col :span="8"> 选择题数量
-            <InputNumber :min="1" size="small" v-model="item.selectCount" style="width: 50px;" />
+            <InputNumber :min="0" size="small" v-model="item.selectCount" style="width: 50px;" />
             </Col>
             <Col :span="8"> 填空题数量
-            <InputNumber :min="1" size="small" v-model="item.blankCount" style="width: 50px;" />
+            <InputNumber :min="0" size="small" v-model="item.blankCount" style="width: 50px;" />
             </Col>
           </Row>
         </FormItem>
@@ -93,7 +93,7 @@
       </Form>
       <div slot="footer">
         <Button @click="cancel">取消</Button>
-        <Button @click="edit" type="primary" >确定</Button>
+        <Button @click="edit" type="primary" :loading="loadBtnEdit">确定</Button>
       </div>
     </Modal>
   </div>
@@ -120,6 +120,8 @@
         }
       }
       return {
+        loadBtnEdit:false,
+        loadBtnAdd:false,
         postData: {
           pageIndex: 1,
           pageSize: 20,
@@ -238,11 +240,13 @@
           })
           return
         }
+        this.loadBtnAdd = true;
         http.post({
           vm: this,
           url: '/manager/course-classification/third/add',
           data: this.addData,
           success: res => {
+            this.loadBtnAdd = false;
             this.$Message.success('添加成功！')
             this.addModal = false
             this.$refs['addData'].resetFields()
@@ -292,12 +296,14 @@
       edit() {
         this.editData.oneToX = this.oneToXArr.join(',')
         this.editData.levelQuestions = JSON.stringify(this.levelList)
-        this.editData.level = this.levelList.length
+        this.editData.level = this.levelList.length;
+        this.loadBtnEdit = true;
         http.post({
           vm: this,
           url: '/manager/course-classification/third/edit',
           data: this.editData,
           success: res => {
+            this.loadBtnEdit = false;
             this.$Message.success('更新成功！')
             this.$refs['editData'].resetFields()
             this.levelList = []
