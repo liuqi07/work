@@ -235,7 +235,7 @@
                   props: {
                     type: 'primary',
                     size: 'small',
-                    disabled: status === 2 ? false : true
+                    // disabled: status === 2 ? false : true
                   },
                   style: {
                     marginRight: '5px',
@@ -358,13 +358,13 @@
           http._post({
             vm: this,
             url: '/manager/student/commentLevel',
-            data:params,
+            data: params,
             success: res => {
               if (res.code === 1) {
                 this.$Message.success('评级信息保存成功!')
                 this.detailModal = false;
                 this.query();
-              }else{
+              } else {
                 this.$Message.error(res.msg);
               }
             }
@@ -415,7 +415,7 @@
                 desc: '已为您加载PDF，若未自动打开，请点击浏览器地址栏中提示消息手动跳转'
               });
               window.open(data.url)
-            } else if (data.type) {
+            } else {
               window.open(data.url)
             }
           }
