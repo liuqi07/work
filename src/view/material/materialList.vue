@@ -463,8 +463,7 @@
         e.target.files[0] ? (this.addData.file = e.target.files[0]) : (delete this.addData.file)
 
       },
-      masterialAudit({id, status, version}) {
-        const content = status === 1 ? '无效' : '有效'
+      masterialAudit({id}) {
         this.$Modal.confirm({
           title: '操作',
           content: `确认对该教材执行删除操作吗？`,
