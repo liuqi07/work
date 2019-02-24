@@ -134,18 +134,19 @@
           {title: '一级分类', key: 'firstName', algin: 'center'},
           {title: '二级分类', key: 'secondName', algin: 'center'},
           {title: '三级分类', key: 'thirdName', algin: 'center'},
-          {
-            title: '教材状态', key: 'status', algin: 'center', render: (h, params) => {
-              return h('div', {}, params.row.status === 1 ? '有效' : '无效')
-            }
-          },
           {title: '上传时间', key: 'createTime', algin: 'center'},
           {
-            title: '管理', key: 'actions', algin: 'center', render: (h, params) => {
-              return h('Button', {
+            title: '管理', key: 'actions', algin: 'center',width: 150, render: (h, params) => {
+              return h('div', [
+              h('Button', {
                 props: {
-                  type: params.row.status === 1 ? 'error' : 'success',
+                  type: 'error',
                   size: 'small'
+                },
+                style: {
+                  marginRight: '5px',
+                  marginBottom: '3px',
+                  display: params.row.status === 1 ? 'inline-block' : 'none'
                 },
                 on: {
                   click: () => {
@@ -155,7 +156,7 @@
                 directives: [
                   {name: 'hasPermission', value: "masterialAudit"}
                 ]
-              }, params.row.status === 1 ? '无效' : '有效'),
+              }, '删除'),
                 h('Button', {
                   props: {
                     type: 'primary',
@@ -176,6 +177,7 @@
                     {name: 'hasPermission', value: "masterialDetail"}
                   ]
                 }, '查看')
+              ])
             }
           },
         ],
@@ -465,16 +467,16 @@
         const content = status === 1 ? '无效' : '有效'
         this.$Modal.confirm({
           title: '操作',
-          content: `确认对该教材执行${content}操作吗？`,
+          content: `确认对该教材执行删除操作吗？`,
           loading: true,
           onOk: () => {
             http.post({
               vm: this,
-              url: '/manager/materials/saveValid',
-              data: {id, version, status: status === 1 ? 0 : 1},
+              url: '/manager/materials/delete',
+              data: {id},
               success: res => {
-                this.$Modal.remove()
-                this.$Message.success('操作成功！')
+                this.$Modal.remove();
+                this.$Message.success('删除成功!');
                 this.getMaterialList()
               }
             })
