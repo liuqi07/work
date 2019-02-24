@@ -262,7 +262,7 @@
                   style: {
                     marginRight: '5px',
                     marginBottom: '3px',
-                    display: (status === 3) ? 'inline-block' : 'none'
+                    display: (status === 3 || status === 4) ? 'inline-block' : 'none'
                   },
                   on: {
                     click: () => {
