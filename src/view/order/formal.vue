@@ -471,6 +471,18 @@
         })
       },
       getTeacherList() {
+        const datesStr = this.formalArrangeData.dateList.map(d => {
+          if (d.date && d.time) {
+            return formatDate('YYYY-MM-DD', d.date) + ' ' + d.time
+          }
+        })
+        for (let i = 0; i < datesStr.length; i++) {
+          if (!datesStr[i]) {
+            this.$Message.error(`请完整填写第 ${i + 1} 组日期`)
+            return
+          }
+        }
+        this.formalArrangeData.datesStr = datesStr;
         const {orderId} = this.formalArrangeData
         http.get({
           vm: this,
