@@ -146,7 +146,7 @@
                 style: {
                   marginRight: '5px',
                   marginBottom: '3px',
-                  display: params.row.status === 1 ? 'inline-block' : 'none'
+                  // display: params.row.status === 1 ? 'inline-block' : 'none'
                 },
                 on: {
                   click: () => {
@@ -166,7 +166,7 @@
                   style: {
                     marginRight: '5px',
                     marginBottom: '3px',
-                    display: params.row.status === 1 ? 'inline-block' : 'none'
+                    // display: params.row.status === 1 ? 'inline-block' : 'none'
                   },
                   on: {
                     click: () => {
