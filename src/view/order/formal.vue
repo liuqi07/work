@@ -491,6 +491,9 @@
           success: res => {
             this.teacherList = res.data
             this.$Message.success('查询成功！')
+          },
+          error: res => {
+            this.teacherList = [];
           }
         })
       },
