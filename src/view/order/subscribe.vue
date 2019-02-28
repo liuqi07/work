@@ -568,6 +568,7 @@
             this.$Message.success('查询成功！')
           },
           error: res => {
+            this.subscribeArrangeData.teacherId
             this.teacherList = [];
           }
         })

@@ -493,6 +493,7 @@
             this.$Message.success('查询成功！')
           },
           error: res => {
+            this.formalArrangeData.teacherId = null;
             this.teacherList = [];
           }
         })
