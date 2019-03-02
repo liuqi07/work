@@ -782,14 +782,16 @@
         })
       },
       getCoursePackerList() {
-        http.get({
-          vm: this,
-          url: '/manager/course-package/listByThird',
-          data: {code: this.subscribeChangeOrderData.thirdCode},
-          success: res => {
-            this.coursePackerList = res.data
-          }
-        })
+        if(this.subscribeChangeOrderData.thirdCode){
+          http.get({
+            vm: this,
+            url: '/manager/course-package/listByThird',
+            data: {code: this.subscribeChangeOrderData.thirdCode},
+            success: res => {
+              this.coursePackerList = res.data
+            }
+          })
+        }
       },
       firstChange(val) {
         let parentCode = null;
