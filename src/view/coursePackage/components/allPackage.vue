@@ -3,7 +3,7 @@
       <Table :columns="columns" :data="packageList" />
     </div>
   </template>
-  
+
   <script>
     export default {
       data() {
@@ -89,7 +89,7 @@
                     },
                     style: {
                       marginRight: '5px',
-                      display: params.row.status===2 ? 'none' : 'inline-block'
+                      // display: params.row.status===2 ? 'none' : 'inline-block'
                     },
                     on: {
                       click: () => {

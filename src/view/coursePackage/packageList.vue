@@ -91,6 +91,9 @@
         <FormItem prop="file" label="上传图片：" :label-width="120" :required="fileIsRequire" v-if="fileReload">
           <input type="file" @change="handleFileChange">
         </FormItem>
+        <FormItem prop="fileH5" label="上传图片H5：" :label-width="120" :required="fileIsRequire" v-if="fileReload">
+          <input type="file" @change="handleFileChangeH5">
+        </FormItem>
       </Form>
       <div slot="footer">
         <Button @click="cancelAddPackage" style="margin-right: 10px;" >取消</Button>
@@ -232,10 +235,10 @@
       addPackage() {
         const url = this.packageUrl
         const addOrEdit = this.addOrEdit
-        const { id, name, coursePackageDesc='', firstId, secondId, thirdId, weekClassHour, weekCount, unitPrice, isDiscount, oneToX, discountUnitPrice, version, file } = this.addData
+        const { id, name, coursePackageDesc='', firstId, secondId, thirdId, weekClassHour, weekCount, unitPrice, isDiscount, oneToX, discountUnitPrice, version, file, fileH5 } = this.addData
         this.$refs['addPackage'].validate(valid => {
           if(valid) {
-            const addData = { id, name, coursePackageDesc, firstId, secondId, thirdId, weekClassHour, weekCount, unitPrice, isDiscount, oneToX, discountUnitPrice, version, file }
+            const addData = { id, name, coursePackageDesc, firstId, secondId, thirdId, weekClassHour, weekCount, unitPrice, isDiscount, oneToX, discountUnitPrice, version, file, fileH5 }
             if(addOrEdit){
               delete addData.id
               delete addData.version
@@ -329,12 +332,12 @@
         this.uploadIsShow = false
         this.addOrEdit = false
 	      console.log('%c packageData', 'color:red;', packageData)
-        const { id, firstId, secondId, thirdId, oneToX, isDiscount=0, weekClassHour=0, weekCount=0, unitPrice=0, discountUnitPrice=0, version, file } = packageData
+        const { id, firstId, secondId, thirdId, oneToX, isDiscount=0, weekClassHour=0, weekCount=0, unitPrice=0, discountUnitPrice=0, version, file, fileH5 } = packageData
         this.discountUnitPriceRequire = isDiscount===1 ? true : false
         this.getFirstList(() => {
           const _firstCode = this.addData.firstList.find(f => f.id === firstId)
           const firstCode = _firstCode && _firstCode.code || ''
-          this.addData = Object.assign({}, this.addData, { id, firstCode, firstId, isDiscount, weekClassHour, weekCount, unitPrice, discountUnitPrice, version, file })
+          this.addData = Object.assign({}, this.addData, { id, firstCode, firstId, isDiscount, weekClassHour, weekCount, unitPrice, discountUnitPrice, version, file, fileH5 })
           this.getSecondList(() => {
             const _secondCode = this.addData.secondList.find(s => s.id === secondId)
             const secondCode = _secondCode && _secondCode.code || ''
@@ -438,6 +441,9 @@
       },
       handleFileChange(e) {
         this.addData.file = e.target.files[0]
+      },
+      handleFileChangeH5(e) {
+        this.addData.fileH5 = e.target.files[0]
       },
       changePage(pageIndex) {
         this.postData.pageIndex = pageIndex

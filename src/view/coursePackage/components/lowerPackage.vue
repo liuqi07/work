@@ -3,7 +3,7 @@
       <Table :columns="columns" :data="packageList" @on-select="onSelect" @on-select-all="onSelectAll" @on-select-cancel="onSelectCancel" @on-select-all-cancel="onSelectAllCancel" />
     </div>
   </template>
-  
+
   <script>
     export default {
       data() {

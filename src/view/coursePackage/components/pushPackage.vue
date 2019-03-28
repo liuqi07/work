@@ -3,7 +3,7 @@
       <Table :columns="columns" :data="packageList"  @on-select="onSelect" @on-select-all="onSelectAll" @on-select-cancel="onSelectCancel" @on-select-all-cancel="onSelectAllCancel" />
     </div>
   </template>
-  
+
   <script>
     export default {
       data() {
@@ -46,7 +46,26 @@
                     directives: [
                       { name: 'hasPermission', value: "packageLower" }
                     ]
-                  }, '下架')
+                  }, '下架'),
+                  h('Button', {
+                    props: {
+                      type: 'primary',
+                      size: 'small',
+                      disabled: params.row.status===4 ? true : false
+                    },
+                    style: {
+                      marginRight: '5px',
+                      // display: params.row.status===2 ? 'none' : 'inline-block'
+                    },
+                    on: {
+                      click: () => {
+                        this.packageEdit(params.row)
+                      }
+                    },
+                    directives: [
+                      { name: 'hasPermission', value: "packageEdit" }
+                    ]
+                  }, '套餐编辑'),
                 ])
               }
             }
@@ -59,6 +78,9 @@
           this.$emit('package_lower', row)
         },
         packageEdit(row) {
+          this.$emit('package_edit', row)
+        },
+        packageEdit (row) {
           this.$emit('package_edit', row)
         },
         packageDelete(row) {
