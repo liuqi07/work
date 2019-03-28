@@ -83,14 +83,15 @@
                   props: {
                     type: 'primary',
                     size: 'small',
-                    disabled: params.row.status===4 ? true : false
+                    // disabled: params.row.status===4 ? true : false
                   },
                   style: {
                     marginRight: '5px',
-                    display: params.row.status===2 ? 'none' : 'inline-block'
+                    // display: params.row.status===2 ? 'none' : 'inline-block'
                   },
                   on: {
                     click: () => {
+                      console.log("编辑");
                       this.courseEdit(params.row)
                     }
                   },
