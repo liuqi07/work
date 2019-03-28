@@ -18,7 +18,7 @@
           // { title: '课程单价', key: '', align: 'center' },
           // { title: '每周课时', key: '', align: 'center' },
           { title: '总课时', key: 'allClassHour', align: 'center' },
-          // { title: '课程总价', key: '', align: 'center' }, 
+          // { title: '课程总价', key: '', align: 'center' },
           {
             title: '课程状态', key: 'status', align: 'center', render: (h, params) => {
               let statusDesc = ''
@@ -91,7 +91,6 @@
                   },
                   on: {
                     click: () => {
-                      console.log("编辑");
                       this.courseEdit(params.row)
                     }
                   },

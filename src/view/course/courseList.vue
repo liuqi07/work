@@ -323,8 +323,8 @@
                   thirdList: []
                 };
                 this.addCourseModal = false
-                this.$refs['addData'].resetFields()
                 this.getCourseList()
+                // this.$refs['addData'].resetFields()
               }
             })
           }
@@ -400,7 +400,7 @@
       },
       // 编辑课程
       courseEdit(courseData) {
-        this.$refs['addData'].resetFields()
+        // this.$refs['addData'].resetFields()
         this.fileIsRequire = false
         this.addOrEdit = false
         this.fileIsExist = true

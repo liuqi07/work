@@ -63,6 +63,7 @@ export default {
     })
       .then(handleResponse(vm, success, error))
       .catch(err => {
+        console.log(err, 'abbbbbbbb')
         vm.$Message.error(err.Message || err.message);
         error && error();
       });
@@ -75,6 +76,7 @@ export default {
   },
 
   _postwithupload: function ({vm, url, data = {}, success, error}) {
+    console.log(data, 'dddddddddd')
     axios({
       url: baseUrl + url,
       method: "post",
@@ -85,8 +87,9 @@ export default {
     })
       .then(handleResponse(vm, success, error))
       .catch(err => {
+        console.log(err, 'ccccccccccc')
         vm.$Message.error(err.Message || err.message);
         error && error();
       });
-  }
+    }
 };
