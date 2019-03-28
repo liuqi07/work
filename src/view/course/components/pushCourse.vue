@@ -19,7 +19,7 @@
           // { title: '课程单价', key: '', align: 'center' },
           // { title: '每周课时', key: '', align: 'center' },
           {title: '总课时', key: 'allClassHour', align: 'center'},
-          // { title: '课程总价', key: '', align: 'center' }, 
+          // { title: '课程总价', key: '', align: 'center' },
           {
             title: '课程状态', key: 'status', align: 'center', render: (h, params) => {
               return h('div', {}, '已上架')
@@ -39,6 +39,9 @@
                       this.courseLower(params.row)
                     }
                   },
+                  style: {
+                    marginRight: '5px',
+                  },
                   directives: [
                     {name: 'hasPermission', value: "courseLower"}
                   ]
@@ -48,10 +51,6 @@
                     type: 'primary',
                     size: 'small',
                     // disabled: params.row.status===4 ? true : false
-                  },
-                  style: {
-                    marginRight: '5px',
-                    // display: params.row.status===2 ? 'none' : 'inline-block'
                   },
                   on: {
                     click: () => {

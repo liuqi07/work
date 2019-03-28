@@ -277,6 +277,7 @@
         this.getFirstList()
       },
       addCourse() {
+        const that = this
         this.$refs['addData'].validate(valid => {
           if (valid) {
             const {levelHour = []} = this.addData
@@ -317,14 +318,14 @@
               url,
               data: formData,
               success: res => {
-                this.$Message.success(msg)
-                this.addData = {
+                that.$Message.success(msg)
+                that.addData = {
                   oneToXArr: [], levelHour: [], firstList: [], secondList: [],
                   thirdList: []
                 };
-                this.addCourseModal = false
-                this.getCourseList()
-                // this.$refs['addData'].resetFields()
+                that.addCourseModal = false
+                that.getCourseList()
+                that.$refs['addData'].resetFields()
               }
             })
           }
