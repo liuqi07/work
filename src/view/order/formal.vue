@@ -71,12 +71,23 @@
         </FormItem>
         <FormItem label="上课时间：" required>
           <Row v-for="i in formalArrangeData.weekTimeCount" :key="i" style="margin-bottom: 5px;">
-            <DatePicker type="date" v-model="formalArrangeData.dateList[i-1].date" @on-change="onDateChange"
-                        :clearable="false" placeholder="选择日期"
-                        style="width: 120px; margin-right: 5px;"></DatePicker>
-            <TimePicker :steps="[1, 30, 60]" v-model="formalArrangeData.dateList[i-1].time" hide-disabled-options
-                        :disabled-hours="[0,1,2,3,4,5,6,7,22,23]"
-                        :clearable="false" placeholder="选择时间段" style="width: 100px; margin-right: 5px;"></TimePicker>
+            <DatePicker 
+              type="date" 
+              v-model="formalArrangeData.dateList[i-1].date" 
+              @on-change="onDateChange"
+              :clearable="false" 
+              placeholder="选择日期"
+              style="width: 120px; margin-right: 5px;">
+            </DatePicker>
+            <TimePicker 
+              :steps="[1, 30, 60]" 
+              v-model="formalArrangeData.dateList[i-1].time" 
+              hide-disabled-options
+              :disabled-hours="[0,1,2,3,4,5,6,7,22,23]"
+              :clearable="false" 
+              placeholder="选择时间段" 
+              style="width: 100px; margin-right: 5px;">
+            </TimePicker>
             <Input v-model="formalArrangeData.dateList[i-1].week" style="width: 80px;" placeholder="星期" readonly/>
           </Row>
         </FormItem>
@@ -604,16 +615,22 @@
           url: '/manager/order-formal/getOrderArrangeInfo',
           data: { orderId },
           success: res => {
-            // res = {
-            //   data: {
-            //     courseId: 9,
-            //     hour: null,
-            //     level: 1
-            //   }
-            // }
             this.tempArrangeData.level = res.data.level
             this.tempArrangeData.hour = res.data.hour
             getCourseList && getCourseList(res.data.courseId)
+
+            const dates = res.data.dates || []
+            const dateList = []
+            if(dates.length> 0) {
+              dates.map(date => {
+                dateList.push({
+                  date: formatDate('YYYY-MM-DD', date), 
+                  time: formatDate('hh:mm:ss', date), 
+                  week: getWeek(date)
+                })
+              })
+              this.formalArrangeData.dateList = dateList
+            }
           }
         })
       },
