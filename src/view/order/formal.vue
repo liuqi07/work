@@ -377,19 +377,23 @@
         coursePackerList: [],
         LevelList: [],
         hourList: [],
+        tempArrangeData: {},
       }
     },
     methods: {
-      levelChange() {
+      levelChange(courseId, level) {
         this.formalArrangeData.hour = null;
-        this.getHourList(this.formalArrangeData.courseId, this.formalArrangeData.level)
+        const _courseId = courseId || this.formalArrangeData.courseId
+        const _level = level || this.formalArrangeData.level
+        this.getHourList(_courseId, _level)
       },
-      courseChange() {
+      courseChange(courseId) {
         this.formalArrangeData.level = null
         this.formalArrangeData.hour = null
         this.LevelList = []
         this.hourList = []
-        this.getLevelList(this.formalArrangeData.courseId)
+        const _courseId = courseId || this.formalArrangeData.courseId
+        this.getLevelList(_courseId)
       },
       getLevelList(courseId) {
         if (courseId) {
@@ -399,6 +403,11 @@
             data: {id: courseId},
             success: res => {
               this.LevelList = res.data.levelHours
+              const { level } = this.tempArrangeData
+              if(level) {
+                this.formalArrangeData.level = level
+                this.levelChange(courseId, level)
+              }
             }
           })
         }
@@ -411,6 +420,10 @@
             data: {courseId: courseId, level: level},
             success: res => {
               this.hourList = res.data;
+              const { hour } = this.tempArrangeData
+              if(hour) {
+                this.formalArrangeData.hour = hour
+              }
             }
           })
         }
@@ -498,7 +511,7 @@
           }
         })
       },
-      getCourseList() {
+      getCourseList(courseId) {
         this.courseList = []
         http.get({
           vm: this,
@@ -506,6 +519,10 @@
           data: {thirdId: this.formalArrangeData.thirdId},
           success: res => {
             this.courseList = res.data
+            if(courseId) {
+              this.formalArrangeData.courseId = courseId
+              this.courseChange(courseId)
+            }
           }
         })
       },
@@ -571,7 +588,7 @@
         this.formalArrangeData.level = null
         this.formalArrangeData.hour = null
         this.formalArrangeData.courseId = null
-        this.getCourseList()
+        this.getFormalArrangeDataByOrder(orderId, courseId=>{this.getCourseList(courseId)})
         this.teacherList = []
         if (teacherId) {
           this.getTeacher(teacherId);
@@ -579,6 +596,26 @@
         for (let i = 0; i < weekTimeCount; i++) {
           this.formalArrangeData.dateList.push({date: '', time: '', week: ''})
         }
+      },
+      getFormalArrangeDataByOrder(orderId, getCourseList) {
+        this.tempArrangeData = {}
+        http.get({
+          vm: this,
+          url: '/manager/order-formal/getOrderArrangeInfo',
+          data: { orderId },
+          success: res => {
+            // res = {
+            //   data: {
+            //     courseId: 9,
+            //     hour: null,
+            //     level: 1
+            //   }
+            // }
+            this.tempArrangeData.level = res.data.level
+            this.tempArrangeData.hour = res.data.hour
+            getCourseList && getCourseList(res.data.courseId)
+          }
+        })
       },
       // 重新排课
       formalArrangeAgain({orderId, name, weekTimeCount, thirdId, teacherId}) {
